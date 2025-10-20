@@ -1,0 +1,40 @@
+.appWrapper {
+	display: flex;
+	height: 100vh;
+	background-color: #3c3c3c;
+}
+
+.mainContent {
+	flex: 1;
+	padding: 20px;
+	overflow-y: auto;
+	background-color: #3c3c3c;
+	transition: all 0.3s;
+}
+
+.contentWrapper {
+	position: relative;
+	overflow: hidden;
+}
+
+.contentWrapper > * {
+	transition:
+		transform 0.3s ease,
+		opacity 0.3s ease;
+}
+
+.contentWrapper.up > * {
+	transform: translateY(-20px);
+	opacity: 0;
+}
+
+.contentWrapper.down > * {
+	transform: translateY(20px);
+	opacity: 0;
+}
+
+/* Entrada de la nueva página */
+.contentWrapper > * {
+	transform: translateY(0);
+	opacity: 1;
+}

@@ -1,0 +1,32 @@
+.dashboard {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	padding: 20px;
+}
+
+.resumenGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 20px;
+	transition: all 0.3s ease; /* para suavizar cambios al abrir/cerrar sidebar */
+}
+
+.chartsGrid {
+	display: grid;
+	grid-template-columns: repeat(
+		auto-fit,
+		minmax(300px, 1fr)
+	); /* ahora se adapta */
+	gap: 20px;
+	height: 400px;
+	transition: all 0.3s ease;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
+}

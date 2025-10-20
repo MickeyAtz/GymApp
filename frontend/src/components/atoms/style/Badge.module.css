@@ -1,0 +1,19 @@
+@import '../../../styles/variables.css';
+
+.badge {
+	padding: 0.25rem 0.5rem;
+	font-size: 0.75rem;
+	font-weight: bold;
+	border-radius: 0.375rem;
+	display: inline-block;
+	text-align: center;
+	color: var(--color-text);
+}
+
+.primary {
+	background-color: var(--color-primary);
+}
+
+.accent {
+	background-color: var(--color-accent);
+}

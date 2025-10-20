@@ -1,0 +1,33 @@
+import {
+	FaUser,
+	FaCalendar,
+	FaDumbbell,
+	FaTrash,
+	FaEdit,
+	FaCheck,
+	FaPlus,
+	FaMoneyBill,
+	FaClock,
+	FaIdCard,
+	FaChalkboardTeacher,
+	FaIdBadge,
+	FaUserTie,
+	FaChartLine,
+} from 'react-icons/fa';
+
+export const iconMap = {
+	user: FaUser,
+	calendar: FaCalendar,
+	dumbbell: FaDumbbell,
+	trash: FaTrash,
+	edit: FaEdit,
+	check: FaCheck,
+	plus: FaPlus,
+	money: FaMoneyBill,
+	clock: FaClock,
+	id: FaIdCard,
+	teacher: FaChalkboardTeacher,
+	empleado: FaIdBadge,
+	corbata: FaUserTie,
+	dashboard: FaChartLine,
+};

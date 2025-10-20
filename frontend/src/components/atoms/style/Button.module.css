@@ -1,0 +1,47 @@
+@import '../../../styles/variables.css';
+
+.button {
+	font-family: inherit;
+	font-weight: 600;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+}
+
+/* Variantes */
+.primary {
+	background-color: var(--color-primary);
+	color: var(--color-bg);
+}
+
+.secondary {
+	background-color: var(--color-accent);
+	color: var(--color-bg);
+}
+
+.tertiary {
+	background-color: var(--color-tertiary);
+	color: var(--color-bg);
+}
+
+/* Tamaños */
+.small {
+	padding: 4px 12px;
+	font-size: 0.875rem;
+}
+
+.medium {
+	padding: 8px 16px;
+	font-size: 1rem;
+}
+
+.large {
+	padding: 12px 24px;
+	font-size: 1.125rem;
+}
+
+/* Hover */
+.button:hover {
+	opacity: 0.85;
+}

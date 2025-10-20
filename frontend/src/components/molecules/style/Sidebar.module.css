@@ -1,0 +1,186 @@
+.topSection {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 1rem 0;
+}
+
+.logoContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 15px;
+	gap: 10px;
+	flex-shrink: 0;
+}
+
+.logo {
+	width: 40px;
+	height: 40px;
+	object-fit: contain;
+	border-radius: 15%;
+}
+
+.logoText {
+	font-size: 1.2rem;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.toggleBtn {
+	width: 100%;
+	height: 40px;
+	background-color: #ffd700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background 0.2s;
+	border-bottom: 1px solid #e0c000;
+	margin-bottom: 1rem;
+}
+
+.toggleBtn:hover {
+	background-color: #ffea00;
+}
+
+.items {
+	margin-top: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center; /* centra los íconos cuando cerrado */
+	overflow-y: auto;
+	overflow-x: hidden;
+	flex-grow: 1;
+	width: 100%;
+}
+
+.item {
+	display: flex;
+	align-items: center;
+	justify-content: center; /* centra contenido cerrado */
+	padding: 10px 0;
+	width: 100%;
+	cursor: pointer;
+	transition:
+		gap 0.3s,
+		background 0.2s,
+		color 0.2s,
+		justify-content 0.3s;
+}
+
+.sidebar.open .item {
+	justify-content: flex-start; /* icono a la izquierda abierto */
+	padding-left: 20px;
+	gap: 12px; /* espacio entre icono y label */
+}
+
+.item:hover {
+	background-color: #1f1f1f;
+}
+
+.active {
+	background-color: #ffd70033;
+	color: #ffd700;
+}
+
+.icon {
+	font-size: 1.5rem;
+	flex-shrink: 0;
+}
+
+.label {
+	white-space: nowrap;
+	transition:
+		opacity 0.3s,
+		transform 0.3s;
+	opacity: 1;
+}
+
+.sidebar.closed .label {
+	display: none; /* oculta labels cerrada */
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.logoutContainer {
+	margin-top: auto; /* empuja al final */
+	width: 100%;
+	display: flex;
+	justify-content: center; /* centra logout cerrado */
+}
+
+.sidebar.open .logoutContainer {
+	justify-content: flex-start; /* alinea a la izquierda abierto */
+}
+
+.logoutBtn {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	background: none;
+	border: none;
+	color: white;
+	cursor: pointer;
+	padding: 10px 15px;
+	text-align: left;
+	justify-content: center; /* centra contenido cerrado */
+}
+
+.sidebar.open .logoutBtn {
+	justify-content: flex-start; /* alinea a la izquierda abierto */
+}
+
+.logoutBtn:hover {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+.userInfo {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 1rem;
+	gap: 0.3rem;
+	overflow: hidden;
+}
+
+.username {
+	font-weight: 600;
+	white-space: nowrap;
+	transition:
+		transform 0.3s ease,
+		opacity 0.3s ease;
+	opacity: 1;
+	min-height: 1.2rem; /* reserva espacio */
+}
+
+.sidebar.closed .username {
+	transform: translateX(-20px);
+	opacity: 0;
+}
+
+.sidebar {
+	background-color: #222;
+	color: #fff;
+	display: flex;
+	flex-direction: column;
+	transition: width 0.3s;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	flex-shrink: 0; /* importante para flexbox */
+	height: 100vh;
+}
+
+.sidebar.open {
+	width: 250px;
+}
+
+.sidebar.closed {
+	width: 100px;
+}

@@ -1,0 +1,17 @@
+@import '../style/Select.module.css';
+
+/* src/components/atoms/Select.module.css */
+.select {
+	background-color: var(--color-bg);
+	color: var(--color-text);
+	border: 1px solid var(--color-primary);
+	border-radius: 6px;
+	padding: 0.5rem 1rem;
+	font-size: 1rem;
+	outline: none;
+	transition: border 0.2s ease;
+}
+
+.select:focus {
+	border-color: var(--color-accent);
+}
