@@ -90,8 +90,8 @@ export const authLogin = async (req, res) => {
 		}
 		const instructorResult = await pool.query(
 			`SELECT id, email, nombre, password
-       FROM instructores
-       WHERE email = $1 AND fechabaja IS NULL`,
+       		FROM instructores
+       		WHERE email = $1 AND fechabaja IS NULL`,
 			[email]
 		);
 

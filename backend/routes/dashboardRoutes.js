@@ -1,4 +1,3 @@
-
 import express from 'express';
 import {
 	totalusuarios,
@@ -9,6 +8,8 @@ import {
 	totalClases,
 	inscripcionesPorClase,
 	estadisticasGenerales,
+	visitasSemana,
+	visitasMes,
 } from '../controllers/dashboardController.js';
 
 const router = express.Router();
@@ -24,5 +25,8 @@ router.get('/clases/total', totalClases);
 router.get('/clases/inscripciones', inscripcionesPorClase);
 
 router.get('/estadisticas/generales', estadisticasGenerales);
+
+router.get('/visitas-semana', visitasSemana);
+router.get('/visitas-mes', visitasMes);
 
 export default router;

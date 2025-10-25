@@ -1,0 +1,39 @@
+.chartContainer {
+	background-color: #111;
+	padding: 1rem;
+	border-radius: 1rem;
+	box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.switchContainer {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+	margin-bottom: 1rem;
+}
+
+.switchButton {
+	background-color: transparent;
+	color: white;
+	border: 2px solid #facc15;
+	padding: 0.4rem 1rem;
+	border-radius: 10px;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+
+.switchButton:hover {
+	background-color: #facc15;
+	color: black;
+}
+
+.active {
+	background-color: #facc15;
+	color: black;
+}
+
+.loadingText {
+	text-align: center;
+	color: white;
+	margin-top: 1rem;
+}
