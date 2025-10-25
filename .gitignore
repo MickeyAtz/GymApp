@@ -4,3 +4,4 @@ backend/node_modules
 backend/.env
 backend/request.http
 frontend/README.md
+backend/tarjetas

@@ -1,6 +1,7 @@
-
 import pool from '../db.js';
 import bcrypt from 'bcrypt';
+import { generarCodigoBarras } from '../utils/generarCodigoBarras.js';
+import { generarTarjetaPDF } from '../services/generarTarjetaPDF.js';
 
 //Creación de usuario
 export const createUsuario = async (req, res) => {
@@ -21,10 +22,25 @@ export const createUsuario = async (req, res) => {
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(password, salt);
 
-		const newUser = await pool.query(
-			'INSERT INTO usuarios (nombre, apellidos, email, telefono, password) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+		const nuevo = await pool.query(
+			'INSERT INTO usuarios (nombre, apellidos, email, telefono, password) VALUES ($1, $2, $3, $4, $5) RETURNING id',
 			[nombre, apellidos, email, telefono, hashedPassword]
 		);
+
+		const id = nuevo.rows[0].id;
+		const codigo = generarCodigoBarras(nombre, apellidos, 'cliente', id);
+
+		const newUser = await pool.query(
+			'UPDATE usuarios SET codigo_barras = $1 WHERE id = $2 RETURNING *',
+			[codigo, id]
+		);
+
+		const cliente = {
+			...newUser.rows[0],
+			tipo_usuario: 'cliente',
+		};
+
+		generarTarjetaPDF(cliente);
 
 		res.json({
 			message: 'Usuario registrado exitosamente',
@@ -81,13 +97,18 @@ export const updateUsuario = async (req, res) => {
 				.json({ error: 'El email ya está en uso por otro usuario' });
 		}
 
+		const newCode = generarCodigoBarras(nombre, apellidos, 'cliente', id);
+
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(password, salt);
 
 		const updatedUsuario = await pool.query(
-			'UPDATE usuarios SET nombre = $1, apellidos = $6, email = $2, telefono = $3, password = $4 WHERE id = $5 RETURNING *',
-			[nombre, email, telefono, hashedPassword, id, apellidos]
+			'UPDATE usuarios SET nombre = $1, apellidos = $6, email = $2, telefono = $3, password = $4, codigo_barras = $7 WHERE id = $5 RETURNING *',
+			[nombre, email, telefono, hashedPassword, id, apellidos, newCode]
 		);
+
+		generarTarjetaPDF(updateUsuario);
+
 		res.json({ usuario: updatedUsuario.rows[0] });
 	} catch (error) {
 		console.error(error);

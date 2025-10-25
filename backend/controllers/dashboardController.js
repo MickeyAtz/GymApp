@@ -1,5 +1,5 @@
-
 import pool from '../db.js';
+import moment from 'moment';
 
 //OPERACIONES dashboard empleados
 export const totalusuarios = async (req, res) => {
@@ -80,17 +80,17 @@ export const totalMembresiasMes = async (req, res) => {
 };
 
 export const totalMembresiasActivas = async (req, res) => {
-    try {
-         const result = await pool.query(`
+	try {
+		const result = await pool.query(`
                 SELECT COUNT(*) AS total
                 FROM usuario_membresia
                 WHERE fecha_fin >= CURRENT_DATE
             `);
-        res.json({totalMembresiasActivas: parseInt(result.rows[0].total, 10)});
-    }catch(error){
-        res.status(500).json({error: 'Error al obtener total de membresias'});
-    }
-}
+		res.json({ totalMembresiasActivas: parseInt(result.rows[0].total, 10) });
+	} catch (error) {
+		res.status(500).json({ error: 'Error al obtener total de membresias' });
+	}
+};
 
 export const totalClases = async (req, res) => {
 	try {
@@ -146,8 +146,84 @@ export const estadisticasGenerales = async (req, res) => {
 	}
 };
 
+export const visitasSemana = async (req, res) => {
+	try {
+		const inicioSemana = moment().startOf('week').format('YYYY-MM-DD');
+		const finSemana = moment().endOf('week').format('YYYY-MM-DD');
+
+		const { rows } = await pool.query(
+			`
+				SELECT 
+				TO_CHAR(fecha_entrada, 'FMDay') AS dia,
+				COUNT(*) AS total,
+				EXTRACT(DOW FROM fecha_entrada) AS dia_num
+				FROM visitas
+				WHERE fecha_entrada BETWEEN $1 AND $2
+				GROUP BY dia, dia_num
+				ORDER BY dia_num;
+			`,
+			[inicioSemana, finSemana]
+		);
+
+		console.log(inicioSemana, finSemana);
+		const traduccion = {
+			Monday: 'Lunes',
+			Tuesday: 'Martes',
+			Wednesday: 'Miércoles',
+			Thursday: 'Jueves',
+			Friday: 'Viernes',
+			Saturday: 'Sábado',
+			Sunday: 'Domingo',
+		};
+
+		const data = rows.map((r) => ({
+			dia: traduccion[r.dia],
+			total: r.total,
+		}));
+
+		res.json(data);
+	} catch (error) {
+		console.error('Error al recuperar visitas semanales: ', error);
+		res.status(500).json({ message: 'Error al obtener visitas semanales.' });
+	}
+};
+
+export const visitasMes = async (req, res) => {
+	try {
+		const inicioMes = moment().startOf('month').format('YYYY-MM-DD');
+		const finMes = moment().endOf('month').format('YYYY-MM-DD');
+
+		console.log(inicioMes, finMes);
+
+		const { rows } = await pool.query(
+			`
+				WITH conteo_diario AS (
+					SELECT 
+						TO_CHAR(fecha_entrada, 'DD') AS dia,
+						COUNT(*) AS total
+					FROM visitas
+					WHERE fecha_entrada::date BETWEEN $1 AND $2
+					GROUP BY dia
+				)
+
+				SELECT dia, total 
+				FROM conteo_diario
+				ORDER BY CAST(dia AS INTEGER); 
+            `,
+			[inicioMes, finMes]
+		);
+
+		const data = rows.map((r) => ({
+			dia: parseInt(r.dia, 10),
+			total: parseInt(r.total, 10),
+		}));
+
+		res.json(data);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: 'Error al obtener visitas mensuales.' });
+	}
+};
 //OPERACIONES clientes
 
-
 //OPERACIONES instructores
-

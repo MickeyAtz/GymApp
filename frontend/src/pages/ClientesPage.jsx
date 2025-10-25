@@ -22,7 +22,6 @@ export default function ClientesPage() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
-
 	const [usuario, setUsuario] = useState(null);
 
 	const obtenerUsuario = () => {
@@ -35,6 +34,7 @@ export default function ClientesPage() {
 		{ field: 'apellidos', label: 'Apellidos' },
 		{ field: 'email', label: 'Email' },
 		{ field: 'telefono', label: 'Teléfono' },
+		{ field: 'codigo_barras', label: 'Código' },
 	];
 
 	const passwordChangeFields = [
