@@ -14,6 +14,13 @@ export default function LoginPage() {
 	const [dataForm, setDataForm] = useState({ email: '', password: '' });
 	const [error, setError] = useState('');
 
+	useEffect(() => {
+		document.title = 'Gym App - Login';
+		return () => {
+			document.title = 'Gym App';
+		};
+	}, []);
+
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setDataForm((prev) => ({

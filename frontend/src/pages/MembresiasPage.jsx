@@ -21,7 +21,13 @@ export default function MembresiasPage() {
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 
-	// Definición de columnas para la tabla
+	useEffect(() => {	
+		document.title = 'Gym App - Membresías';
+		return () => {
+			document.title = 'Gym App';
+		};
+	}, []);
+
 	const columns = [
 		{ field: 'nombre', label: 'Nombre' },
 		{ field: 'duracion_dias', label: 'Duración (días)' },

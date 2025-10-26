@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 import Modal from '../components/molecules/Modal';
@@ -21,6 +20,13 @@ import { getAllInstructores } from '../api/instructores';
 import { Navigate } from 'react-router-dom';
 
 export default function ClasesPage() {
+	useEffect(() => {
+		document.title = 'Gym App - Clases';
+		return () => {
+			document.title = 'Gym App';
+		};
+	}, []);
+
 	const [clases, setClases] = useState([]);
 	const [instructores, setInstructores] = useState([]);
 	const [isModalOpen, setIsModalOpen] = useState(false);

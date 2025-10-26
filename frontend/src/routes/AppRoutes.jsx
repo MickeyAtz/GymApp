@@ -38,6 +38,7 @@ import Loading from '../components/atoms/Loading';
 
 import { isAuthenticated } from '../utils/auth';
 import HomeRedirect from '../components/HomeRedirect';
+import DashboardPageInstructor from '../pages/DashboardPageInstructores';
 
 export default function AppRoutes() {
 	return (
@@ -56,6 +57,10 @@ export default function AppRoutes() {
 
 				<Route path="dashboard-admin" element={<DashboardPageAdmin />} />
 				<Route path="dashboard-cliente" element={<DashboardPageClientes />} />
+				<Route
+					path="dashboard-instructor"
+					element={<DashboardPageInstructor />}
+				/>
 
 				<Route path="clientes" element={<ClientesPage />} />
 				<Route path="clases" element={<ClasesPage />} />

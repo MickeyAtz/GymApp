@@ -22,6 +22,13 @@ export default function InstructoresPage() {
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 
+	useEffect(() => {
+		document.title = 'Gym App - Instructores';
+		return () => {
+			document.title = 'Gym App';
+		};
+	}, []);
+
 	const columns = [
 		{ field: 'nombre', label: 'Nombre' },
 		{ field: 'apellidos', label: 'Apellidos' },

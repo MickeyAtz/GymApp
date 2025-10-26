@@ -18,6 +18,13 @@ import {
 } from '../api/usuarios';
 
 export default function ClientesPage() {
+	useEffect(() => {
+		document.title = 'Gym App - Clientes';
+		return () => {
+			document.title = 'Gym App';
+		};
+	}, []);
+
 	const [clientes, setClientes] = useState([]);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [editData, setEditData] = useState(null);

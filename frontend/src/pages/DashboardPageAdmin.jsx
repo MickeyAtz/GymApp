@@ -51,6 +51,12 @@ export default function DashboardPageAdmin() {
 		visitasSemanales: { labels: [], data: [] },
 	});
 
+	useEffect(() => {
+		document.title = 'Mi Dashboard - Empleados';
+		return () => {
+			document.title = 'Gym App';
+		};
+	}, []);
 
 	useEffect(() => {
 		console.log('Iniciando fetch: getTotalUsuarios');
@@ -192,7 +198,6 @@ export default function DashboardPageAdmin() {
 			})
 			.catch((err) => console.error('ERROR en getVisitasSemana:', err));
 	}, []);
-
 
 	return (
 		<div className={styles.dashboard}>

@@ -23,6 +23,7 @@ import inscripcionesRouter from './routes/inscripciones.js';
 import rolesRouter from './routes/roles.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import dashboardClienteRoutes from './routes/dashboardClienteRoutes.js';
+import dashboardInstructoresRoutes from './routes/dashboardInstructoresRoutes.js';
 
 //Configuración de variables de entorno
 dotenv.config();
@@ -57,6 +58,7 @@ app.use('/api/inscripciones', inscripcionesRouter);
 app.use('/api/roles', rolesRouter);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/dashboard-cliente', dashboardClienteRoutes);
+app.use('/api/dashboard-instructor', dashboardInstructoresRoutes);
 
 //Inicializar servidor en puerto 5000 o en la variable de entorno (.env)
 const PORT = process.env.BACKEND_PORT || 5000;

@@ -25,6 +25,13 @@ export default function EmpleadosPage() {
 	const [modalTitle, setModalTitle] = useState('');
 	const [editData, setEditData] = useState(null);
 
+	useEffect(() => {
+		document.title = 'Gym App - Empleados';
+		return () => {
+			document.title = 'Gym App';
+		};
+	}, []);
+
 	const columns = [
 		{ field: 'nombre', label: 'Nombre' },
 		{ field: 'apellidos', label: 'Apellidos' },

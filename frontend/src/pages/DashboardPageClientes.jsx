@@ -16,6 +16,13 @@ import {
 export default function DashboardClientePages() {
 	const { user } = useUser();
 
+	useEffect(() => {
+		document.title = 'Mi Dashboard - Clientes';
+		return () => {
+			document.title = 'Gym App';
+		};
+	}, []);
+
 	const [dashboardData, setDashboardData] = useState({
 		estadoMembresia: 'Cargando...',
 		proximaClase: 'Cargando...',
