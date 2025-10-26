@@ -146,48 +146,6 @@ export const estadisticasGenerales = async (req, res) => {
 	}
 };
 
-export const visitasSemana = async (req, res) => {
-	try {
-		const inicioSemana = moment().startOf('week').format('YYYY-MM-DD');
-		const finSemana = moment().endOf('week').format('YYYY-MM-DD');
-
-		const { rows } = await pool.query(
-			`
-				SELECT 
-				TO_CHAR(fecha_entrada, 'FMDay') AS dia,
-				COUNT(*) AS total,
-				EXTRACT(DOW FROM fecha_entrada) AS dia_num
-				FROM visitas
-				WHERE fecha_entrada BETWEEN $1 AND $2
-				GROUP BY dia, dia_num
-				ORDER BY dia_num;
-			`,
-			[inicioSemana, finSemana]
-		);
-
-		console.log(inicioSemana, finSemana);
-		const traduccion = {
-			Monday: 'Lunes',
-			Tuesday: 'Martes',
-			Wednesday: 'Miércoles',
-			Thursday: 'Jueves',
-			Friday: 'Viernes',
-			Saturday: 'Sábado',
-			Sunday: 'Domingo',
-		};
-
-		const data = rows.map((r) => ({
-			dia: traduccion[r.dia],
-			total: r.total,
-		}));
-
-		res.json(data);
-	} catch (error) {
-		console.error('Error al recuperar visitas semanales: ', error);
-		res.status(500).json({ message: 'Error al obtener visitas semanales.' });
-	}
-};
-
 export const visitasMes = async (req, res) => {
 	try {
 		const inicioMes = moment().startOf('month').format('YYYY-MM-DD');
@@ -197,31 +155,91 @@ export const visitasMes = async (req, res) => {
 
 		const { rows } = await pool.query(
 			`
-				WITH conteo_diario AS (
-					SELECT 
-						TO_CHAR(fecha_entrada, 'DD') AS dia,
-						COUNT(*) AS total
-					FROM visitas
-					WHERE fecha_entrada::date BETWEEN $1 AND $2
-					GROUP BY dia
-				)
-
-				SELECT dia, total 
-				FROM conteo_diario
-				ORDER BY CAST(dia AS INTEGER); 
+            WITH conteo_diario AS (
+                SELECT 
+                    CAST(TO_CHAR(fecha_entrada, 'DD') AS INTEGER) AS dia,
+                    COUNT(*) AS total
+                FROM visitas
+                WHERE fecha_entrada::date BETWEEN $1 AND $2
+                GROUP BY dia
+            )
+            SELECT json_build_object(
+                'labels', json_agg(dia ORDER BY dia ASC),
+                'data', json_agg(total ORDER BY dia ASC)
+            ) AS chart_data
+            FROM conteo_diario;
             `,
 			[inicioMes, finMes]
 		);
 
-		const data = rows.map((r) => ({
-			dia: parseInt(r.dia, 10),
-			total: parseInt(r.total, 10),
-		}));
+		let data = { labels: [], data: [] };
+
+		if (rows.length > 0 && rows[0].chart_data) {
+			data = {
+				labels: rows[0].chart_data.labels ?? [],
+				data: rows[0].chart_data.data ?? [],
+			};
+		}
 
 		res.json(data);
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: 'Error al obtener visitas mensuales.' });
+	}
+};
+
+export const visitasSemana = async (req, res) => {
+	try {
+		const inicioSemana = moment().startOf('week').format('YYYY-MM-DD');
+		const finSemana = moment().endOf('week').format('YYYY-MM-DD');
+
+		const { rows } = await pool.query(
+			`
+            WITH conteo_semanal AS (
+                SELECT 
+                    EXTRACT(DOW FROM fecha_entrada) AS dia_num, /* 0=Domingo, 1=Lunes... */
+                    COUNT(*) AS total
+                FROM visitas
+                WHERE fecha_entrada::date BETWEEN $1 AND $2 
+                GROUP BY dia_num
+            ),
+            conteo_traducido AS (
+                SELECT 
+                    total,
+                    dia_num,
+                    CASE dia_num
+                        WHEN 0 THEN 'Domingo'
+                        WHEN 1 THEN 'Lunes'
+                        WHEN 2 THEN 'Martes'
+                        WHEN 3 THEN 'Miércoles'
+                        WHEN 4 THEN 'Jueves'
+                        WHEN 5 THEN 'Viernes'
+                        WHEN 6 THEN 'Sábado'
+                    END AS dia
+                FROM conteo_semanal
+            )
+            SELECT json_build_object(
+                'labels', json_agg(dia ORDER BY dia_num ASC),
+                'data', json_agg(total ORDER BY dia_num ASC)
+            ) AS chart_data
+            FROM conteo_traducido;
+            `,
+			[inicioSemana, finSemana]
+		);
+
+		let data = { labels: [], data: [] };
+
+		if (rows.length > 0 && rows[0].chart_data) {
+			data = {
+				labels: rows[0].chart_data.labels ?? [],
+				data: rows[0].chart_data.data ?? [],
+			};
+		}
+
+		res.json(data);
+	} catch (error) {
+		console.error('Error al recuperar visitas semanales: ', error);
+		res.status(500).json({ message: 'Error al obtener visitas semanales.' });
 	}
 };
 //OPERACIONES clientes

@@ -1,4 +1,3 @@
-
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
@@ -77,7 +76,7 @@ export const authLogin = async (req, res) => {
 				{ expiresIn: process.env.JWT_EXPIRES_IN }
 			);
 
-			res.json({
+			return res.json({
 				message: 'Inicio de sesión exitoso',
 				token,
 				usuario: {

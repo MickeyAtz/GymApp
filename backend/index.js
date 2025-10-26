@@ -1,4 +1,3 @@
-	
 import express from 'express';
 import cors from 'cors';
 
@@ -23,6 +22,7 @@ import instructoresRouter from './routes/instructores.js';
 import inscripcionesRouter from './routes/inscripciones.js';
 import rolesRouter from './routes/roles.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import dashboardClienteRoutes from './routes/dashboardClienteRoutes.js';
 
 //Configuración de variables de entorno
 dotenv.config();
@@ -56,6 +56,7 @@ app.use('/api/clases', clasesRouter);
 app.use('/api/inscripciones', inscripcionesRouter);
 app.use('/api/roles', rolesRouter);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/dashboard-cliente', dashboardClienteRoutes);
 
 //Inicializar servidor en puerto 5000 o en la variable de entorno (.env)
 const PORT = process.env.BACKEND_PORT || 5000;

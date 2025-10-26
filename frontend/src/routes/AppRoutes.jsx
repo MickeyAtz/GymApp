@@ -1,6 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
+import {
+	Chart as ChartJS,
+	CategoryScale,
+	LinearScale,
+	BarElement,
+	PointElement,
+	LineElement,
+	Title,
+	Tooltip,
+	Legend,
+} from 'chart.js';
+
+ChartJS.register(
+	CategoryScale,
+	LinearScale,
+	BarElement,
+	PointElement,
+	LineElement,
+	Title,
+	Tooltip,
+	Legend
+);
+
+//Importación de páginas
 import LoginPage from '../pages/LoginPage';
 import DashboardLayout from '../layouts/DashboardLayout';
 import DashboardPageAdmin from '../pages/DashboardPageAdmin';
@@ -9,9 +33,11 @@ import EmpleadosPage from '../pages/EmpleadosPage';
 import ClasesPage from '../pages/ClasesPage';
 import MembresiasPage from '../pages/MembresiasPage';
 import InstructoresPage from '../pages/InstructoresPage';
+import DashboardPageClientes from '../pages/DashboardPageClientes';
 import Loading from '../components/atoms/Loading';
 
 import { isAuthenticated } from '../utils/auth';
+import HomeRedirect from '../components/HomeRedirect';
 
 export default function AppRoutes() {
 	return (
@@ -26,7 +52,11 @@ export default function AppRoutes() {
 					isAuthenticated() ? <DashboardLayout /> : <Navigate to="/login" />
 				}
 			>
-				<Route index element={<DashboardPageAdmin />} />
+				<Route index element={<HomeRedirect />} />
+
+				<Route path="dashboard-admin" element={<DashboardPageAdmin />} />
+				<Route path="dashboard-cliente" element={<DashboardPageClientes />} />
+
 				<Route path="clientes" element={<ClientesPage />} />
 				<Route path="clases" element={<ClasesPage />} />
 				<Route path="empleados" element={<EmpleadosPage />} />

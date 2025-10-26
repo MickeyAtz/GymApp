@@ -3,6 +3,7 @@ import styles from './styles/DashboardPageAdmin.module.css';
 import Card from '../components/molecules/Card';
 import CardDashboard from '../components/atoms/CardDashboard';
 import { Line, Bar } from 'react-chartjs-2';
+
 import {
 	Chart as ChartJS,
 	CategoryScale,
@@ -22,6 +23,8 @@ import {
 	getTotalMembresiasActivas,
 	getTotalClases,
 	getInscripcionesPorClase,
+	getVisitasMes,
+	getVisitasSemana,
 } from '../api/dashboard';
 
 ChartJS.register(
@@ -44,59 +47,152 @@ export default function DashboardPageAdmin() {
 		totalMembresiasActivas: 0,
 		totalClases: 0,
 		inscripcionesPorClase: { labels: [], data: [] },
+		visitasMensuales: { labels: [], data: [] },
+		visitasSemanales: { labels: [], data: [] },
 	});
 
-	const fetchDashboardData = async () => {
-		try {
-			const [
-				totalUsuariosRes,
-				nuevosUsuariosRes,
-				usuariosPorMesRes,
-				totalMembresiasMesRes,
-				totalMembresiasActivasRes,
-				totalClasesRes,
-				inscripcionesPorClaseRes,
-			] = await Promise.all([
-				getTotalUsuarios(),
-				getNuevosUsuarios(),
-				getUsuariosPorMes(),
-				getTotalMembresiasMes(),
-				getTotalMembresiasActivas(),
-				getTotalClases(),
-				getInscripcionesPorClase(),
-			]);
-
-			setDashboardData({
-				totalUsuarios: totalUsuariosRes.totalUsuarios ?? 0,
-				nuevosUsuarios: {
-					count: nuevosUsuariosRes.count ?? 0,
-					mes: nuevosUsuariosRes.mes ?? '',
-					anio: nuevosUsuariosRes.anio ?? '',
-				},
-				usuariosPorMes: {
-					labels: usuariosPorMesRes.labels ?? [],
-					data: usuariosPorMesRes.data ?? [],
-				},
-				totalMembresiasMes: {
-					total: totalMembresiasMesRes.total ?? 0,
-					mes: totalMembresiasMesRes.mes ?? '',
-					anio: totalMembresiasMesRes.anio ?? '',
-				},
-				totalMembresiasActivas: totalMembresiasActivasRes.total ?? 0,
-				totalClases: totalClasesRes.total ?? 0,
-				inscripcionesPorClase: {
-					labels: inscripcionesPorClaseRes.labels ?? [],
-					data: inscripcionesPorClaseRes.data ?? [],
-				},
-			});
-		} catch (error) {
-			console.error('Error al cargar datos del dashboard', error);
-		}
-	};
 
 	useEffect(() => {
-		fetchDashboardData();
+		console.log('Iniciando fetch: getTotalUsuarios');
+		getTotalUsuarios()
+			.then((data) => {
+				console.log('Éxito getTotalUsuarios:', data);
+				setDashboardData((prev) => ({
+					...prev,
+					totalUsuarios: data?.totalUsuarios ?? 0,
+				}));
+			})
+			.catch((err) => console.error('ERROR en getTotalUsuarios:', err));
 	}, []);
+
+	useEffect(() => {
+		console.log('Iniciando fetch: getNuevosUsuarios');
+		getNuevosUsuarios()
+			.then((data) => {
+				console.log('Éxito getNuevosUsuarios:', data);
+				setDashboardData((prev) => ({
+					...prev,
+					nuevosUsuarios: {
+						count: data?.count ?? 0,
+						mes: data?.mes ?? '',
+						anio: data?.anio ?? '',
+					},
+				}));
+			})
+			.catch((err) => console.error('ERROR en getNuevosUsuarios:', err));
+	}, []);
+
+	useEffect(() => {
+		console.log('Iniciando fetch: getUsuariosPorMes');
+		getUsuariosPorMes()
+			.then((data) => {
+				console.log('Éxito getUsuariosPorMes:', data);
+				setDashboardData((prev) => ({
+					...prev,
+					usuariosPorMes: {
+						labels: data?.labels ?? [],
+						data: data?.data ?? [],
+					},
+				}));
+			})
+			.catch((err) => console.error('ERROR en getUsuariosPorMes:', err));
+	}, []);
+
+	useEffect(() => {
+		console.log('Iniciando fetch: getTotalMembresiasMes');
+		getTotalMembresiasMes()
+			.then((data) => {
+				console.log('Éxito getTotalMembresiasMes:', data);
+				setDashboardData((prev) => ({
+					...prev,
+					totalMembresiasMes: {
+						total: data?.total ?? 0,
+						mes: data?.mes ?? '',
+						anio: data?.anio ?? '',
+					},
+				}));
+			})
+			.catch((err) => console.error('ERROR en getTotalMembresiasMes:', err));
+	}, []);
+
+	useEffect(() => {
+		console.log('Iniciando fetch: getTotalMembresiasActivas');
+		getTotalMembresiasActivas()
+			.then((data) => {
+				console.log('Éxito getTotalMembresiasActivas:', data);
+				setDashboardData((prev) => ({
+					...prev,
+					totalMembresiasActivas: data?.total ?? 0,
+				}));
+			})
+			.catch((err) =>
+				console.error('ERROR en getTotalMembresiasActivas:', err)
+			);
+	}, []);
+
+	useEffect(() => {
+		console.log('Iniciando fetch: getTotalClases');
+		getTotalClases()
+			.then((data) => {
+				console.log('Éxito getTotalClases:', data);
+				setDashboardData((prev) => ({
+					...prev,
+					totalClases: data?.total ?? 0,
+				}));
+			})
+			.catch((err) => console.error('ERROR en getTotalClases:', err));
+	}, []);
+
+	useEffect(() => {
+		console.log('Iniciando fetch: getInscripcionesPorClase');
+		getInscripcionesPorClase()
+			.then((data) => {
+				console.log('Éxito getInscripcionesPorClase:', data);
+				setDashboardData((prev) => ({
+					...prev,
+					inscripcionesPorClase: {
+						labels: data?.labels ?? [],
+						data: data?.data ?? [],
+					},
+				}));
+			})
+			.catch((err) => console.error('ERROR en getInscripcionesPorClase:', err));
+	}, []);
+
+	useEffect(() => {
+		console.log('Iniciando fetch: getVisitasMes');
+		getVisitasMes()
+			.then((data) => {
+				console.log('Éxito getVisitasMes:', data);
+				setDashboardData((prev) => ({
+					...prev,
+					visitasMensuales: {
+						// Asumimos que el backend ya da el formato {labels, data}
+						labels: data?.labels ?? [],
+						data: data?.data ?? [],
+					},
+				}));
+			})
+			.catch((err) => console.error('ERROR en getVisitasMes:', err));
+	}, []);
+
+	useEffect(() => {
+		console.log('Iniciando fetch: getVisitasSemana');
+		getVisitasSemana()
+			.then((data) => {
+				console.log('Éxito getVisitasSemana:', data);
+				setDashboardData((prev) => ({
+					...prev,
+					visitasSemanales: {
+						// Asumimos que el backend ya da el formato {labels, data}
+						labels: data?.labels ?? [],
+						data: data?.data ?? [],
+					},
+				}));
+			})
+			.catch((err) => console.error('ERROR en getVisitasSemana:', err));
+	}, []);
+
 
 	return (
 		<div className={styles.dashboard}>
@@ -151,7 +247,6 @@ export default function DashboardPageAdmin() {
 						options={{ responsive: true, maintainAspectRatio: false }}
 					/>
 				</Card>
-
 				<Card title="Inscripciones por Clase">
 					<Bar
 						data={{
@@ -168,6 +263,40 @@ export default function DashboardPageAdmin() {
 						}}
 						options={{ responsive: true, maintainAspectRatio: false }}
 					/>
+				</Card>
+				<Card title="Visitas Semanales">
+					<Bar
+						data={{
+							labels: dashboardData.visitasSemanales.labels,
+							datasets: [
+								{
+									label: 'Visitas Semanales',
+									data: dashboardData.visitasSemanales.data,
+									backgroundColor: 'rgba(255, 99, 132, 0.5)',
+									borderColor: 'rgba(255, 99, 132, 1)',
+									borderWidth: 1,
+								},
+							],
+						}}
+						options={{ responsive: true, maintainAspectRatio: false }}
+					></Bar>
+				</Card>
+				<Card title="Visitas Mensuales">
+					<Bar
+						data={{
+							labels: dashboardData.visitasMensuales.labels,
+							datasets: [
+								{
+									label: 'Visitas Mensuales',
+									data: dashboardData.visitasMensuales.data,
+									backgroundColor: 'rgba(255, 99, 132, 0.5)',
+									borderColor: 'rgba(255, 99, 132, 1)',
+									borderWidth: 1,
+								},
+							],
+						}}
+						options={{ responsive: true, maintainAspectRatio: false }}
+					></Bar>
 				</Card>
 			</div>
 		</div>

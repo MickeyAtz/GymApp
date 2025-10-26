@@ -1,4 +1,4 @@
-
+import axios from 'axios';
 import axiosInstance from './axiosInstance';
 
 //DASHBOARD empleados
@@ -26,6 +26,11 @@ export const getInscripcionesPorClase = async () =>
 export const getEstadisticasGenerales = async () =>
 	(await axiosInstance.get('/dashboard/estadisticas/generales')).data;
 
+export const getVisitasMes = async () =>
+	(await axiosInstance.get('/dashboard/visitas-mes')).data;
+
+export const getVisitasSemana = async () =>
+	(await axiosInstance.get('/dashboard/visitas-semana')).data;
 //DASHBOARD clientes
 
 //DASHBOARD instructores
