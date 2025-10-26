@@ -3,6 +3,8 @@ import { Bar } from 'react-chartjs-2';
 import { useUser } from '../context/UserContext';
 import styles from './styles/DashboardPageAdmin.module.css';
 import CardDashboard from '../components/atoms/CardDashboard';
+import Card from '../components/molecules/Card.jsx';
+import Badge from '../components/atoms/Badge.jsx';
 
 import {
 	getEstadoMembresia,
@@ -11,7 +13,7 @@ import {
 	getGraficaAsistencias,
 } from '../api/dashboardCliente.js';
 
-export default function DashboardClientePage() {
+export default function DashboardClientePages() {
 	const { user } = useUser();
 
 	const [dashboardData, setDashboardData] = useState({
@@ -97,10 +99,9 @@ export default function DashboardClientePage() {
 		<div className={styles.dashboard}>
 			<div className={styles.header}>
 				<h2>¡Hola, {user ? user.nombre : 'Cliente'}!</h2>
-				<p>Este es tu resumen de actividad.</p>
+				<Badge variant="accent">Este es tu resumen de actividad.</Badge>
 			</div>
 
-			{/* --- KPIs (Tarjetas) --- */}
 			<div className={styles.resumenGrid}>
 				<CardDashboard
 					title="Estado de Membresía"
@@ -119,12 +120,8 @@ export default function DashboardClientePage() {
 				/>
 			</div>
 
-			{/* --- Gráfica --- */}
 			<div className={styles.chartsGrid}>
-				{/* Asumo que tienes un estilo .card o un componente <Card> */}
-				<div className={styles.card}>
-					<h3>Mi Historial de Asistencia (Mes Actual)</h3>
-					{/* Contenedor para la gráfica con altura definida */}
+				<Card title="Mi Historial de Asistencia (Mes Actual)">
 					<div className={styles.chartContainer}>
 						<Bar
 							data={{
@@ -145,7 +142,7 @@ export default function DashboardClientePage() {
 							}}
 						/>
 					</div>
-				</div>
+				</Card>
 			</div>
 		</div>
 	);
