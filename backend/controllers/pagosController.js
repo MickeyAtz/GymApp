@@ -1,12 +1,7 @@
-
-
 import pool from '../db.js';
+import moment from 'moment';
 
 //Creación del pago
-//Para la creación del pago es necesario tener usuario y membresia para poder realizar dos inserciones
-//La primera inserción es en usuario_membresia y la segunda en pagos.
-// Utilizamos el rollback para asegurarnos que si una de las dos inserciones falla, no se realice el pago
-// De otra manera, al final realizamos un commit para guardar todos los cambios.
 export const createPago = async (req, res) => {
 	const { usuario_id, membresia_id, monto, tipo_pago } = req.body;
 	const cliente = await pool.connect();
@@ -16,7 +11,7 @@ export const createPago = async (req, res) => {
 
 		// Obtener duración de la membresía
 		const membresiaResult = await cliente.query(
-			'SELECT * FROM membresias WHERE id = $1',
+			'SELECT * FROM membresias WHERE id = $1 AND fecha_baja IS NULL',
 			[membresia_id]
 		);
 
@@ -25,39 +20,95 @@ export const createPago = async (req, res) => {
 			return res.status(404).json({ error: 'Membresía no encontrada' });
 		}
 
-		const duracion_dias = membresiaResult.rows[0].duracion_dias;
+		const duracion_dias_nueva = membresiaResult.rows[0].duracion_dias;
+		let dias_restantes_vieja = 0;
+		let membresia_vieja_id = null;
 
 		// Revisar si hay membresía activa
 		const activoResult = await cliente.query(
-			`SELECT * FROM usuario_membresia
-			WHERE usuario_id = $1 AND status = 'activo' AND DATE(fecha_fin) >= CURRENT_DATE
-			ORDER BY fecha_fin DESC LIMIT 1`,
+			`
+				SELECT id, fecha_fin
+				FROM usuario_membresia
+				WHERE usuario_id = $1
+					AND status = 'activo'
+					AND fecha_fin >= CURRENT_DATE
+				ORDER BY fecha_fin DESC
+				LIMIT 1
+			`,
 			[usuario_id]
 		);
 
-		const fecha_inicio =
-			activoResult.rows.length > 0
-				? new Date(activoResult.rows[0].fecha_fin + 1)
-				: new Date();
+		if (activoResult.rows.length > 0) {
+			const membresia_vieja = activoResult.rows[0];
+			membresia_vieja_id = membresia_vieja.id;
 
-		const fecha_fin = new Date(fecha_inicio);
-		fecha_fin.setDate(fecha_fin.getDate() + duracion_dias);
+			dias_restantes_vieja = moment(membresia_vieja.fecha_fin).diff(
+				moment().startOf('day'),
+				'days'
+			);
 
-		// Crear usuario_membresia
+			dias_restantes_vieja = Math.max(0, dias_restantes_vieja);
+
+			console.log(
+				`Membresía vieja encontrada (ID: ${membresia_vieja_id}). Días restantes: ${dias_restantes_vieja}`
+			);
+
+			await cliente.query(
+				`
+				UPDATE usuario_membresia 
+				SET status = 'terminado'
+				WHERE id = $1	
+			`,
+				[membresia_vieja_id]
+			);
+
+			console.log(
+				`Membresía vieja (ID: ${membresia_vieja_id}) actualizada a 'terminado'`
+			);
+		}
+
+		const fecha_inicio_nueva = moment().startOf('day');
+		const duracion_total = duracion_dias_nueva + dias_restantes_vieja;
+		const fecha_fin_nueva = moment(fecha_inicio_nueva).add(
+			duracion_total,
+			'days'
+		);
+
+		const fecha_inicio_db = fecha_inicio_nueva.toDate();
+		const fecha_fin_db = fecha_fin_nueva.toDate();
+
+		console.log(
+			`Nueva membresía: Inicio = ${fecha_inicio_nueva.format('YYYY-MM-DD')}, Fin=${fecha_fin_nueva.format('YYYY-MM-DD')}`
+		);
+
 		const usuarioMembresia = await cliente.query(
-			'INSERT INTO usuario_membresia (usuario_id, membresia_id, fecha_inicio, fecha_fin) VALUES ($1, $2, $3, $4) RETURNING *',
-			[usuario_id, membresia_id, fecha_inicio, fecha_fin]
+			`
+			INSERT INTO usuario_membresia (usuario_id, membresia_id, fecha_inicio, fecha_fin, status)
+			VALUES($1, $2, $3, $4, 'activo')
+			RETURNING id, fecha_inicio, fecha_fin`,
+			[usuario_id, membresia_id, fecha_inicio_db, fecha_fin_db]
+		);
+		const nuevaUsuarioMembresiaId = usuarioMembresia.rows[0].id;
+		console.log(
+			`Nuevo registro usuario_membresia creado (ID: ${nuevaUsuarioMembresiaId}.)`
 		);
 
-		// Crear pago
 		const newPago = await cliente.query(
-			'INSERT INTO pagos (usuario_membresia_id, monto, tipo_pago) VALUES ($1, $2, $3) RETURNING *',
-			[usuarioMembresia.rows[0].id, monto, tipo_pago]
+			`INSERT INTO pagos(usuario_membresia_id, monto, tipo_pago, fecha_pago)
+			VALUES ($1, $2, $3, NOW())
+			RETURNING id, fecha_pago`,
+			[nuevaUsuarioMembresiaId, monto, tipo_pago]
 		);
-
+		console.log(`Nuevo registro de pago creado (ID: ${newPago.rows[0].id})`);
 		await cliente.query('COMMIT');
-		res.json({
-			message: 'Pago y membresía registrados exitosamente',
+		console.log('Transacción completada (COMMIT)');
+
+		return res.status(201).json({
+			message:
+				'Pago y membresía registrados existosamente' +
+				(dias_restantes_vieja > 0
+					? `(se añadieron ${dias_restantes_vieja} días de la membresía anterior).`
+					: '.'),
 			usuarioMembresia: usuarioMembresia.rows[0],
 			pago: newPago.rows[0],
 		});

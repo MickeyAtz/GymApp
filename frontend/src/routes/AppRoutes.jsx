@@ -35,6 +35,7 @@ import MembresiasPage from '../pages/MembresiasPage';
 import InstructoresPage from '../pages/InstructoresPage';
 import DashboardPageClientes from '../pages/DashboardPageClientes';
 import Loading from '../components/atoms/Loading';
+import VenderMembresiaPage from '../pages/VenderMembresiaPage';
 
 import { isAuthenticated } from '../utils/auth';
 import HomeRedirect from '../components/HomeRedirect';
@@ -62,6 +63,7 @@ export default function AppRoutes() {
 					element={<DashboardPageInstructor />}
 				/>
 
+				<Route path="vender-membresia" element={<VenderMembresiaPage />} />
 				<Route path="clientes" element={<ClientesPage />} />
 				<Route path="clases" element={<ClasesPage />} />
 				<Route path="empleados" element={<EmpleadosPage />} />

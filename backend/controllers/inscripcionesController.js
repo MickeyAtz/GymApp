@@ -77,12 +77,12 @@ export const getInscripcionesByUsuario = async (req, res) => {
 	try {
 		const result = await pool.query(
 			`SELECT i.id, i.fecha_inscripcion, 
-              c.nombre AS clase, 
-              ins.nombre AS instructor
-       FROM inscripciones i
-       JOIN clases c ON i.clase_id = c.id
-       JOIN instructores ins ON c.id_instructor = ins.id
-       WHERE i.usuario_id = $1 AND i.fechabaja IS NULL`,
+				c.nombre AS clase, 
+				ins.nombre AS instructor
+			FROM inscripciones i
+			JOIN clases c ON i.clase_id = c.id
+			JOIN instructores ins ON c.id_instructor = ins.id
+			WHERE i.usuario_id = $1 AND i.fechabaja IS NULL`,
 			[usuario_id]
 		);
 		res.json(result.rows);

@@ -1,0 +1,218 @@
+/* src/pages/styles/VenderMembresia.module.css */
+
+/* Importa tus variables globales si no lo haces ya en un index.css */
+@import '../../styles/variables.css';
+
+.ventaContainer {
+	padding: 2rem;
+	max-width: 750px; /* Ancho máximo del contenedor */
+	margin: 2rem auto; /* Centrado con margen */
+	background-color: var(--color-bg, #121212); /* Fondo oscuro */
+	color: var(--color-text, #f5f5f5); /* Texto claro */
+	border-radius: 8px;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.ventaContainer h1 {
+	/* Título principal */
+	text-align: center;
+	margin-bottom: 2.5rem;
+	color: var(--color-primary, #ffd700); /* Color primario amarillo */
+	font-weight: 700;
+	font-size: 1.8rem;
+	border-bottom: 1px solid #444; /* Línea separadora */
+	padding-bottom: 0.8rem;
+}
+
+.ventaForm {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem; /* Espacio entre secciones del formulario */
+}
+
+.formSection {
+	padding-bottom: 1.5rem;
+	border-bottom: 1px solid #333; /* Separador entre secciones */
+}
+.formSection:last-of-type {
+	border-bottom: none; /* Sin borde en la última sección */
+}
+
+.formSection h3 {
+	/* Títulos de sección (1. Cliente, 2. Membresía...) */
+	margin-top: 0;
+	margin-bottom: 1.2rem;
+	color: var(--color-text-secondary, #b3b3b3); /* Color secundario */
+	font-size: 1.15rem;
+	font-weight: 600;
+	border-left: 4px solid var(--color-primary, #ffd700); /* Borde lateral amarillo */
+	padding-left: 0.8rem;
+}
+
+/* --- Estilos para Búsqueda de Cliente --- */
+.searchResults {
+	/* Lista de resultados */
+	list-style: none;
+	padding: 0;
+	margin-top: 0.5rem;
+	max-height: 160px; /* Altura máxima antes de scroll */
+	overflow-y: auto; /* Scroll vertical si hay muchos resultados */
+	background-color: #222; /* Fondo un poco más claro */
+	border: 1px solid #444;
+	border-radius: 4px;
+}
+.searchResults li {
+	/* Cada item de la lista */
+	padding: 0.8rem 1rem;
+	cursor: pointer;
+	border-bottom: 1px solid #333;
+	transition: background-color 0.2s ease; /* Efecto suave al pasar el mouse */
+}
+.searchResults li:last-child {
+	border-bottom: none;
+} /* Sin borde en el último */
+.searchResults li:hover {
+	/* Al pasar el mouse */
+	background-color: #333;
+}
+.noResults {
+	/* Mensaje "No se encontraron clientes" */
+	color: var(--color-text-secondary, #aaa);
+	font-style: italic;
+	margin-top: 0.5rem;
+	font-size: 0.9rem;
+}
+
+/* --- Estilo para Cliente Seleccionado --- */
+.selectedClient {
+	padding: 0.8rem 1rem;
+	background-color: #2a2a2a; /* Fondo para destacar */
+	border: 1px solid #555;
+	border-radius: 4px;
+	display: flex;
+	justify-content: space-between; /* Nombre a la izquierda, botón a la derecha */
+	align-items: center; /* Centrar verticalmente */
+	font-size: 0.95rem;
+}
+.selectedClient strong {
+	/* Resaltar el nombre */
+	color: var(--color-primary, #ffd700);
+}
+.selectedClient button {
+	/* Botón "Cambiar" */
+	padding: 0.3rem 0.6rem; /* Hacerlo pequeño */
+	font-size: 0.8rem;
+	/* Hereda estilos de tu Button component, puedes añadir más aquí si es necesario */
+}
+
+/* --- Campos de Pago --- */
+.paymentFields {
+	display: grid; /* Usar grid para alinear */
+	grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
+	gap: 1rem; /* Espacio entre los campos */
+}
+
+/* --- Botón de Envío Principal --- */
+.submitButton {
+	margin-top: 1rem; /* Espacio antes del botón */
+	padding: 0.8rem 1.5rem;
+	font-size: 1rem;
+	font-weight: bold;
+	cursor: pointer;
+	background-color: var(--color-primary, #ffd700); /* Amarillo */
+	color: #121212; /* Texto oscuro para contraste */
+	border: none;
+	border-radius: 4px;
+	transition:
+		background-color 0.2s ease,
+		opacity 0.2s ease;
+	width: 100%; /* Ocupar todo el ancho disponible */
+}
+.submitButton:hover:not(:disabled) {
+	background-color: #e6c300; /* Amarillo más oscuro al pasar el mouse */
+}
+.submitButton:disabled {
+	/* Estilo cuando está deshabilitado */
+	background-color: #555;
+	color: #999;
+	cursor: not-allowed;
+	opacity: 0.7;
+}
+
+/* --- Mensajes de Error y Éxito --- */
+.errorMessage,
+.successMessage {
+	padding: 0.9rem 1.2rem;
+	border-radius: 4px;
+	margin: 0 0 1.5rem 0; /* Margen solo abajo */
+	text-align: center;
+	font-weight: 500;
+	font-size: 0.95rem;
+}
+.errorMessage {
+	/* Rojo para error */
+	color: #f8d7da;
+	background-color: var(--color-accent, #e63946);
+	border: 1px solid #dc3545;
+}
+.successMessage {
+	/* Verde para éxito */
+	color: #d4edda;
+	background-color: #155724; /* Verde oscuro */
+	border: 1px solid #1e7e34;
+}
+
+/* ... (tus otros estilos) ... */
+
+.resumenVenta {
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	padding: 16px;
+	margin-bottom: 24px;
+	background-color: #f9f9f9;
+}
+
+.resumenItem,
+.resumenItemTotal {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 0;
+}
+
+.resumenItem + .resumenItem,
+.resumenItem + .resumenItemTotal {
+	border-top: 1px dashed #ccc;
+}
+
+.resumenItem span,
+.resumenItemTotal span {
+	color: #555;
+	font-size: 0.95rem;
+}
+
+.resumenItem strong {
+	font-weight: 500;
+}
+
+.resumenItemTotal {
+	padding-top: 12px;
+}
+
+.resumenItemTotal span {
+	font-size: 1.1rem;
+	font-weight: 600;
+	color: #333;
+}
+
+.resumenItemTotal strong {
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: #007bff; /* Un color de acento para el total */
+}
+
+.submitButtonContainer {
+	margin-top: 24px;
+	display: flex;
+	justify-content: flex-end;
+}

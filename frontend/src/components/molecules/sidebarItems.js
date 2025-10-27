@@ -1,10 +1,16 @@
 export const allItems = [
 	{ id: 1, label: 'Dashboard', icon: 'dashboard', path: '/' },
-	{ id: 2, label: 'Clientes', icon: 'user', path: '/clientes' },
-	{ id: 3, label: 'Empleados', icon: 'corbata', path: '/empleados' },
-	{ id: 4, label: 'Clases', icon: 'teacher', path: '/clases' },
-	{ id: 5, label: 'Membresías', icon: 'id', path: '/membresias' },
-	{ id: 6, label: 'Instructores', icon: 'empleado', path: '/instructores' },
+	{
+		id: 2,
+		label: 'Vender Membresías',
+		icon: 'dashboard',
+		path: '/vender-membresia',
+	},
+	{ id: 3, label: 'Clientes', icon: 'user', path: '/clientes' },
+	{ id: 4, label: 'Empleados', icon: 'corbata', path: '/empleados' },
+	{ id: 5, label: 'Clases', icon: 'teacher', path: '/clases' },
+	{ id: 6, label: 'Membresías', icon: 'id', path: '/membresias' },
+	{ id: 7, label: 'Instructores', icon: 'empleado', path: '/instructores' },
 ];
 
 export const itemsByRole = {

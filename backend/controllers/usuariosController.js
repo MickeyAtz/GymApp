@@ -152,3 +152,38 @@ export const passwordChange = async (req, res) => {
 		res.status(500).json({ error: 'Error al actualizar contraseña' });
 	}
 };
+
+//Busqueda de usuarios
+export const searchUsuarios = async (req, res) => {
+	const { search } = req.query;
+
+	if (!search || search.trim().length < 2) {
+		return res.json([]);
+	}
+
+	const searchTerm = `%${search.trim()}%`;
+
+	try {
+		const usuarios = await pool.query(
+			`
+			SELECT id, nombre, apellidos, email
+			FROM usuarios
+			WHERE fecha_baja IS NULL
+				AND (
+					nombre ILIKE $1
+					OR apellidos ILIKE $1
+					OR email ILIKE $1
+					OR (nombre || ' ' || apellidos) ILIKE $1
+					OR codigo_barras ILIKE $1		
+				)
+			ORDER BY nombre ASC, apellidos ASC
+			LIMIT 10
+		`,
+			[searchTerm]
+		);
+		res.json(usuarios.rows);
+	} catch (error) {
+		console.error('Error al buscar usuarios: ', error);
+		res.status(500).json({ error: 'Error al buscar los usuarios.' });
+	}
+};

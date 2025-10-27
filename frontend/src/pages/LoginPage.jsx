@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 import Input from '../components/atoms/Input';
-import Button from '../components/atoms/Button';
 
 export default function LoginPage() {
 	const navigate = useNavigate();
@@ -31,7 +30,7 @@ export default function LoginPage() {
 
 	useEffect(() => {
 		if (user) navigate('/');
-	}, [user]);
+	}, []);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
