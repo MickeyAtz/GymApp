@@ -3,7 +3,6 @@ import { Bar } from 'react-chartjs-2';
 import { useUser } from '../context/UserContext';
 import styles from './styles/DashboardPageAdmin.module.css';
 import CardDashboard from '../components/atoms/CardDashboard';
-import Loading from '../components/atoms/Loading';
 import Card from '../components/molecules/Card.jsx';
 
 import {
@@ -34,12 +33,10 @@ export default function DashboardPageInstructor() {
 		datasets: [],
 	});
 
-	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
 	useEffect(() => {
 		const fetchInstructorData = async () => {
-			setLoading(true);
 			setError(null);
 			try {
 				const [proximaClaseResult, totalClasesHoyResult, popularidadResult] =
@@ -125,8 +122,6 @@ export default function DashboardPageInstructor() {
 			} catch (error) {
 				console.error('Fatal error loading instructor dashboard data:', error);
 				setError('Could not load all dashboard data.');
-			} finally {
-				setLoading(false);
 			}
 		};
 
@@ -140,10 +135,9 @@ export default function DashboardPageInstructor() {
 				<p>Este es tu resumen de clases.</p>
 			</div>
 
-			{loading && <Loading />}
 			{error && <p style={{ color: 'red' }}>{error}</p>}
 
-			{!loading && !error && (
+			{!error && (
 				<>
 					<div className={styles.resumenGrid}>
 						<CardDashboard

@@ -35,18 +35,12 @@ export default function DashboardClientePages() {
 	const fetchDashboardData = async () => {
 		setDashboardData((prev) => ({ ...prev, loading: true, error: null }));
 		try {
-			console.log('>>> fetchDashboardData INICIADA');
 			const results = await Promise.allSettled([
 				getEstadoMembresia(),
 				getProximaClase(),
 				getAsistenciasMes(),
 				getGraficaAsistencias(),
 			]);
-
-			console.log(
-				'Resultados Crudos (Promise.allSettled):',
-				JSON.stringify(results, null, 2)
-			);
 
 			const membresiaRes = results[0];
 			const proximaClaseRes = results[1];
@@ -88,7 +82,6 @@ export default function DashboardClientePages() {
 				error: null,
 			});
 		} catch (err) {
-			console.log('Error al cargar datos del dashboard cliente: ', err);
 			setDashboardData((prev) => ({
 				...prev,
 				loading: false,
@@ -98,7 +91,6 @@ export default function DashboardClientePages() {
 	};
 
 	useEffect(() => {
-		console.log('>>> fetchDashboardData INICIADA USEEFFECT');
 		fetchDashboardData();
 	}, []);
 

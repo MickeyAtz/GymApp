@@ -30,7 +30,7 @@ export default function LoginPage() {
 
 	useEffect(() => {
 		if (user) navigate('/');
-	}, []);
+	}, [user, navigate]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -45,8 +45,6 @@ export default function LoginPage() {
 			localStorage.setItem('usuario', JSON.stringify(usuario));
 
 			setUser(usuario);
-
-			navigate('/');
 		} catch (err) {
 			setError(err.response?.data?.message || 'Error al iniciar sesión');
 		}
@@ -64,6 +62,7 @@ export default function LoginPage() {
 					value={dataForm.email}
 					onChange={handleChange}
 					required
+					autoComplete="email"
 				></Input>
 				<Input
 					type="password"
@@ -72,6 +71,7 @@ export default function LoginPage() {
 					value={dataForm.password}
 					onChange={handleChange}
 					required
+					auto
 				></Input>
 				<button type="submit">Ingresar</button>
 			</form>

@@ -63,7 +63,6 @@ export default function MembresiasPage() {
 
 	const fetchMembresias = async () => {
 		const data = await getMembresias();
-		console.log('Primer registro: ', data[0]);
 
 		// Aseguramos que cada registro tenga activo y activoLabel
 		const dataForTable = data.map((m) => ({
@@ -82,7 +81,6 @@ export default function MembresiasPage() {
 			activo: formData.activo === 'true' || formData.activo === true,
 		};
 
-		console.log('Final payload: ', payload);
 		if (editData) {
 			await updateMembresia(editData.id, payload);
 		} else {

@@ -3,12 +3,10 @@ import { createContext, useContext, useState, useEffect } from 'react';
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-	const [user, setUser] = useState(null);
-
-	useEffect(() => {
+	const [user, setUser] = useState(() => {
 		const storedUser = localStorage.getItem('usuario');
-		if (storedUser) setUser(JSON.parse(storedUser));
-	}, []);
+		return storedUser ? JSON.parse(storedUser) : null;
+	});
 
 	useEffect(() => {
 		if (user) {

@@ -5,122 +5,109 @@ import dotenv from 'dotenv';
 import pool from '../db.js';
 
 dotenv.config();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const authLogin = async (req, res) => {
 	const { email, password } = req.body;
 
+	if (!email || !password) {
+		return res.status(400).json({ message: 'Email y contraseña requeridos.' });
+	}
+
 	try {
-		const empleadoResult = await pool.query(
-			`SELECT e.id, e.email, e.nombre, e.password, r.id AS role_id, r.nombre AS role_nombre
-			FROM empleados e
-			JOIN roles r ON e.role_id = r.id
-			WHERE e.email = $1 AND e.fecha_baja IS NULL`,
+		const { rows } = await pool.query(
+			'SELECT * FROM cuentas_acceso WHERE LOWER(email) = LOWER($1)',
 			[email]
 		);
 
-		if (empleadoResult.rows.length > 0) {
-			const empleado = empleadoResult.rows[0];
+		if (rows.length === 0)
+			return res.status(404).json({ message: 'Credenciales incorrectas.' });
 
-			const isValidPassowrd = await bcrypt.compare(password, empleado.password);
+		const cuenta = rows[0];
 
-			if (!isValidPassowrd)
-				return res.status(401).json({ error: 'Credenciales incorrectas' });
+		const validPassword = await bcrypt.compare(password, cuenta.password_hash);
+		console.log(validPassword);
 
-			const token = jwt.sign(
-				{
-					id: empleado.id,
-					email: empleado.email,
-					rol: empleado.rol_id,
-					tipo: 'empleado',
-				},
-				process.env.JWT_SECRET,
-				{ expiresIn: process.env.JWT_EXPIRES_IN }
-			);
-
-			return res.json({
-				message: 'Inicio de sesión exitoso',
-				token,
-				usuario: {
-					id: empleado.id,
-					email: empleado.email,
-					nombre: empleado.nombre,
-					rol: empleado.role_id,
-					rol_nombre: empleado.role_nombre,
-					tipo: 'empleado',
-				},
-			});
+		if (!validPassword) {
+			return res.status(401).json({ message: 'Credenciales incorrectas.' });
 		}
 
-		const clienteResult = await pool.query(
-			`SELECT id, email, nombre, password
-			FROM usuarios
-			WHERE email = $1 AND fecha_baja IS NULL`,
-			[email]
-		);
+		let perfil = '';
+		let perfilId = null;
+		let nombre = '';
+		let apellidos = '';
+		let rol = '';
 
-		if (clienteResult.rows.length > 0) {
-			const cliente = clienteResult.rows[0];
+		if (cuenta.usuario_id) {
+			perfil = 'cliente';
+			perfilId = cuenta.usuario_id;
 
-			const isValidPassword = await bcrypt.compare(password, cliente.password);
+			const { rows: usuarioRows } = await pool.query(
+				`SELECT nombre, apellidos FROM usuarios WHERE id = $1`,
+				[perfilId]
+			);
+			if (usuarioRows.length > 0) {
+				nombre = usuarioRows[0].nombre;
+				apellidos = usuarioRows[0].apellidos;
+				rol = 'cliente';
+			}
+		} else if (cuenta.instructor_id) {
+			perfil = 'instructor';
+			perfilId = cuenta.instructor_id;
 
-			if (!isValidPassword)
-				return res.status(401).json({ error: 'Credenciales incorrectas' });
+			const { rows: instructorRows } = await pool.query(
+				`SELECT nombre, apellidos FROM instructores WHERE id = $1`,
+				[perfilId]
+			);
+			if (instructorRows.length > 0) {
+				nombre = instructorRows[0].nombre;
+				apellidos = instructorRows[0].apellidos;
+				rol = 'instructor';
+			}
+		} else if (cuenta.empleado_id) {
+			perfil = 'empleado';
+			perfilId = cuenta.empleado_id;
 
-			const token = jwt.sign(
-				{
-					id: cliente.id,
-					email: cliente.email,
-					tipo: 'cliente',
-				},
-				process.env.JWT_SECRET,
-				{ expiresIn: process.env.JWT_EXPIRES_IN }
+			const { rows: empleadoRows } = await pool.query(
+				`
+					SELECT e.nombre, e.apellidos, r.nombre AS rol
+					FROM empleados e
+					JOIN roles r ON r.id = e.role_id
+					WHERE e.id = $1
+				`,
+				[perfilId]
 			);
 
-			return res.json({
-				message: 'Inicio de sesión exitoso',
-				token,
-				usuario: {
-					id: cliente.id,
-					email: cliente.email,
-					nombre: cliente.nombre,
-					tipo: 'cliente',
-				},
-			});
+			if (empleadoRows.length > 0) {
+				nombre = empleadoRows[0].nombre;
+				apellidos = empleadoRows[0].apellidos;
+				rol = empleadoRows[0].rol;
+			}
 		}
-		const instructorResult = await pool.query(
-			`SELECT id, email, nombre, password
-       		FROM instructores
-       		WHERE email = $1 AND fechabaja IS NULL`,
-			[email]
-		);
 
-		if (instructorResult.rows.length > 0) {
-			const instructor = instructorResult.rows[0];
-			const isValidPassword = await bcrypt.compare(
-				password,
-				instructor.password
-			);
-			if (!isValidPassword)
-				return res.status(401).json({ error: 'Credenciales incorrectas' });
+		const payload = {
+			cuenta_id: cuenta.id,
+			perfil,
+			perfil_id: perfilId,
+			rol,
+		};
 
-			const token = jwt.sign(
-				{ id: instructor.id, email: instructor.email, tipo: 'instructor' },
-				process.env.JWT_SECRET,
-				{ expiresIn: process.env.JWT_EXPIRES_IN }
-			);
+		const token = jwt.sign(payload, JWT_SECRET, {
+			expiresIn: '1d',
+		});
 
-			return res.json({
-				message: 'Inicio de sesión exitoso',
-				token,
-				usuario: {
-					id: instructor.id,
-					email: instructor.email,
-					nombre: instructor.nombre,
-					tipo: 'instructor',
-				},
-			});
-		}
-		return res.status(401).json({ error: 'Credenciales incorrectas' });
+		const usuario = {
+			nombre,
+			apellidos,
+			perfil,
+			rol,
+		};
+
+		return res.json({
+			message: 'Inicio de sesión éxitoso',
+			token,
+			usuario,
+		});
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Error en el servidor' });

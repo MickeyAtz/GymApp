@@ -18,8 +18,6 @@ export default function DashboardLayout() {
 		localStorage.setItem('sidebarOpen', JSON.stringify(isOpen));
 	}, [isOpen]);
 
-	if (!user) return <Loading></Loading>;
-
 	return (
 		<div className="appWrapper">
 			<Sidebar isOpen={isOpen} toggleSidebar={() => setIsOpen(!isOpen)} />

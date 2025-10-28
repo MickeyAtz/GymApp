@@ -7,12 +7,11 @@ import { itemsByRole } from './sidebarItems';
 import { FaSignOutAlt } from 'react-icons/fa';
 import Badge from '../atoms/Badge';
 import { useUser } from '../../context/UserContext';
+import { useEffect } from 'react';
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
 	const { user, setUser } = useUser(); // Obtenemos el usuario desde el contexto
-	const items = itemsByRole[user.tipo.toLowerCase()];
 	const [activeItem, setActiveItem] = React.useState(1);
-
 	const navigate = useNavigate();
 
 	const handleLogout = () => {
@@ -21,6 +20,8 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 		setUser(null);
 		navigate('/login');
 	};
+
+	const items = itemsByRole[user.perfil.toLowerCase()];
 
 	return (
 		<div
@@ -32,7 +33,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 					{isOpen && <span className={styles.logoText}>Mi Gym</span>}
 				</div>
 				<div className={styles.userInfo}>
-					<Badge>{user.tipo.toUpperCase()}</Badge>
+					<Badge>{user.perfil.toUpperCase()}</Badge>
 					{isOpen && <p className={styles.username}>¡Hola, {user.nombre}!</p>}
 				</div>
 			</div>

@@ -7,13 +7,13 @@ export default function HomeRedirect() {
 	const { user } = useUser();
 	if (!user) return <Loading></Loading>;
 
-	if (user.tipo === 'cliente')
+	if (user.perfil === 'cliente')
 		return <Navigate to="/dashboard-cliente" replace />;
 
-	if (user.tipo === 'empleado')
+	if (user.perfil === 'empleado')
 		return <Navigate to="/dashboard-admin" replace />;
 
-	if (user.tipo === 'instructor')
+	if (user.perfil === 'instructor')
 		return <Navigate to="/dashboard-instructor" replace />;
 
 	return <Navigate to="/login" replace />;

@@ -9,7 +9,6 @@ export const createPago = async (req, res) => {
 	try {
 		await cliente.query('BEGIN');
 
-		// Obtener duración de la membresía
 		const membresiaResult = await cliente.query(
 			'SELECT * FROM membresias WHERE id = $1 AND fecha_baja IS NULL',
 			[membresia_id]
@@ -24,7 +23,6 @@ export const createPago = async (req, res) => {
 		let dias_restantes_vieja = 0;
 		let membresia_vieja_id = null;
 
-		// Revisar si hay membresía activa
 		const activoResult = await cliente.query(
 			`
 				SELECT id, fecha_fin
@@ -56,14 +54,14 @@ export const createPago = async (req, res) => {
 			await cliente.query(
 				`
 				UPDATE usuario_membresia 
-				SET status = 'terminado'
+				SET status = 'expirado'
 				WHERE id = $1	
 			`,
 				[membresia_vieja_id]
 			);
 
 			console.log(
-				`Membresía vieja (ID: ${membresia_vieja_id}) actualizada a 'terminado'`
+				`Membresía vieja (ID: ${membresia_vieja_id}) actualizada a 'expirado'`
 			);
 		}
 
