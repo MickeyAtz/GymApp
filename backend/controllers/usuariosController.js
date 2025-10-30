@@ -6,16 +6,17 @@ import { generarTarjetaPDF } from '../services/generarTarjetaPDF.js';
 //Creación de usuario
 export const createUsuario = async (req, res) => {
 	const { nombre, apellidos, email, telefono, password } = req.body;
+	const { perfil_id: empleado_id } = req.user;
 
 	try {
 		const userExist = await pool.query(
-			'SELECT * FROM usuarios WHERE email = $1',
+			'SELECT * FROM cuentas_acceso WHERE email = $1 and activo = true',
 			[email]
 		);
 
 		if (userExist.rows.length > 0) {
 			return res.status(400).json({
-				error: 'El usuario ya está registrado.',
+				error: 'El correo ya está registrado.',
 			});
 		}
 
@@ -23,11 +24,11 @@ export const createUsuario = async (req, res) => {
 		const hashedPassword = await bcrypt.hash(password, salt);
 
 		const nuevo = await pool.query(
-			'INSERT INTO usuarios (nombre, apellidos, email, telefono, password) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-			[nombre, apellidos, email, telefono, hashedPassword]
+			'SELECT registrar_usuario($1, $2, $3, $4, $5, $6) AS nuevo_id',
+			[nombre, apellidos, telefono, empleado_id, email, hashedPassword]
 		);
 
-		const id = nuevo.rows[0].id;
+		const id = nuevo.rows[0].nuevo_id;
 		const codigo = generarCodigoBarras(nombre, apellidos, 'cliente', id);
 
 		const newUser = await pool.query(
@@ -40,9 +41,11 @@ export const createUsuario = async (req, res) => {
 			tipo_usuario: 'cliente',
 		};
 
-		generarTarjetaPDF(cliente);
+		await generarTarjetaPDF(cliente);
 
-		res.json({
+		console.log(cliente);
+
+		return res.json({
 			message: 'Usuario registrado exitosamente',
 			user: newUser.rows[0],
 		});
@@ -55,9 +58,7 @@ export const createUsuario = async (req, res) => {
 //Obtener todos los usuarios
 export const getAllUsuarios = async (req, res) => {
 	try {
-		const usuarios = await pool.query(
-			'SELECT * FROM usuarios WHERE fecha_baja IS NULL'
-		);
+		const usuarios = await pool.query('SELECT * FROM v_usuarios');
 		res.json(usuarios.rows);
 	} catch (error) {
 		console.error(error);
@@ -83,33 +84,15 @@ export const getUsuarioById = async (req, res) => {
 //Actualizar usuario
 export const updateUsuario = async (req, res) => {
 	const { id } = req.params;
-	const { nombre, apellidos, email, telefono, password } = req.body;
+	const { nombre, apellidos, email, telefono } = req.body;
 
 	try {
-		const checkEmail = await pool.query(
-			'SELECT * FROM usuarios WHERE email = $1 AND id != $2',
-			[email, id]
+		const usuario = await pool.query(
+			'SELECT modificar_usuario($1, $2, $3, $4, $5) AS usuario_modificado_id',
+			[id, nombre, apellidos, telefono, email]
 		);
 
-		if (checkEmail.rows.length > 0) {
-			return res
-				.status(400)
-				.json({ error: 'El email ya está en uso por otro usuario' });
-		}
-
-		const newCode = generarCodigoBarras(nombre, apellidos, 'cliente', id);
-
-		const salt = await bcrypt.genSalt(10);
-		const hashedPassword = await bcrypt.hash(password, salt);
-
-		const updatedUsuario = await pool.query(
-			'UPDATE usuarios SET nombre = $1, apellidos = $6, email = $2, telefono = $3, password = $4, codigo_barras = $7 WHERE id = $5 RETURNING *',
-			[nombre, email, telefono, hashedPassword, id, apellidos, newCode]
-		);
-
-		generarTarjetaPDF(updateUsuario);
-
-		res.json({ usuario: updatedUsuario.rows[0] });
+		return res.status(200).json({ message: usuario.rows[0] });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Error al actualizar el usuario' });
@@ -121,7 +104,7 @@ export const deleteUsuario = async (req, res) => {
 	const { id } = req.params;
 	try {
 		const deleteUsuario = await pool.query(
-			'UPDATE usuarios SET fecha_baja = NOW() WHERE id = $1 RETURNING * ',
+			'SELECT baja_usuario($1) AS usuario_eliminado_id',
 			[id]
 		);
 		res.json({ message: 'Usuario eliminado', usuario: deleteUsuario.rows[0] });
@@ -133,15 +116,15 @@ export const deleteUsuario = async (req, res) => {
 
 //CAMBIAR SOLO CONTRASEÑA
 export const passwordChange = async (req, res) => {
-	const { id } = req.params;
+	const { usuario_id } = req.params;
 	const { password } = req.body;
 	try {
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(password, salt);
 
 		const updateUsuario = await pool.query(
-			`UPDATE usuarios SET password = $1 WHERE id = $2`,
-			[hashedPassword, id]
+			`SELECT cambio_password_usuario($1, $2) AS usuario_actualizado_id`,
+			[usuario_id, hashedPassword]
 		);
 		res.json({
 			message: 'Contraseña actualizada',
@@ -166,13 +149,12 @@ export const searchUsuarios = async (req, res) => {
 	try {
 		const usuarios = await pool.query(
 			`
-			SELECT id, nombre, apellidos, email
+			SELECT id, nombre, apellidos
 			FROM usuarios
 			WHERE fecha_baja IS NULL
 				AND (
 					nombre ILIKE $1
 					OR apellidos ILIKE $1
-					OR email ILIKE $1
 					OR (nombre || ' ' || apellidos) ILIKE $1
 					OR codigo_barras ILIKE $1		
 				)
@@ -181,6 +163,7 @@ export const searchUsuarios = async (req, res) => {
 		`,
 			[searchTerm]
 		);
+
 		res.json(usuarios.rows);
 	} catch (error) {
 		console.error('Error al buscar usuarios: ', error);

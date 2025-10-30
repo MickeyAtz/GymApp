@@ -9,6 +9,8 @@ import Card from '../components/molecules/Card';
 import styles from './styles/CRUDPages.module.css';
 import { Navigate } from 'react-router-dom';
 
+import { useUser } from '../context/UserContext';
+
 import {
 	getUsuarios,
 	createUsuario,
@@ -18,6 +20,8 @@ import {
 } from '../api/usuarios';
 
 export default function ClientesPage() {
+	const { user, setUser } = useUser();
+
 	useEffect(() => {
 		document.title = 'Gym App - Clientes';
 		return () => {
@@ -103,10 +107,13 @@ export default function ClientesPage() {
 				alert('Las contraseñas no coinciden');
 				return;
 			}
-			await updatePassword(editData.id, { password: formData.password });
+			await updatePassword(editData.usuario_id, {
+				password: formData.password,
+			});
 		}
 		if (editData) {
-			await updateUsuario(editData.id, formData);
+			console.log('Cliente a editar - HandleSubmit_editData: ', formData, editData);
+			await updateUsuario(editData.usuario_id, formData);
 		} else {
 			await createUsuario(formData);
 		}
@@ -130,6 +137,7 @@ export default function ClientesPage() {
 
 	const handlePasswordChange = async (cliente) => {
 		setModalTitle('Cambiar contraseña');
+		console.log('Cliente a editar - handlePasswordChange: ', cliente);
 		setEditData({
 			...cliente,
 			password: '',
@@ -163,7 +171,7 @@ export default function ClientesPage() {
 								Editar
 							</Button>
 							<Button
-								onClick={() => handleDelete(cliente.id)}
+								onClick={() => handleDelete(cliente.usuario_id)}
 								variant="secondary"
 								size="small"
 							>

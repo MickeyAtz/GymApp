@@ -10,6 +10,8 @@ export async function generarTarjetaPDF(cliente) {
 			const carpetaTarjetas = path.join('tarjetas');
 			if (!fs.existsSync(carpetaTarjetas)) fs.mkdirSync(carpetaTarjetas);
 
+			console.log('VALOR PARA BWIP-JS: ', cliente.codigo_barras);
+
 			const barcodeBuffer = await bwipjs.toBuffer({
 				bcid: 'code128',
 				text: cliente.codigo_barras,

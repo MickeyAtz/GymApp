@@ -10,7 +10,7 @@ import { useUser } from '../../context/UserContext';
 import { useEffect } from 'react';
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
-	const { user, setUser } = useUser(); // Obtenemos el usuario desde el contexto
+	const { user, setUser } = useUser();
 	const [activeItem, setActiveItem] = React.useState(1);
 	const navigate = useNavigate();
 

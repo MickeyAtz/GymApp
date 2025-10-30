@@ -1,4 +1,3 @@
-
 import pool from '../db.js';
 import cron from 'node-cron';
 import nodemailer from 'nodemailer';
@@ -31,9 +30,11 @@ export const sendNotificationsJob = () => {
 const generarNotificaciones = async () => {
 	try {
 		const result = await pool.query(`
-            SELECT um.id AS usuario_membresia_id, u.nombre, u.email, um.fecha_fin
+            SELECT 
+				um.id AS usuario_membresia_id, u.nombre, ca.email, um.fecha_fin
             FROM usuario_membresia um
-            JOIN usuarios u ON um.usuario_id = u.id
+				JOIN usuarios u ON um.usuario_id = u.id
+				JOIN cuentas_acceso ca ON u.id = ca.usuario_id 
             WHERE um.status = 'activo'
         `);
 
