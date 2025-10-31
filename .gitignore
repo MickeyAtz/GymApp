@@ -5,3 +5,5 @@ backend/.env
 backend/request.http
 frontend/README.md
 backend/tarjetas
+backend/GeneradorCodigoBarras.js
+backend/generarTodasLasTarjetas.js
