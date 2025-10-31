@@ -21,6 +21,8 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 		navigate('/login');
 	};
 
+	if (!user) return null;
+
 	const items = itemsByRole[user.perfil.toLowerCase()];
 
 	return (

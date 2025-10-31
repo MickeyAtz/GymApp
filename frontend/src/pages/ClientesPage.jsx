@@ -12,11 +12,11 @@ import { Navigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 import {
-	getUsuarios,
+	getAllUsuarios,
 	createUsuario,
 	updateUsuario,
 	deleteUsuario,
-	updatePassword,
+	updatePasswordUsuario,
 } from '../api/usuarios';
 
 export default function ClientesPage() {
@@ -97,7 +97,7 @@ export default function ClientesPage() {
 	}, []);
 
 	const fetchClientes = async () => {
-		const data = await getUsuarios();
+		const data = await getAllUsuarios();
 		setClientes(data);
 	};
 
@@ -107,12 +107,16 @@ export default function ClientesPage() {
 				alert('Las contraseñas no coinciden');
 				return;
 			}
-			await updatePassword(editData.usuario_id, {
+			await updatePasswordUsuario(editData.usuario_id, {
 				password: formData.password,
 			});
 		}
 		if (editData) {
-			console.log('Cliente a editar - HandleSubmit_editData: ', formData, editData);
+			console.log(
+				'Cliente a editar - HandleSubmit_editData: ',
+				formData,
+				editData
+			);
 			await updateUsuario(editData.usuario_id, formData);
 		} else {
 			await createUsuario(formData);

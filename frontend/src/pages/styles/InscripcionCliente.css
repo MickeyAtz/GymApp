@@ -1,0 +1,54 @@
+/* pages/styles/InscripcionCliente.css */
+
+.clase-grid-container {
+	display: grid;
+	/* Crea columnas flexibles que miden al menos 300px */
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: 1.5rem;
+	margin-top: 1rem;
+}
+
+.clase-card {
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	padding: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.clase-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.clase-card h3 {
+	margin-top: 0;
+	margin-bottom: 0.75rem;
+	color: #333; /* Un color de título oscuro */
+}
+
+.clase-card p {
+	margin: 0.5rem 0;
+	color: #555; /* Un color de texto más suave */
+}
+
+.clase-card button {
+	width: 100%;
+	margin-top: 1rem;
+}
+
+/* Estilo para el banner de error */
+.clase-error-banner {
+	background-color: #f8d7da; /* Rojo pálido */
+	color: #721c24; /* Rojo oscuro */
+	border: 1px solid #f5c6cb;
+	padding: 0.75rem 1.25rem;
+	margin-bottom: 1.5rem;
+	border-radius: 4px;
+	font-weight: 500;
+}

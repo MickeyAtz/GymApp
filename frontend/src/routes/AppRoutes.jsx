@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from '../components/ProtectedRoute';
 
 import {
 	Chart as ChartJS,
@@ -34,12 +35,20 @@ import MembresiasPage from '../pages/MembresiasPage';
 import InstructoresPage from '../pages/InstructoresPage';
 import DashboardPageClientes from '../pages/DashboardPageClientes';
 import VenderMembresiaPage from '../pages/VenderMembresiaPage';
+import MisClasesInstructorPage from '../pages/MisClasesInstructorPage';
+import InscripcionClientePage from '../pages/InscripcionClientePage';
 
 import { isAuthenticated } from '../utils/auth';
 import HomeRedirect from '../components/HomeRedirect';
 import DashboardPageInstructor from '../pages/DashboardPageInstructores';
 
 export default function AppRoutes() {
+	const ROLES = {
+		ADMIN: 'empleado',
+		INSTRUCTOR: 'instructor',
+		CLIENTE: 'cliente',
+	};
+
 	return (
 		<Routes>
 			{/*RUTA PÚBLICA*/}
@@ -52,21 +61,111 @@ export default function AppRoutes() {
 					isAuthenticated() ? <DashboardLayout /> : <Navigate to="/login" />
 				}
 			>
+				{/* REDIRECCIÓN DEL INDEX */}
 				<Route index element={<HomeRedirect />} />
 
-				<Route path="dashboard-admin" element={<DashboardPageAdmin />} />
-				<Route path="dashboard-cliente" element={<DashboardPageClientes />} />
+				{/* RUTAS DE ADMINISTRACIÓN */}
 				<Route
-					path="dashboard-instructor"
-					element={<DashboardPageInstructor />}
+					path="dashboard-admin"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+							<DashboardPageAdmin />
+						</ProtectedRoute>
+					}
+				/>
+				{/* PÁGINAS CRUD */}
+				<Route
+					path="vender-membresia"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+							<VenderMembresiaPage />
+						</ProtectedRoute>
+					}
 				/>
 
-				<Route path="vender-membresia" element={<VenderMembresiaPage />} />
-				<Route path="clientes" element={<ClientesPage />} />
-				<Route path="clases" element={<ClasesPage />} />
-				<Route path="empleados" element={<EmpleadosPage />} />
-				<Route path="instructores" element={<InstructoresPage />} />
-				<Route path="membresias" element={<MembresiasPage />} />
+				<Route
+					path="clientes"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+							<ClientesPage></ClientesPage>
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="clases"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+							<ClasesPage></ClasesPage>
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="empleados"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+							<EmpleadosPage></EmpleadosPage>
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="instructores"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+							<InstructoresPage></InstructoresPage>
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="membresias"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+							<MembresiasPage></MembresiasPage>
+						</ProtectedRoute>
+					}
+				/>
+				{/* FIN PÁGINAS CRUD - ADMINISTRACIÓN */}
+
+				{/* PÁGINAS DEL CLIENTE */}
+				<Route
+					path="dashboard-cliente"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.CLIENTE]}>
+							<DashboardPageClientes></DashboardPageClientes>
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="inscribir-clases"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.CLIENTE]}>
+							<InscripcionClientePage />
+						</ProtectedRoute>
+					}
+				/>
+
+				{/* PÁGINAS DEL INSTRUCTOR */}
+				<Route
+					path="dashboard-instructor"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.INSTRUCTOR]}>
+							<DashboardPageInstructor></DashboardPageInstructor>
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="mis-clases"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.INSTRUCTOR]}>
+							<MisClasesInstructorPage></MisClasesInstructorPage>
+						</ProtectedRoute>
+					}
+				/>
 			</Route>
 		</Routes>
 	);
