@@ -1,4 +1,3 @@
-
 import express from 'express';
 import {
 	createInstructor,
@@ -13,6 +12,7 @@ import { verifyToken } from '../middleware/auth.js';
 import { authorizeRoles } from '../middleware/checkRole.js';
 
 const router = express.Router();
+router.use(verifyToken);
 
 // ----------------------------CRUD-----------------------------
 router.post('/register', createInstructor);

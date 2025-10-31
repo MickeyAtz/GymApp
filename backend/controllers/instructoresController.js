@@ -1,16 +1,18 @@
-
 import pool from '../db.js';
 import bcrypt from 'bcrypt';
 
 // Crear instructor
 export const createInstructor = async (req, res) => {
+	const { perfil_id: empleado_id } = req.user;
 	const { nombre, especialidad, telefono, email, apellidos, password } =
 		req.body;
+
+	console.log(req.user);
 
 	try {
 		// Validar que el email no exista
 		const instructorExist = await pool.query(
-			'SELECT * FROM instructores WHERE email = $1 AND fechabaja IS NULL',
+			'SELECT * FROM cuentas_acceso WHERE email = $1',
 			[email]
 		);
 
@@ -23,32 +25,36 @@ export const createInstructor = async (req, res) => {
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(password, salt);
 
-		const newInstructor = await pool.query(
-			`INSERT INTO instructores (nombre, especialidad, telefono, email, apellidos, password) 
-             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-			[nombre, especialidad, telefono, email, apellidos, hashedPassword]
+		await pool.query(
+			`
+				CALL registrar_instructor($1, $2, $3, $4, $5, $6, $7)
+			`,
+			[
+				nombre,
+				apellidos,
+				especialidad,
+				telefono,
+				empleado_id,
+				email,
+				hashedPassword,
+			]
 		);
 
-		res.json({
-			message: 'Instructor creado exitosamente',
-			instructor: newInstructor.rows[0],
-		});
+		return res.status(200).json({ message: 'Instructor creado exitosamente' });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Error al crear el instructor' });
+		return res.status(500).json({ error: 'Error al crear el instructor' });
 	}
 };
 
 // Obtener todos los instructores activos
 export const getAllInstructores = async (req, res) => {
 	try {
-		const instructores = await pool.query(
-			'SELECT * FROM instructores WHERE fechabaja IS NULL'
-		);
-		res.json(instructores.rows);
+		const instructores = await pool.query('SELECT * FROM v_instructores');
+		return res.json(instructores.rows);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Error al obtener los instructores' });
+		return res.status(500).json({ error: 'Error al obtener los instructores' });
 	}
 };
 
@@ -57,7 +63,7 @@ export const getInstructorById = async (req, res) => {
 	const { id } = req.params;
 	try {
 		const instructor = await pool.query(
-			'SELECT * FROM instructores WHERE id = $1 AND fechabaja IS NULL',
+			'SELECT * FROM v_instructores WHERE instructor_id = $1',
 			[id]
 		);
 
@@ -65,23 +71,25 @@ export const getInstructorById = async (req, res) => {
 			return res.status(404).json({ error: 'Instructor no encontrado' });
 		}
 
-		res.json(instructor.rows[0]);
+		return res.json(instructor.rows[0]);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Error al obtener el instructor' });
+		return res.status(500).json({ error: 'Error al obtener el instructor' });
 	}
 };
 
 // Actualizar instructor
 export const updateInstructor = async (req, res) => {
 	const { id } = req.params;
-	const { nombre, especialidad, telefono, email, apellidos } = req.body;
+	const { nombre, especialidad, telefono, email, apellidos, ca_id } = req.body;
+
+	console.log(req.body);
 
 	try {
 		// Validar que el email no se repita en otro instructor
 		const checkEmail = await pool.query(
-			'SELECT * FROM instructores WHERE email = $1 AND id != $2 AND fechabaja IS NULL',
-			[email, id]
+			'SELECT * FROM cuentas_acceso WHERE email = $1 AND id != $2',
+			[email, ca_id]
 		);
 
 		if (checkEmail.rows.length > 0) {
@@ -90,24 +98,17 @@ export const updateInstructor = async (req, res) => {
 				.json({ error: 'El email ya está en uso por otro instructor' });
 		}
 
-		const updatedInstructor = await pool.query(
-			`UPDATE instructores 
-             SET nombre = $1, especialidad = $2, telefono = $3, email = $4, apellidos = $6
-             WHERE id = $5 AND fechabaja IS NULL
-             RETURNING *`,
-			[nombre, especialidad, telefono, email, id, apellidos]
+		await pool.query(
+			`
+				CALL modificar_instructor($1, $2, $3, $4, $5, $6)
+			`,
+			[id, nombre, apellidos, telefono, especialidad, email]
 		);
 
-		if (updatedInstructor.rows.length === 0) {
-			return res
-				.status(404)
-				.json({ error: 'Instructor no encontrado o ya dado de baja' });
-		}
-
-		res.json({ instructor: updatedInstructor.rows[0] });
+		return res.json({ message: 'Instructor actualizado exitosamente. ' });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Error al actualizar el instructor' });
+		return res.status(500).json({ error: 'Error al actualizar el instructor' });
 	}
 };
 
@@ -115,22 +116,18 @@ export const updateInstructor = async (req, res) => {
 export const deleteInstructor = async (req, res) => {
 	const { id } = req.params;
 	try {
-		const deletedInstructor = await pool.query(
-			'UPDATE instructores SET fechabaja = NOW() WHERE id = $1 RETURNING *',
+		const { rows } = await pool.query(
+			'SELECT baja_instructor($1) AS instructor_eliminado_id',
 			[id]
 		);
 
-		if (deletedInstructor.rows.length === 0) {
-			return res.status(404).json({ error: 'Instructor no encontrado' });
-		}
-
-		res.json({
+		return res.json({
 			message: 'Instructor eliminado (baja lógica)',
-			instructor: deletedInstructor.rows[0],
+			instructor: rows[0],
 		});
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Error al eliminar el instructor' });
+		return res.status(500).json({ error: 'Error al eliminar el instructor' });
 	}
 };
 
@@ -138,14 +135,14 @@ export const deleteInstructor = async (req, res) => {
 export const passwordChange = async (req, res) => {
 	const { id } = req.params;
 	const { password } = req.body;
+	console.log(req.params);
 	try {
-		
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(password, salt);
 
 		const updateInstructor = await pool.query(
-			`UPDATE instructores SET password = $1 WHERE id = $2`,
-			[hashedPassword, id]
+			`SELECT cambio_password_instructor($1, $2) AS instructor_actualziado_id`,
+			[id, hashedPassword]
 		);
 		res.json({
 			message: 'Contraseña actualizada',

@@ -1,4 +1,3 @@
-
 import pool from '../db.js';
 import bcrypt from 'bcrypt';
 
@@ -8,7 +7,7 @@ export const createEmpleado = async (req, res) => {
 
 	try {
 		const empleadoExist = await pool.query(
-			'SELECT * FROM empleados WHERE email = $1 and fecha_baja IS NULL',
+			'SELECT * FROM cuentas_acceso WHERE email = $1 and activo = true',
 			[email]
 		);
 
@@ -21,14 +20,17 @@ export const createEmpleado = async (req, res) => {
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(password, salt);
 
-		const newEmpleado = await pool.query(
-			'INSERT INTO empleados (nombre, apellidos, email, telefono, role_id, password) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-			[nombre, apellidos, email, telefono, rol, hashedPassword]
-		);
+		await pool.query('CALL registrar_empleado($1, $2, $3, $4, $5, $6)', [
+			nombre,
+			apellidos,
+			telefono,
+			rol,
+			email,
+			hashedPassword,
+		]);
 
 		res.json({
 			message: 'Empleado registrado exitosamente',
-			empleado: newEmpleado.rows[0],
 		});
 	} catch (error) {
 		console.error(error);
@@ -39,12 +41,7 @@ export const createEmpleado = async (req, res) => {
 //Obtener todos los empleados
 export const getAllEmpleados = async (req, res) => {
 	try {
-		const empleados = await pool.query(
-			`SELECT e.*, r.nombre AS rol
-			FROM empleados e 
-			LEFT JOIN roles r ON e.role_id = r.id
-			WHERE e.fecha_baja IS NULL`
-		);
+		const empleados = await pool.query(`SELECT * FROM v_empleados`);
 		res.json(empleados.rows);
 	} catch (error) {
 		console.error(error);
@@ -70,11 +67,22 @@ export const getEmpleadoById = async (req, res) => {
 //Actualizar usuario
 export const updateEmpleado = async (req, res) => {
 	const { id } = req.params;
-	const { nombre, apellidos, email, telefono, rol, password } = req.body;
+	const { nombre, apellidos, email, telefono, rol } = req.body;
 
+	console.log(
+		'información del empleado:',
+		id,
+		nombre,
+		apellidos,
+		email,
+		telefono,
+		rol,
+
+		req.params
+	);
 	try {
 		const checkEmail = await pool.query(
-			'SELECT * FROM empleados WHERE email = $1 AND id != $2 AND fecha_baja IS NULL',
+			'SELECT * FROM cuentas_acceso WHERE email = $1 AND empleado_id != $2',
 			[email, id]
 		);
 
@@ -84,17 +92,19 @@ export const updateEmpleado = async (req, res) => {
 				.json({ error: 'El email ya está en uso por otro empleado' });
 		}
 
-		const salt = await bcrypt.genSalt(10);
-		const hashedPassword = await bcrypt.hash(password, salt);
+		await pool.query('CALL modificar_empleado($1, $2, $3, $4, $5, $6)', [
+			id,
+			nombre,
+			apellidos,
+			telefono,
+			rol,
+			email,
+		]);
 
-		const updatedEmpleado = await pool.query(
-			'UPDATE empleados SET nombre = $1, apellidos = $2, email = $3, telefono = $4, role_id = $5, password = $6 WHERE id = $7 RETURNING *',
-			[nombre, apellidos, email, telefono, rol, hashedPassword, id]
-		);
-		res.json({ empleado: updatedEmpleado.rows[0] });
+		return res.json({ message: 'Empleado actualizado correctamente.' });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Error al actualizar el empleado' });
+		return res.status(500).json({ error: 'Error al actualizar el empleado' });
 	}
 };
 
@@ -102,13 +112,13 @@ export const updateEmpleado = async (req, res) => {
 export const deleteEmpleado = async (req, res) => {
 	const { id } = req.params;
 	try {
-		const deleteEmpleado = await pool.query(
-			'UPDATE Empleados SET fecha_baja = NOW() WHERE id = $1 RETURNING * ',
+		const { rows } = await pool.query(
+			'SELECT baja_empleado($1) AS empleado_eliminado_id',
 			[id]
 		);
 		res.json({
 			message: 'Empleado eliminado',
-			empleado: deleteEmpleado.rows[0],
+			empleado: rows[0].empleado_eliminado_id,
 		});
 	} catch (error) {
 		console.error(error);
@@ -125,8 +135,8 @@ export const passwordChange = async (req, res) => {
 		const hashedPassword = await bcrypt.hash(password, salt);
 
 		const updatedEmpleado = await pool.query(
-			'UPDATE empleados SET password = $1 WHERE id = $2',
-			[hashedPassword, id]
+			'SELECT cambio_password_empleado($1, $2) AS empleado_actualizado_id',
+			[id, hashedPassword]
 		);
 		res.json({
 			message: 'Contraseña actualizada',

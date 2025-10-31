@@ -120,9 +120,11 @@ export default function EmpleadosPage() {
 				alert('Las contraseñas no coinciden');
 				return;
 			}
-			await updatePassword(editData.id, { password: formData.password });
+			await updatePassword(editData.empleado_id, {
+				password: formData.password,
+			});
 		} else if (editData) {
-			await updateEmpleado(editData.id, formData);
+			await updateEmpleado(editData.empleado_id, formData);
 		} else {
 			await createEmpleado(formData);
 		}
@@ -135,7 +137,7 @@ export default function EmpleadosPage() {
 		setModalTitle('Editar Empleado');
 		setEditData({
 			...empleado,
-			rol: empleado.role_id,
+			rol: empleado.rol,
 		});
 		setIsModalOpen(true);
 	};
@@ -184,7 +186,7 @@ export default function EmpleadosPage() {
 								Editar
 							</Button>
 							<Button
-								onClick={() => handleDelete(empleado.id)}
+								onClick={() => handleDelete(empleado.empleado_id)}
 								variant="secondary"
 								size="small"
 							>

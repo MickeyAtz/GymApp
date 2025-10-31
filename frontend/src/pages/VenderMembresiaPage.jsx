@@ -150,8 +150,8 @@ export default function VenderMembresiaPage() {
 													e.key === 'Enter' && handleSelectClient(client)
 												}
 											>
-												{client.nombre} {client.apellidos || ''}({client.email})
-												{client.codigo_barras && `- ${client.codigo_barras}`}
+												{client.nombre} {client.apellidos || ''}(
+												{client.codigo_barras})
 											</li>
 										))}
 									</ul>
@@ -164,7 +164,7 @@ export default function VenderMembresiaPage() {
 									<strong>
 										{selectedClient.nombre} {selectedClient.apellidos || ''}
 									</strong>
-									({selectedClient.email})
+									({selectedClient.codigo_barras})
 								</span>
 								<Button
 									onClick={() => setSelectedClient(null)}

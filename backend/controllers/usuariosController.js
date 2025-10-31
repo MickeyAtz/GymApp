@@ -116,7 +116,7 @@ export const deleteUsuario = async (req, res) => {
 
 //CAMBIAR SOLO CONTRASEÑA
 export const passwordChange = async (req, res) => {
-	const { usuario_id } = req.params;
+	const { id } = req.params;
 	const { password } = req.body;
 	try {
 		const salt = await bcrypt.genSalt(10);
@@ -124,7 +124,7 @@ export const passwordChange = async (req, res) => {
 
 		const updateUsuario = await pool.query(
 			`SELECT cambio_password_usuario($1, $2) AS usuario_actualizado_id`,
-			[usuario_id, hashedPassword]
+			[id, hashedPassword]
 		);
 		res.json({
 			message: 'Contraseña actualizada',
@@ -149,7 +149,7 @@ export const searchUsuarios = async (req, res) => {
 	try {
 		const usuarios = await pool.query(
 			`
-			SELECT id, nombre, apellidos
+			SELECT id, nombre, apellidos, codigo_barras
 			FROM usuarios
 			WHERE fecha_baja IS NULL
 				AND (

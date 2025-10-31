@@ -24,7 +24,6 @@ ChartJS.register(
 	Legend
 );
 
-//Importación de páginas
 import LoginPage from '../pages/LoginPage';
 import DashboardLayout from '../layouts/DashboardLayout';
 import DashboardPageAdmin from '../pages/DashboardPageAdmin';
@@ -34,7 +33,6 @@ import ClasesPage from '../pages/ClasesPage';
 import MembresiasPage from '../pages/MembresiasPage';
 import InstructoresPage from '../pages/InstructoresPage';
 import DashboardPageClientes from '../pages/DashboardPageClientes';
-import Loading from '../components/atoms/Loading';
 import VenderMembresiaPage from '../pages/VenderMembresiaPage';
 
 import { isAuthenticated } from '../utils/auth';

@@ -72,6 +72,7 @@ export default function LoginPage() {
 					onChange={handleChange}
 					required
 					auto
+					autoComplete="current-password"
 				></Input>
 				<button type="submit">Ingresar</button>
 			</form>

@@ -32,8 +32,8 @@ export default function InstructoresPage() {
 	const columns = [
 		{ field: 'nombre', label: 'Nombre' },
 		{ field: 'apellidos', label: 'Apellidos' },
-		{ field: 'especialidad', label: 'Especialidad' },
 		{ field: 'email', label: 'Email' },
+		{ field: 'especialidad', label: 'Especialidad' },
 		{ field: 'telefono', label: 'Teléfono' },
 	];
 
@@ -106,10 +106,12 @@ export default function InstructoresPage() {
 				alert('Las contraseñas no coinciden');
 				return;
 			}
-			await updatePassword(editData.id, { password: formData.password });
+			await updatePassword(editData.instructor_id, {
+				password: formData.password,
+			});
 		}
 		if (editData) {
-			await updateInstructor(editData.id, formData);
+			await updateInstructor(editData.instructor_id, formData);
 		} else {
 			await createInstructor(formData);
 		}
@@ -169,7 +171,7 @@ export default function InstructoresPage() {
 								Editar
 							</Button>
 							<Button
-								onClick={() => handleDelete(instructor.id)}
+								onClick={() => handleDelete(instructor.instructor_id)}
 								variant="secondary"
 								size="small"
 							>

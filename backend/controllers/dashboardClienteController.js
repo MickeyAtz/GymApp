@@ -7,29 +7,30 @@ import moment from 'moment'; // Necesitas moment para las fechas
  */
 export const getEstadoMembresia = async (req, res) => {
 	// req.user viene del middleware verifyToken
-	const { id: usuarioId } = req.user;
-
+	const { perfil_id: usuarioId } = req.user;
+	console.log('Usuario ID para membresía:', usuarioId);
 	try {
 		const { rows } = await pool.query(
 			`
             SELECT 
                 m.nombre AS membresia_nombre,
-                um.fecha_fin, -- Columna correcta según tu esquema
+                um.fecha_fin, 
                 TO_CHAR(um.fecha_fin, 'DD/MM/YYYY') AS fecha_vencimiento_formateada
             FROM usuario_membresia um
-            JOIN membresias m ON um.membresia_id = m.id -- Corregido: membresias.id
+            JOIN membresias m ON um.membresia_id = m.id
             WHERE
                 um.usuario_id = $1
-                AND NOW() BETWEEN um.fecha_inicio AND um.fecha_fin -- Lógica correcta: verificar si hoy está dentro del rango
-                AND um.status = 'activo' -- CORREGIDO: Compara status con el texto 'activo' (¡verifica que este sea el texto exacto!)
-            ORDER BY um.fecha_fin DESC -- Por si tiene varias, tomamos la que vence más tarde
+                AND NOW() BETWEEN um.fecha_inicio AND um.fecha_fin 
+                AND um.status = 'activo'
+            ORDER BY um.fecha_fin DESC
             LIMIT 1;
             `,
 			[usuarioId]
 		);
 
+		console.log(rows);
+
 		if (rows.length === 0) {
-			// Usa return para detener la ejecución aquí
 			return res.json({
 				activa: false,
 				mensaje: 'Sin membresía activa',
@@ -37,7 +38,6 @@ export const getEstadoMembresia = async (req, res) => {
 		}
 
 		const membresia = rows[0];
-		// Asegúrate de usar 'fecha_fin' (el nombre correcto de la columna)
 		const diasRestantes = moment(membresia.fecha_fin).diff(moment(), 'days');
 
 		let mensaje = `Membresía ${membresia.membresia_nombre}. `;
@@ -49,7 +49,6 @@ export const getEstadoMembresia = async (req, res) => {
 			mensaje += `Vencida recientemente.`;
 		}
 
-		// Usa return aquí también
 		return res.json({
 			activa: true,
 			mensaje: mensaje,
@@ -144,28 +143,21 @@ export const getGraficaAsistencias = async (req, res) => {
 	try {
 		const { rows } = await pool.query(
 			`
-            /* 1. CTE para contar las visitas por día del mes */
             WITH conteo_diario AS (
                 SELECT 
-                    -- Extraemos el día como número entero
                     CAST(TO_CHAR(fecha_entrada, 'DD') AS INTEGER) AS dia,
-                    -- Contamos las visitas para ese día
                     COUNT(*) AS total
                 FROM visitas
                 WHERE
                     usuario_id = $1   -- Filtro por el cliente logueado
-                    -- Comparamos solo la fecha (ignorando la hora) con el rango del mes
                     AND fecha_entrada::date BETWEEN $2 AND $3 
-                GROUP BY dia -- Agrupamos por día para contar
+                GROUP BY dia 
             )
-            /* 2. Construimos el objeto JSON final */
             SELECT json_build_object(
-                -- Creamos el array 'labels' con los días, ordenados
                 'labels', COALESCE(json_agg(dia ORDER BY dia ASC), '[]'::json),
-                -- Creamos el array 'data' con los totales, ordenados por día
                 'data', COALESCE(json_agg(total ORDER BY dia ASC), '[]'::json)
             ) AS chart_data
-            FROM conteo_diario; -- Seleccionamos desde nuestro CTE
+            FROM conteo_diario; 
             `,
 			[usuarioId, inicioMes, finMes]
 		);
