@@ -8,7 +8,7 @@ import {
 	FaTimesCircle,
 	FaSignOutAlt,
 	FaSpinner,
-	FaBarcode,
+	FaBarcode,	
 } from 'react-icons/fa';
 
 export default function CheckInPage() {

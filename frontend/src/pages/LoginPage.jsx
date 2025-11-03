@@ -12,6 +12,8 @@ export default function LoginPage() {
 	const { user, setUser } = useUser();
 	const [dataForm, setDataForm] = useState({ email: '', password: '' });
 	const [error, setError] = useState('');
+	// Añadamos un estado de carga para el botón
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		document.title = 'Gym App - Login';
@@ -34,6 +36,8 @@ export default function LoginPage() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		setError('');
+		setIsLoading(true); // <-- Activa la carga
 		try {
 			const response = await axios.post(
 				'http://localhost:3000/api/auth/login',
@@ -47,11 +51,14 @@ export default function LoginPage() {
 			setUser(usuario);
 		} catch (err) {
 			setError(err.response?.data?.message || 'Error al iniciar sesión');
+			setIsLoading(false); // <-- Desactiva la carga en error
 		}
+		// No es necesario un 'finally' porque el componente se desmonta al navegar
 	};
 
 	return (
 		<div className={styles.loginWrapper}>
+			<div className={styles.scanLight}></div>
 			<form className={styles.loginForm} onSubmit={handleSubmit}>
 				<h2>Inicio de Sesión</h2>
 				{error && <p className={styles.error}>{error}</p>}
@@ -61,6 +68,7 @@ export default function LoginPage() {
 					placeholder="Ingresa tu email"
 					value={dataForm.email}
 					onChange={handleChange}
+					disabled={isLoading}
 					required
 					autoComplete="email"
 				></Input>
@@ -70,11 +78,13 @@ export default function LoginPage() {
 					placeholder="Ingresa tu contraseña"
 					value={dataForm.password}
 					onChange={handleChange}
+					disabled={isLoading}
 					required
-					auto
 					autoComplete="current-password"
 				></Input>
-				<button type="submit">Ingresar</button>
+				<button type="submit" disabled={isLoading}>
+					{isLoading ? 'Ingresando...' : 'Ingresar'}
+				</button>
 			</form>
 		</div>
 	);
