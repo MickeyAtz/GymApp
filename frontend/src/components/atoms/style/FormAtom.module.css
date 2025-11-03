@@ -1,5 +1,4 @@
-@import '../../../styles/variables.css';
-
+/* src/components/molecules/style/FormAtom.module.css */
 .form {
 	display: flex;
 	flex-wrap: wrap;
@@ -7,26 +6,22 @@
 	gap: 1rem;
 	width: 100%;
 }
-
 .formGroup {
 	display: flex;
 	flex-direction: column;
 }
-
 .label {
 	font-weight: 500;
 	margin-bottom: 0.3rem;
 	color: var(--color-text);
 	font-size: 0.9rem;
 }
-
 .actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: 0.5rem;
 	margin-top: 1rem;
 }
-
 button:hover {
 	cursor: pointer;
 }

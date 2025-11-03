@@ -6,7 +6,7 @@ export default function Table({
 	data = [],
 	renderCell,
 	renderActions,
-	rowsPerPage = 10,
+	rowsPerPage = 6,
 }) {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });

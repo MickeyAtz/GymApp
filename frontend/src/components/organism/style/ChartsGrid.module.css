@@ -1,11 +1,16 @@
+/* src/components/organism/style/ChartsGrid.module.css */
+
 .grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 	gap: 24px;
 }
+
+/* Esto es básicamente un <Card>, así que le damos esos estilos */
 .chartItem {
-	background: #fff;
-	padding: 16px;
-	border-radius: 8px;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+	background-color: var(--color-bg-alt); /* Fondo de Card */
+	color: var(--color-text);
+	padding: 1.5rem;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }

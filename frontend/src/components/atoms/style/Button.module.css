@@ -1,4 +1,4 @@
-@import '../../../styles/variables.css';
+/* src/components/atoms/style/Button.module.css */
 
 .button {
 	font-family: inherit;
@@ -9,23 +9,35 @@
 	transition: all 0.2s ease-in-out;
 }
 
-/* Variantes */
+/* --- Variantes de Color (Usando tus variables) --- */
 .primary {
 	background-color: var(--color-primary);
-	color: var(--color-bg);
+	color: var(--color-bg); /* Texto oscuro sobre fondo dorado */
+}
+.primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2); /* Brillo dorado */
 }
 
 .secondary {
 	background-color: var(--color-accent);
-	color: var(--color-bg);
+	color: var(--color-text); /* Texto claro sobre fondo rojo */
+}
+.secondary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2); /* Brillo rojo */
 }
 
 .tertiary {
 	background-color: var(--color-tertiary);
-	color: var(--color-bg);
+	color: var(--color-bg); /* Texto oscuro sobre fondo naranja */
+}
+.tertiary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2); /* Brillo naranja */
 }
 
-/* Tamaños */
+/* --- Tamaños --- */
 .small {
 	padding: 4px 12px;
 	font-size: 0.875rem;
@@ -41,7 +53,11 @@
 	font-size: 1.125rem;
 }
 
-/* Hover */
-.button:hover {
-	opacity: 0.85;
+/* --- Estado Deshabilitado --- */
+.button:disabled {
+	background-color: var(--color-border);
+	color: #666;
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
 }

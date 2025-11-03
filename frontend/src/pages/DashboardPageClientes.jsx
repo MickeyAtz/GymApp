@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useUser } from '../context/UserContext';
-import styles from './styles/DashboardPageAdmin.module.css';
+import styles from './styles/DashboardPages.module.css';
 import CardDashboard from '../components/atoms/CardDashboard';
 import Card from '../components/molecules/Card.jsx';
 import Badge from '../components/atoms/Badge.jsx';

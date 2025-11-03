@@ -1,5 +1,3 @@
-@import '../../styles/variables.css';
-
 /* --- CAMBIO: Contenedor principal ahora tiene el fondo animado --- */
 .loginWrapper {
 	display: flex;

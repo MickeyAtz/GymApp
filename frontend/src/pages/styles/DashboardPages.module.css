@@ -1,0 +1,38 @@
+/* src/pages/styles/DashboardPage.module.css */
+/* (Renombra DashboardPageAdmin.module.css a este nombre) */
+
+.dashboard {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem; /* Espacio consistente */
+	/* Quitamos el padding, el .mainContent de App.css ya lo da */
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+}
+
+/* El h2 hereda el color dorado */
+.header h2 {
+	margin: 0;
+	font-size: 1.75rem;
+}
+/* (El Badge ya tiene sus propios estilos de átomo) */
+
+.resumenGrid {
+	display: grid;
+	/* Un minmax más responsivo */
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 1.5rem;
+}
+
+.chartsGrid {
+	display: grid;
+	/* Permitimos que las columnas crezcan */
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 1.5rem;
+	/* La altura no debe ser fija, debe crecer con el contenido */
+}

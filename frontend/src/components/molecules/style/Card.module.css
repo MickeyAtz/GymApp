@@ -1,34 +1,42 @@
-@import '../../../styles/variables.css';
+/* src/components/molecules/style/Card.module.css */
 
 .card {
-	background-color: var(--color-bg);
+	/* Usamos --color-bg-alt para que contraste con el fondo --color-bg */
+	background-color: var(--color-bg-alt);
 	color: var(--color-text);
 	border-radius: 12px;
-	padding: 16px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	padding: 1.5rem; /* Más padding */
+
+	/* Sombra más sutil para un tema oscuro */
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
-	min-height: 120px;
-	gap: 8px;
+	gap: 1rem; /* Espacio entre título y contenido */
 	transition:
-		transform 0.2s,
-		box-shadow 0.2s;
+		transform 0.3s ease,
+		box-shadow 0.3s ease;
 }
 
 .card:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+	/* El efecto "lift" (levantarse) que mencionamos */
+	transform: translateY(-4px);
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
 }
 
 .title {
 	font-size: 1.25rem;
 	font-weight: 600;
+	/* El título usa el color primario (dorado) */
+	color: var(--color-primary);
+	padding-bottom: 0.75rem; /* Separador */
+	border-bottom: 1px solid var(--color-border);
 }
 
 .subtitle {
 	font-size: 0.9rem;
-	color: var(--color-primary);
+	/* El subtítulo usa el color terciario (naranja) */
+	color: var(--color-tertiary);
+	margin-top: -0.75rem; /* Pega el subtítulo al título */
 }
 
 .content {
@@ -36,8 +44,8 @@
 }
 
 .footer {
-	margin-top: 12px;
+	margin-top: 1rem;
 	display: flex;
 	justify-content: flex-end;
-	gap: 8px;
+	gap: 0.5rem;
 }

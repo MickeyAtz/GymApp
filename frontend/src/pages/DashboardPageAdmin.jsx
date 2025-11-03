@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import styles from './styles/DashboardPageAdmin.module.css';
+import styles from './styles/DashboardPages.module.css';
 import Card from '../components/molecules/Card';
 import CardDashboard from '../components/atoms/CardDashboard';
 import { Line, Bar } from 'react-chartjs-2';

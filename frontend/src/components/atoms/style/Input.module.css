@@ -1,10 +1,8 @@
-@import '../../../styles/variables.css';
-
-/* Input.module.css */
 .inputContainer {
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 1rem;
+	width: 100%; /* Asegura que ocupe el espacio */
 }
 
 .label {
@@ -14,38 +12,27 @@
 }
 
 .customInput {
-	padding: 0.5rem 1rem;
-	border: 2px solid var(--color-primary);
+	padding: 0.75rem 1rem; /* Un poco más de padding */
+	border: 2px solid var(--color-border); /* Borde neutral por defecto */
 	border-radius: 8px;
-	background-color: var(--color-bg);
+	background-color: var(--color-input-bg); /* Fondo de input */
 	color: var(--color-text);
 	font-size: 1rem;
+	outline: none; /* Quitamos el feo borde azul de Chrome */
 	transition:
-		border-color 0.2s,
-		background-color 0.2s;
+		border-color 0.2s ease,
+		box-shadow 0.2s ease;
 }
 
-/* Variantes */
-.primary {
-	border-color: var(--color-primary);
-}
-
-.primary:focus {
-	border-color: var(--color-accent);
+.customInput:focus {
+	border-color: var(--color-primary); /* Se pone dorado al enfocar */
+	box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); /* Brillo dorado */
 }
 
 .error {
-	border-color: var(--color-accent);
+	border-color: var(--color-accent); /* Borde rojo si hay error */
 }
-
 .error:focus {
 	border-color: var(--color-accent);
-}
-
-.success {
-	border-color: #28a745;
-}
-
-.success:focus {
-	border-color: #218838;
+	box-shadow: 0 0 10px rgba(230, 57, 70, 0.2); /* Brillo rojo */
 }

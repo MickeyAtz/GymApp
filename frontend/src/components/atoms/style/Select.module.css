@@ -1,17 +1,40 @@
-@import '../style/Select.module.css';
 
-/* src/components/atoms/Select.module.css */
-.select {
-	background-color: var(--color-bg);
+.selectContainer {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 1rem;
+	width: 100%;
+}
+
+.label {
 	color: var(--color-text);
-	border: 1px solid var(--color-primary);
-	border-radius: 6px;
-	padding: 0.5rem 1rem;
+	margin-bottom: 0.25rem;
+	font-weight: 500;
+}
+
+.select {
+	padding: 0.75rem 1rem;
+	border: 2px solid var(--color-border);
+	border-radius: 8px;
+	background-color: var(--color-input-bg);
+	color: var(--color-text);
 	font-size: 1rem;
 	outline: none;
-	transition: border 0.2s ease;
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease;
+	width: 100%;
 }
 
 .select:focus {
+	border-color: var(--color-primary);
+	box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.error {
 	border-color: var(--color-accent);
+}
+.error:focus {
+	border-color: var(--color-accent);
+	box-shadow: 0 0 10px rgba(230, 57, 70, 0.2);
 }
