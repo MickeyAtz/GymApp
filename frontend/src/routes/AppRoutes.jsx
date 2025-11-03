@@ -37,6 +37,7 @@ import DashboardPageClientes from '../pages/DashboardPageClientes';
 import VenderMembresiaPage from '../pages/VenderMembresiaPage';
 import MisClasesInstructorPage from '../pages/MisClasesInstructorPage';
 import InscripcionClientePage from '../pages/InscripcionClientePage';
+import CheckInPage from '../pages/CheckInPage';
 
 import { isAuthenticated } from '../utils/auth';
 import HomeRedirect from '../components/HomeRedirect';
@@ -54,6 +55,14 @@ export default function AppRoutes() {
 			{/*RUTA PÚBLICA*/}
 			<Route path="/login" element={<LoginPage />} />
 
+			<Route
+				path="/check-in"
+				element={
+					<ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+						<CheckInPage></CheckInPage>
+					</ProtectedRoute>
+				}
+			/>
 			{/*RUTAS PRIVADAS*/}
 			<Route
 				path="/*"

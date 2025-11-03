@@ -18,6 +18,7 @@ export const allItems = [
 		icon: 'clases',
 		path: '/inscribir-clases',
 	},
+	{ id: 10, label: 'Registro de Visita', icon: 'barcode', path: '/check-in' },
 ];
 
 export const itemsByRole = {

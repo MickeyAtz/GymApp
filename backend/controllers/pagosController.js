@@ -5,6 +5,8 @@ import moment from 'moment';
 export const createPago = async (req, res) => {
 	const { usuario_id, membresia_id, monto, tipo_pago } = req.body;
 	const cliente = await pool.connect();
+	
+	console.log(req.body);
 
 	try {
 		await cliente.query('BEGIN');
@@ -78,6 +80,8 @@ export const createPago = async (req, res) => {
 		console.log(
 			`Nueva membresía: Inicio = ${fecha_inicio_nueva.format('YYYY-MM-DD')}, Fin=${fecha_fin_nueva.format('YYYY-MM-DD')}`
 		);
+
+		console.log(usuario_id, membresia_id, fecha_inicio_db, fecha_fin_db);
 
 		const usuarioMembresia = await cliente.query(
 			`

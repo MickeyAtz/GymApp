@@ -184,6 +184,8 @@ export const searchUsuarios = async (req, res) => {
 			[searchTerm]
 		);
 
+		console.log('Usuarios encontrados: ', usuarios.rows);
+
 		res.json(usuarios.rows);
 	} catch (error) {
 		console.error('Error al buscar usuarios: ', error);
