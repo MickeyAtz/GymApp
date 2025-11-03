@@ -6,6 +6,8 @@ import Button from '../components/atoms/Button';
 import Table from '../components/organism/Table';
 import Card from '../components/molecules/Card';
 
+import { toast } from 'react-toastify';
+
 import styles from './styles/CRUDPages.module.css';
 import { Navigate } from 'react-router-dom';
 
@@ -34,6 +36,7 @@ export default function ClientesPage() {
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 	const [usuario, setUsuario] = useState(null);
+	const [itemParaBorrar, setItemParaBorrar] = useState(null);
 
 	const obtenerUsuario = () => {
 		const localUsuario = localStorage.getItem('usuario');
@@ -102,28 +105,36 @@ export default function ClientesPage() {
 	};
 
 	const handleSubmit = async (formData) => {
-		if (modalTitle === 'Cambiar contraseña') {
-			if (formData.password !== formData.confirmPassword) {
-				alert('Las contraseñas no coinciden');
-				return;
+		try {
+			if (modalTitle === 'Cambiar contraseña') {
+				if (formData.password !== formData.confirmPassword) {
+					alert('Las contraseñas no coinciden');
+					return;
+				}
+				await updatePasswordUsuario(editData.usuario_id, {
+					password: formData.password,
+				});
+				toast.success('Contraseña actualizada con éxito.');
 			}
-			await updatePasswordUsuario(editData.usuario_id, {
-				password: formData.password,
-			});
+			if (editData) {
+				console.log(
+					'Cliente a editar - HandleSubmit_editData: ',
+					formData,
+					editData
+				);
+				await updateUsuario(editData.usuario_id, formData);
+				toast.success('¡Cliente actualizado con éxito!');
+			} else {
+				await createUsuario(formData);
+				toast.success('¡Cliente creado con éxito!');
+			}
+			setIsModalOpen(false);
+			setEditData(null);
+			fetchClientes();
+		} catch (err) {
+			console.error('Error en el handleSubmit:', err);
+			toast.error('Ocurrió un error. Por favor, intenta de nuevo.');
 		}
-		if (editData) {
-			console.log(
-				'Cliente a editar - HandleSubmit_editData: ',
-				formData,
-				editData
-			);
-			await updateUsuario(editData.usuario_id, formData);
-		} else {
-			await createUsuario(formData);
-		}
-		setIsModalOpen(false);
-		setEditData(null);
-		fetchClientes();
 	};
 
 	const handleEdit = (cliente) => {
@@ -133,9 +144,22 @@ export default function ClientesPage() {
 	};
 
 	const handleDelete = async (id) => {
-		if (window.confirm('¿Seguro que deseas eliminar este cliente?')) {
-			await deleteUsuario(id);
+		setItemParaBorrar(id);
+	};
+
+	const handleConfirmDelete = async () => {
+		if (!itemParaBorrar) return;
+		try {
+			await deleteUsuario(itemParaBorrar);
+			toast.info('Cliente eliminado correctamente.');
 			fetchClientes();
+		} catch (err) {
+			console.error(err);
+			toast.error(
+				err.response?.data?.error || 'No se pudo eliminar el cliente.'
+			);
+		} finally {
+			setItemParaBorrar(null);
 		}
 	};
 
@@ -216,6 +240,41 @@ export default function ClientesPage() {
 						setEditData(null);
 					}}
 				></FormAtom>
+			</Modal>
+
+			<Modal
+				title="Confirmar Eliminación"
+				isOpen={itemParaBorrar !== null} // Se abre si 'itemParaBorrar' no es null
+				onClose={() => setItemParaBorrar(null)} // Se cierra al cancelar
+			>
+				<div style={{ padding: '1rem' }}>
+					<p>
+						¿Estás seguro de que deseas eliminar a este cliente? Esta acción no
+						se puede deshacer.
+					</p>
+
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'flex-end',
+							gap: '1rem',
+							marginTop: '2rem',
+						}}
+					>
+						<Button
+							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							onClick={handleConfirmDelete}
+						>
+							Sí, Eliminar
+						</Button>
+						<Button
+							variant="primary" // (O un botón neutral/dorado)
+							onClick={() => setItemParaBorrar(null)}
+						>
+							Cancelar
+						</Button>
+					</div>
+				</div>
 			</Modal>
 		</div>
 	);

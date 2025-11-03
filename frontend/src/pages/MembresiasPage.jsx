@@ -6,6 +6,8 @@ import Button from '../components/atoms/Button';
 import Table from '../components/organism/Table';
 import Card from '../components/molecules/Card';
 
+import { toast } from 'react-toastify';
+
 import styles from './styles/CRUDPages.module.css';
 
 import {
@@ -20,8 +22,9 @@ export default function MembresiasPage() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
+	const [itemParaBorrar, setItemParaBorrar] = useState(null);
 
-	useEffect(() => {	
+	useEffect(() => {
 		document.title = 'Gym App - Membresías';
 		return () => {
 			document.title = 'Gym App';
@@ -81,14 +84,23 @@ export default function MembresiasPage() {
 			activo: formData.activo === 'true' || formData.activo === true,
 		};
 
-		if (editData) {
-			await updateMembresia(editData.id, payload);
-		} else {
-			await createMembresia(payload);
+		try {
+			if (editData) {
+				await updateMembresia(editData.id, payload);
+				toast.success('¡Membresía actualizada con éxito!');
+			} else {
+				await createMembresia(payload);
+				toast.success('¡Membresía creada con éxito!');
+			}
+			setIsModalOpen(false);
+			setEditData(null);
+			fetchMembresias();
+		} catch (err) {
+			console.error(err);
+			toast.error(
+				err.response?.data?.error || 'No se pudo guardar la membresía.'
+			);
 		}
-		setIsModalOpen(false);
-		setEditData(null);
-		fetchMembresias();
 	};
 
 	// Editar membresía
@@ -103,9 +115,19 @@ export default function MembresiasPage() {
 
 	// Eliminar membresía
 	const handleDelete = async (id) => {
-		if (window.confirm('¿Seguro que deseas eliminar esta membresía?')) {
-			await deleteMembresia(id);
-			fetchMembresias();
+		setItemParaBorrar(id);
+	};
+
+	const handleConfirmDelete = async () => {
+		if (!itemParaBorrar) return;
+		try {
+		} catch (err) {
+			console.error(err);
+			toast.error(
+				err.response?.data?.error || 'No se pudo eliminar la membresía.'
+			);
+		} finally {
+			setItemParaBorrar(null);
 		}
 	};
 
@@ -167,6 +189,41 @@ export default function MembresiasPage() {
 						setEditData(null);
 					}}
 				/>
+			</Modal>
+
+			<Modal
+				title="Confirmar Eliminación"
+				isOpen={itemParaBorrar !== null} // Se abre si 'itemParaBorrar' no es null
+				onClose={() => setItemParaBorrar(null)} // Se cierra al cancelar
+			>
+				<div style={{ padding: '1rem' }}>
+					<p>
+						¿Estás seguro de que deseas eliminar a esta membresía? Esta acción
+						no se puede deshacer.
+					</p>
+
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'flex-end',
+							gap: '1rem',
+							marginTop: '2rem',
+						}}
+					>
+						<Button
+							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							onClick={handleConfirmDelete}
+						>
+							Sí, Eliminar
+						</Button>
+						<Button
+							variant="primary" // (O un botón neutral/dorado)
+							onClick={() => setItemParaBorrar(null)}
+						>
+							Cancelar
+						</Button>
+					</div>
+				</div>
 			</Modal>
 		</div>
 	);

@@ -6,6 +6,8 @@ import Button from '../components/atoms/Button';
 import Table from '../components/organism/Table';
 import Card from '../components/molecules/Card';
 
+import { toast } from 'react-toastify';
+
 import styles from './styles/CRUDPages.module.css';
 
 import {
@@ -21,6 +23,7 @@ export default function InstructoresPage() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
+	const [itemParaBorrar, setItemParaBorrar] = useState(null);
 
 	useEffect(() => {
 		document.title = 'Gym App - Instructores';
@@ -101,23 +104,33 @@ export default function InstructoresPage() {
 	};
 
 	const handleSubmit = async (formData) => {
-		if (modalTitle === 'Cambiar contraseña') {
-			if (formData.password !== formData.confirmPassword) {
-				alert('Las contraseñas no coinciden');
-				return;
+		try {
+			if (modalTitle === 'Cambiar contraseña') {
+				if (formData.password !== formData.confirmPassword) {
+					alert('Las contraseñas no coinciden');
+					return;
+				}
+				await updatePassword(editData.instructor_id, {
+					password: formData.password,
+				});
+				toast.success('¡Contraseña actualizada con éxito!');
 			}
-			await updatePassword(editData.instructor_id, {
-				password: formData.password,
-			});
+			if (editData) {
+				await updateInstructor(editData.instructor_id, formData);
+				toast.success('¡Instructor actualizado con éxito!');
+			} else {
+				await createInstructor(formData);
+				toast.success('¡Instructor creado con éxito!');
+			}
+			setIsModalOpen(false);
+			setEditData(null);
+			fetchInstructores();
+		} catch (err) {
+			console.error(err);
+			toast.error(
+				err.response?.data?.error || 'No se pudo guardar el instructor.'
+			);
 		}
-		if (editData) {
-			await updateInstructor(editData.instructor_id, formData);
-		} else {
-			await createInstructor(formData);
-		}
-		setIsModalOpen(false);
-		setEditData(null);
-		fetchInstructores();
 	};
 
 	const handleEdit = (instructor) => {
@@ -127,9 +140,23 @@ export default function InstructoresPage() {
 	};
 
 	const handleDelete = async (id) => {
-		if (window.confirm('¿Seguro que deseas eliminar este instructor?')) {
-			await deleteInstructor(id);
+		setItemParaBorrar(id);
+	};
+
+	const handleConfirmDelete = async () => {
+		if (!itemParaBorrar) return;
+
+		try {
+			await deleteInstructor(itemParaBorrar);
+			toast.info('¡Instructor eliminado correctamente!');
 			fetchInstructores();
+		} catch (err) {
+			console.error(err);
+			toast.error(
+				err.response?.data?.error || 'No se pudo eliminar el instructor.'
+			);
+		} finally {
+			setItemParaBorrar(null);
 		}
 	};
 
@@ -212,6 +239,40 @@ export default function InstructoresPage() {
 						setEditData(null);
 					}}
 				></FormAtom>
+			</Modal>
+			<Modal
+				title="Confirmar Eliminación"
+				isOpen={itemParaBorrar !== null} // Se abre si 'itemParaBorrar' no es null
+				onClose={() => setItemParaBorrar(null)} // Se cierra al cancelar
+			>
+				<div style={{ padding: '1rem' }}>
+					<p>
+						¿Estás seguro de que deseas eliminar a este instructor? Esta acción
+						no se puede deshacer.
+					</p>
+
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'flex-end',
+							gap: '1rem',
+							marginTop: '2rem',
+						}}
+					>
+						<Button
+							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							onClick={handleConfirmDelete}
+						>
+							Sí, Eliminar
+						</Button>
+						<Button
+							variant="primary" // (O un botón neutral/dorado)
+							onClick={() => setItemParaBorrar(null)}
+						>
+							Cancelar
+						</Button>
+					</div>
+				</div>
 			</Modal>
 		</div>
 	);
