@@ -5,6 +5,8 @@ import Button from '../components/atoms/Button';
 import Select from '../components/atoms/Select';
 import Card from '../components/molecules/Card';
 
+import { toast } from 'react-toastify';
+
 import {
 	searchUsuarios,
 	getActiveMemberships,
@@ -21,17 +23,14 @@ export default function VenderMembresiaPage() {
 	const [selectedMembershipId, setSelectedMembershipId] = useState('');
 	const [payAmount, setPayAmount] = useState('');
 	const [paymentType, setPaymentType] = useState('efectivo');
-	const [error, setError] = useState('');
-	const [successMessage, setSuccessMessage] = useState('');
 
 	const fetchMembresias = async () => {
-		setError('');
 		try {
 			const data = await getActiveMemberships();
 			setMemberships(data || []);
 		} catch (err) {
 			console.error('Error al cargar membresias: ', err);
-			setError('No se pudieron cargar las membresías.');
+			toast.error('Error al cargar las membresías disponibles.');
 			setMemberships([]);
 		}
 	};
@@ -39,12 +38,11 @@ export default function VenderMembresiaPage() {
 	useEffect(() => {
 		const handler = setTimeout(() => {
 			if (searchTerm && searchTerm.trim().length > 1) {
-				setError('');
 				searchUsuarios(searchTerm)
 					.then((data) => setSearchResults(data || []))
 					.catch((err) => {
 						console.error('Error al buscar usuarios: ', err);
-						setError('Error al buscar clientes.');
+						toast.error('Error al buscar clientes.');
 						setSearchResults([]);
 					});
 			} else {
@@ -89,13 +87,9 @@ export default function VenderMembresiaPage() {
 			!payAmount ||
 			!paymentType
 		) {
-			setError('Por favor completa todos los campos.');
+			toast.error('Por favor completa todos los campos.');
 			return;
 		}
-
-		setError('');
-		setSuccessMessage('');
-
 		const paymentData = {
 			usuario_id: selectedClient.id,
 			membresia_id: parseInt(selectedMembershipId, 10),
@@ -105,26 +99,20 @@ export default function VenderMembresiaPage() {
 
 		try {
 			const result = await createMembershipPayment(paymentData);
-			setSuccessMessage(result.message || '¡Venta registrada con éxito!');
-
+			toast.success('¡Venta registrada con éxito!');
 			setSelectedClient(null);
 			setSelectedMembershipId('');
 			setPayAmount('');
 			setPaymentType('efectivo');
 		} catch (err) {
 			console.error('Error al registrar pago: ', err);
-			setError(err.response?.data?.error || 'Error al registrar la venta.');
+			toast.error(err.response?.data?.error || 'Error al registrar la venta.');
 		}
 	};
 
 	return (
 		<div className={styles.ventaContainer}>
 			<h1>Registrar Venta de Membresía</h1>
-			{error && <p className={styles.errorMessage}>{error}</p>}
-			{successMessage && (
-				<p className={styles.successMessage}>{successMessage}</p>
-			)}
-
 			<Card title="Detalles de la venta">
 				<form onSubmit={handleSubmit}>
 					<section className={styles.formSection}>

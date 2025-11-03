@@ -193,28 +193,27 @@ export const getMisClases = async (req, res) => {
 // Necesita: req.params.clase_id, req.user.perfil_id (del token)
 // Descripción: Obtiene la lista de alumnos inscritos en una clase específica del instructor.
 export const getAlumnosDeMiClase = async (req, res) => {
-	const instructor_id = req.user.perfil_id;
-	const { clase_id } = req.params; // Corregido (antes id_clase)
+	const { clase_id } = req.params;
 
 	try {
 		const { rows } = await pool.query(
 			`
                 SELECT 
-                    u.nombre,
-                    u.apellidos,
-                    ca.email,
-                    i.id AS inscripcion_id,
-                    i.fecha_inscripcion
-                FROM inscripciones i
-                JOIN usuarios u ON i.usuario_id = u.id
-                JOIN clases c ON i.clase_id = c.id           -- Corregido (antes id_clase)
-                JOIN cuentas_acceso ca ON u.id = ca.usuario_id -- Corregido (antes id_usuario)
-                WHERE i.clase_id = $1      -- Corregido
-                  AND c.id_instructor = $2
-                  AND u.fecha_baja IS NULL -- Corregido (columna de 'usuarios')
-                  AND i.fechabaja IS NULL    -- Corregido (columna de 'inscripciones')
+					u.nombre,
+					u.apellidos,
+					ca.email,
+					i.id AS inscripcion_id,
+					i.fecha_inscripcion
+				FROM inscripciones i
+				JOIN usuarios u ON i.usuario_id = u.id
+				JOIN cuentas_acceso ca ON u.id = ca.usuario_id 
+				JOIN clases c ON i.clase_id = c.id
+				WHERE i.clase_id = $1          
+				AND u.fecha_baja IS NULL     
+				AND i.fechabaja IS NULL      
+				AND c.fechabaja IS NULL;
             `,
-			[clase_id, instructor_id] // Corregido
+			[clase_id] 
 		);
 
 		return res.json(rows);
@@ -235,15 +234,14 @@ export const eliminarAlumnoDeClase = async (req, res) => {
 		// Corregido: Añadida validación de seguridad
 		const { rows, rowCount } = await pool.query(
 			`
-            UPDATE inscripciones
-            SET fechabaja = NOW() -- Corregido (columna de 'inscripciones')
-            WHERE id = $1
-              -- Validación de Seguridad --
-              AND clase_id IN (
-                SELECT id FROM clases 
-                WHERE id_instructor = $2
-              )
-            RETURNING *
+				UPDATE inscripciones
+				SET fechabaja = NOW() 
+				WHERE id = $1
+				AND clase_id IN (
+					SELECT id FROM clases 
+					WHERE id_instructor = $2
+				)
+				RETURNING *
             `,
 			[id_inscripcion, instructor_id]
 		);

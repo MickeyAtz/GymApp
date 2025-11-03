@@ -9,6 +9,8 @@ import Badge from '../atoms/Badge';
 import { useUser } from '../../context/UserContext';
 import { useEffect } from 'react';
 
+import { toast } from 'react-toastify';
+
 export default function Sidebar({ isOpen, toggleSidebar }) {
 	const { user, setUser } = useUser();
 	const [activeItem, setActiveItem] = React.useState(1);
@@ -19,6 +21,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 		localStorage.removeItem('usuario');
 		setUser(null);
 		navigate('/login');
+		toast.info('Cierre de sesión exitoso.');
 	};
 
 	if (!user) return null;

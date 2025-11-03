@@ -1,4 +1,3 @@
-
 :global(body),
 :global(html) {
 	margin: 0;
@@ -20,7 +19,6 @@
 	box-sizing: border-box;
 	cursor: none;
 
-	/* Fondo principal: Tu --color-bg con un degradado sutil */
 	background-color: var(--color-bg, #121212);
 	background-image: radial-gradient(
 		circle at 50% 50%,
@@ -28,28 +26,24 @@
 		var(--color-bg, #121212) 70%
 	);
 
-	/* Para la animación de rayos */
 	position: relative;
 	overflow: hidden;
 }
 
-/* --- Animación 1: Rayo de Luz --- */
 .scanLight {
 	position: absolute;
 	top: 0;
-	left: -100%; /* Inicia fuera de la pantalla */
+	left: -100%;
 	width: 100%;
 	height: 100%;
 
-	/* Un "reflector" hecho con tu color primario (dorado) */
 	background: linear-gradient(
 		90deg,
 		transparent,
 		rgba(255, 215, 0, 0.08),
-		/* --color-primary (ffd700) con 8% opacidad */ transparent
+		transparent
 	);
 
-	/* Animación que lo mueve */
 	animation: sweep 6s linear infinite;
 	z-index: 1;
 }
@@ -66,19 +60,17 @@
 	}
 }
 
-/* --- Pantalla de Escaneo (Default) --- */
 .promptSection {
 	position: relative;
-	z-index: 2; /* Encima del rayo de luz */
+	z-index: 2;
 	text-align: center;
 	color: var(--color-text, #f5f5f5);
 
-	/* Transición suave al desaparecer */
 	transition: opacity 0.4s ease-out;
 	opacity: 1;
 }
 .kioskContainer.showResult .promptSection {
-	opacity: 0; /* Oculta el prompt cuando aparece el resultado */
+	opacity: 0;
 }
 
 .iconPrompt {
@@ -179,18 +171,19 @@
 	}
 }
 
-/* Tus colores para los resultados */
 .success {
-	background-color: var(--color-primary, #ffd700);
-	color: var(--color-bg, #121212);
+	background-color: var(--color-success, #2a9d8f);
+	color: var(--color-text, #f5f5f5);
 }
+
 .error {
 	background-color: var(--color-accent, #e63946);
 	color: var(--color-text, #f5f5f5);
 }
+
 .goodbye {
 	background-color: var(--color-tertiary, #ff9800);
-	color: var(--color-bg, #121212);
+	color: var(--color-bg, #121212); /* Texto Oscuro */
 }
 
 .iconResult {
@@ -206,6 +199,7 @@
 	font-size: 3rem;
 	font-weight: 700;
 	margin: 0;
+	color: inherit;
 }
 
 .userText {
@@ -213,4 +207,14 @@
 	font-weight: 300;
 	margin: 0.25rem 0 0 0;
 	opacity: 0.9;
+	color: inherit;
+}
+
+.iconResult {
+	font-size: 5rem;
+	margin-bottom: 1rem;
+	/* * ¡Importante! Hace que el ícono tome el color del texto
+     * (claro para success/error, oscuro para goodbye)
+     */
+	color: inherit;
 }

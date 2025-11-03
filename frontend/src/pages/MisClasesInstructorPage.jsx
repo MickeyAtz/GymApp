@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 
-// Importa tus componentes de UI
 import Modal from '../components/molecules/Modal';
 import FormAtom from '../components/atoms/FormAtom';
 import Button from '../components/atoms/Button';
 import Table from '../components/organism/Table';
 import Card from '../components/molecules/Card';
 
-// Importa los estilos
 import styles from './styles/CRUDPages.module.css';
 
-// Importa TODAS las funciones de API para el INSTRUCTOR
+import { toast } from 'react-toastify';
+
 import {
 	getMisClases,
 	getAlumnosDeMiClase,
@@ -21,22 +20,18 @@ import {
 } from '../api/instructores.js'; // (Tu archivo API que ya creamos)
 
 export default function MisClasesInstructorPage() {
-	// --- Estados ---
 	const [misClases, setMisClases] = useState([]);
 	const [alumnos, setAlumnos] = useState([]); // Estado para los alumnos del modal
 
-	// Estados para el Modal 1 (CRUD Clases)
 	const [isCrudModalOpen, setIsCrudModalOpen] = useState(false);
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
+	const [itemParaBorrar, setItemParaBorrar] = useState(null);
+	const [deleteCliente, setDeleteCliente] = useState(null);
 
-	// Estados para el Modal 2 (Gestionar Alumnos)
 	const [isAlumnosModalOpen, setIsAlumnosModalOpen] = useState(false);
 	const [selectedClase, setSelectedClase] = useState(null);
 
-	// --- Definiciones de Columnas y Campos ---
-
-	// Columnas para la tabla principal
 	const columns = [
 		{ field: 'nombre', label: 'Nombre' },
 		{ field: 'dia', label: 'Día' },
@@ -44,14 +39,12 @@ export default function MisClasesInstructorPage() {
 		{
 			field: 'cupos',
 			label: 'Cupos',
-			// Render personalizado para mostrar "inscritos / capacidad"
 			render: (clase) => (
 				<strong>{`${clase.inscritos} / ${clase.capacidad}`}</strong>
 			),
 		},
 	];
 
-	// Opciones para el select de días
 	const diasOptions = [
 		'Lunes',
 		'Martes',
@@ -62,7 +55,6 @@ export default function MisClasesInstructorPage() {
 		'Domingo',
 	].map((d) => ({ value: d, label: d }));
 
-	// Campos para el formulario de Crear/Editar Clase (Modal 1)
 	const fieldsClase = [
 		{ name: 'nombre', label: 'Nombre', type: 'text', placeholder: 'Ej. Yoga' },
 		{
@@ -81,14 +73,11 @@ export default function MisClasesInstructorPage() {
 		},
 	];
 
-	// Columnas para la tabla de alumnos (Modal 2)
 	const columnsAlumnos = [
 		{ field: 'nombre', label: 'Nombre' },
 		{ field: 'apellidos', label: 'Apellidos' },
 		{ field: 'email', label: 'Email' },
 	];
-
-	// --- Carga de Datos Inicial ---
 
 	useEffect(() => {
 		document.title = 'Gym App - Mis Clases';
@@ -97,59 +86,62 @@ export default function MisClasesInstructorPage() {
 
 	const fetchMisClases = async () => {
 		try {
-			const data = await getMisClases(); // Llama a la API
+			const data = await getMisClases();
 			setMisClases(data);
 		} catch (error) {
 			console.error(error.message);
-			// Aquí deberías mostrar un error al usuario (ej. con un Toast)
+			toast.error('Error al cargar clases.');
 		}
 	};
-
-	// --- MANEJO MODAL 1: CRUD Clases ---
 
 	const handleSubmitClase = async (formData) => {
 		try {
 			if (editData) {
-				// El 'id' de la clase viene de 'editData'
 				await updateClase(editData.id, formData);
+				toast.success('¡Clase editada correctamente!');
 			} else {
 				await createClase(formData);
+				toast.success('¡Clase creada con éxito!');
 			}
 			setIsCrudModalOpen(false);
 			setEditData(null);
-			fetchMisClases(); // Recarga la tabla principal
+			fetchMisClases();
 		} catch (error) {
 			console.error(error.message);
-			// Mostrar error en el modal
+			toast.error('No se pudo guardar la información.');
 		}
 	};
 
 	const handleEditClase = (clase) => {
 		setModalTitle('Editar Clase');
-		// El input 'time' necesita el formato HH:mm
 		const horaFormateada = clase.hora ? clase.hora.substring(0, 5) : '';
 		setEditData({ ...clase, hora: horaFormateada });
 		setIsCrudModalOpen(true);
 	};
 
 	const handleDeleteClase = async (claseId) => {
-		if (window.confirm('¿Seguro que deseas eliminar esta clase?')) {
-			try {
-				await deleteClase(claseId);
-				fetchMisClases();
-			} catch (error) {
-				console.error(error.message);
-			}
+		setItemParaBorrar(claseId);
+	};
+
+	const handleConfirmDelete = async () => {
+		try {
+			await deleteClase(itemParaBorrar);
+			toast.success('¡Clase eliminada con éxito!');
+		} catch (err) {
+			console.error(err);
+			toast.error('Error al eliminar clase.');
+		} finally {
+			setItemParaBorrar(null);
+			fetchMisClases();
 		}
 	};
 
-	// --- MANEJO MODAL 2: Gestionar Alumnos ---
-
 	const handleOpenAlumnosModal = async (clase) => {
 		try {
-			setSelectedClase(clase); // Guarda la clase seleccionada
-			const data = await getAlumnosDeMiClase(clase.id); // Llama a la API
+			setSelectedClase(clase);
+			const data = await getAlumnosDeMiClase(clase.id);
 			setAlumnos(data);
+			console.log(data);
 			setIsAlumnosModalOpen(true);
 		} catch (error) {
 			console.error(error.message);
@@ -160,28 +152,26 @@ export default function MisClasesInstructorPage() {
 		setIsAlumnosModalOpen(false);
 		setSelectedClase(null);
 		setAlumnos([]);
-		// Recargamos las clases por si el conteo de inscritos cambió
 		fetchMisClases();
 	};
 
 	const handleEliminarAlumno = async (inscripcionId) => {
-		if (
-			window.confirm(
-				'¿Seguro que deseas dar de baja a este alumno de la clase?'
-			)
-		) {
-			try {
-				await eliminarAlumnoDeClase(inscripcionId);
-				// Recargamos la lista de alumnos en el modal
-				const data = await getAlumnosDeMiClase(selectedClase.id);
-				setAlumnos(data);
-			} catch (error) {
-				console.error(error.message);
-			}
-		}
+		setDeleteCliente(inscripcionId);
 	};
 
-	// --- RENDERIZADO ---
+	const handleConfirmDeleteUsuario = async () => {
+		try {
+			await eliminarAlumnoDeClase(deleteCliente);
+			toast.success('¡Cliente eliminado de la clase!');
+			const data = await getAlumnosDeMiClase(selectedClase.id);
+			setAlumnos(data);
+		} catch (err) {
+			console.error(err);
+			toast.error('Error al eliminar cliente de la clase.');
+		} finally {
+			setDeleteCliente(null);
+		}
+	};
 
 	return (
 		<div>
@@ -221,7 +211,6 @@ export default function MisClasesInstructorPage() {
 								Editar
 							</Button>
 							<Button
-								// Pasamos el 'clase.id' que es la PK
 								onClick={() => handleDeleteClase(clase.id)}
 								variant="secondary"
 								size="small"
@@ -233,7 +222,6 @@ export default function MisClasesInstructorPage() {
 				></Table>
 			</Card>
 
-			{/* Modal 1: Crear/Editar Clase */}
 			<Modal
 				title={modalTitle}
 				isOpen={isCrudModalOpen}
@@ -250,7 +238,6 @@ export default function MisClasesInstructorPage() {
 				></FormAtom>
 			</Modal>
 
-			{/* Modal 2: Ver/Eliminar Alumnos */}
 			<Modal
 				title={`Alumnos en: ${selectedClase?.nombre || ''}`}
 				isOpen={isAlumnosModalOpen}
@@ -261,7 +248,6 @@ export default function MisClasesInstructorPage() {
 					data={alumnos}
 					renderActions={(alumno) => (
 						<Button
-							// Pasamos el 'alumno.inscripcion_id'
 							onClick={() => handleEliminarAlumno(alumno.inscripcion_id)}
 							variant="secondary"
 							size="small"
@@ -270,6 +256,63 @@ export default function MisClasesInstructorPage() {
 						</Button>
 					)}
 				></Table>
+			</Modal>
+			<Modal
+				title="Confirmar Eliminación"
+				isOpen={itemParaBorrar !== null}
+				onClose={() => setItemParaBorrar(null)}
+			>
+				<div style={{ padding: '1rem' }}>
+					<p>
+						¿Estás seguro de que deseas eliminar a esta clase? Esta acción no se
+						puede deshacer.
+					</p>
+
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'flex-end',
+							gap: '1rem',
+							marginTop: '2rem',
+						}}
+					>
+						<Button variant="secondary" onClick={handleConfirmDelete}>
+							Sí, Eliminar
+						</Button>
+						<Button variant="primary" onClick={() => setItemParaBorrar(null)}>
+							Cancelar
+						</Button>
+					</div>
+				</div>
+			</Modal>
+
+			<Modal
+				title="Confirmar Eliminación"
+				isOpen={deleteCliente !== null}
+				onClose={() => setDeleteCliente(null)}
+			>
+				<div style={{ padding: '1rem' }}>
+					<p>
+						¿Estás seguro de que deseas eliminar al usuario de esta clase? Esta
+						acción no se puede deshacer.
+					</p>
+
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'flex-end',
+							gap: '1rem',
+							marginTop: '2rem',
+						}}
+					>
+						<Button variant="secondary" onClick={handleConfirmDeleteUsuario}>
+							Sí, Eliminar
+						</Button>
+						<Button variant="primary" onClick={() => setDeleteCliente(null)}>
+							Cancelar
+						</Button>
+					</div>
+				</div>
 			</Modal>
 		</div>
 	);

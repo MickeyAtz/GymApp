@@ -5,6 +5,8 @@ import styles from './styles/LoginPage.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
+import { toast } from 'react-toastify';
+
 import Input from '../components/atoms/Input';
 
 export default function LoginPage() {
@@ -37,7 +39,7 @@ export default function LoginPage() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError('');
-		setIsLoading(true); // <-- Activa la carga
+		setIsLoading(true);
 		try {
 			const response = await axios.post(
 				'http://localhost:3000/api/auth/login',
@@ -45,15 +47,15 @@ export default function LoginPage() {
 			);
 			const { token, usuario } = response.data;
 
+			toast.success('Inicio de sesión exitoso.');
 			localStorage.setItem('token', token);
 			localStorage.setItem('usuario', JSON.stringify(usuario));
 
 			setUser(usuario);
 		} catch (err) {
-			setError(err.response?.data?.message || 'Error al iniciar sesión');
-			setIsLoading(false); // <-- Desactiva la carga en error
+			toast.error(err.response?.data?.message || 'Error al iniciar sesión');
+			setIsLoading(false);
 		}
-		// No es necesario un 'finally' porque el componente se desmonta al navegar
 	};
 
 	return (

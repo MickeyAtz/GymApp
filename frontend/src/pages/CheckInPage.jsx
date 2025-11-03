@@ -8,7 +8,7 @@ import {
 	FaTimesCircle,
 	FaSignOutAlt,
 	FaSpinner,
-	FaBarcode,	
+	FaBarcode,
 } from 'react-icons/fa';
 
 export default function CheckInPage() {
@@ -86,17 +86,13 @@ export default function CheckInPage() {
 	};
 
 	return (
-		// Contenedor principal a pantalla completa
 		<div
 			className={`${styles.kioskContainer} ${scanResult ? styles.showResult : ''}`}
 			onClick={() => inputRef.current?.focus()}
 		>
-			{/* Animación 1: Rayo de luz (definido en CSS) */}
 			<div className={styles.scanLight}></div>
 
-			{/* Mostramos el Resultado (si existe) O el Prompt (por defecto) */}
 			{scanResult ? (
-				// --- Pantalla de Resultado ---
 				<div className={`${styles.resultCard} ${getResultClass()}`}>
 					{getResultIcon()}
 					<div className={styles.resultText}>
@@ -105,7 +101,6 @@ export default function CheckInPage() {
 					</div>
 				</div>
 			) : (
-				// --- Pantalla de Escaneo (Default) ---
 				<div className={styles.promptSection}>
 					{isLoading ? (
 						<FaSpinner className={`${styles.iconPrompt} ${styles.spinner}`} />
@@ -122,7 +117,7 @@ export default function CheckInPage() {
 						<input
 							ref={inputRef}
 							type="text"
-							className={styles.scanInput} // ¡Input ahora es visible!
+							className={styles.scanInput} 
 							value={scanData}
 							onChange={(e) => setScanData(e.target.value)}
 							autoComplete="off"

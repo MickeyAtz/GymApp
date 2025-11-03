@@ -5,6 +5,10 @@ import Button from '../components/atoms/Button';
 import styles from './styles/CRUDPages.module.css';
 import './styles/InscripcionCliente.css'; // (Este archivo CSS ya no sería tan necesario)
 
+import Modal from '../components/molecules/Modal';
+
+import { toast } from 'react-toastify';
+
 import {
 	getMisInscripciones,
 	getClasesDisponibles,
@@ -15,7 +19,7 @@ import {
 export default function InscripcionClientePage() {
 	const [misInscripciones, setMisInscripciones] = useState([]);
 	const [clasesDisponibles, setClasesDisponibles] = useState([]);
-	const [error, setError] = useState(null);
+	const [itemParaBorrar, setItemParaBorrar] = useState(null);
 
 	const columnsMisClases = [
 		{ field: 'clase_nombre', label: 'Clase' },
@@ -53,7 +57,6 @@ export default function InscripcionClientePage() {
 	}, []);
 
 	const fetchData = async () => {
-		setError(null);
 		try {
 			const [inscripcionesData, disponiblesData] = await Promise.all([
 				getMisInscripciones(),
@@ -63,37 +66,36 @@ export default function InscripcionClientePage() {
 			setClasesDisponibles(disponiblesData);
 		} catch (err) {
 			console.error(err);
-			setError(err.message || 'Error al cargar los datos');
+			toast.error(err.message || 'Error al cargar los datos');
 		}
 	};
 
-	// --- Manejadores (siguen igual) ---
 	const handleInscribir = async (claseId) => {
-		// ... (sin cambios)
-		setError(null);
 		try {
 			await inscribirClase(claseId);
+			toast.success('¡Inscripción realizada con éxito!');
 			fetchData();
 		} catch (err) {
 			console.error(err);
-			setError(err.response?.data?.error || 'No se pudo inscribir');
+			toast.error(err.response?.data?.error || 'No se pudo inscribir');
 		}
 	};
 
 	const handleDarseDeBaja = async (idInscripcion) => {
-		// ... (sin cambios)
-		setError(null);
-		if (window.confirm('¿Seguro que deseas darte de baja de esta clase?')) {
-			try {
-				await darseDeBajaClase(idInscripcion);
-				fetchData();
-			} catch (err) {
-				console.error(err);
-				setError(err.response?.data?.error || 'No se pudo dar de baja');
-			}
-		}
+		setItemParaBorrar(idInscripcion);
 	};
 
+	const handleConfirmDelete = async () => {
+		try {
+			await darseDeBajaClase(itemParaBorrar);
+			toast.info('¡Te diste de baja exitosamente!');
+		} catch (err) {
+			console.error(err);
+			toast.error(err.response?.data?.error || 'No se pudo inscribir');
+		} finally {
+			setItemParaBorrar(null);
+		}
+	};
 
 	return (
 		<div>
@@ -101,9 +103,6 @@ export default function InscripcionClientePage() {
 				<h2>Inscripción a Clases</h2>
 			</div>
 
-			{error && <div className="clase-error-banner">{error}</div>}
-
-			{/* --- Sección 1: Mis Clases (Sin cambios) --- */}
 			<Card title="Mis Clases Inscritas">
 				<Table
 					columns={columnsMisClases}
@@ -120,12 +119,10 @@ export default function InscripcionClientePage() {
 				/>
 			</Card>
 
-			{/* --- ¡CAMBIO! Sección 2: Clases Disponibles (Ahora es una Tabla) --- */}
 			<div className={styles.header} style={{ marginTop: '2rem' }}>
 				<h2>Clases Disponibles</h2>
 			</div>
 
-			{/* Reemplazamos el 'clase-grid-container' por este Card + Table */}
 			<Card>
 				<Table
 					columns={columnsDisponibles}
@@ -145,6 +142,40 @@ export default function InscripcionClientePage() {
 					}}
 				/>
 			</Card>
+			<Modal
+				title="Confirmar Eliminación"
+				isOpen={itemParaBorrar !== null}
+				onClose={() => setItemParaBorrar(null)}
+			>
+				<div style={{ padding: '1rem' }}>
+					<p>
+						¿Estás seguro de que deseas eliminar a esta clase? Esta acción no se
+						puede deshacer.
+					</p>
+
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'flex-end',
+							gap: '1rem',
+							marginTop: '2rem',
+						}}
+					>
+						<Button
+							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							onClick={handleConfirmDelete}
+						>
+							Sí, Eliminar
+						</Button>
+						<Button
+							variant="primary" // (O un botón neutral/dorado)
+							onClick={() => setItemParaBorrar(null)}
+						>
+							Cancelar
+						</Button>
+					</div>
+				</div>
+			</Modal>
 		</div>
 	);
 }
