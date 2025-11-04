@@ -20,3 +20,8 @@ export const getReportePagosPDF = async (fechaInicio, fechaFin) => {
 		})
 	).data;
 };
+
+//HISTORIAL DE PAGOS POR EL USUARIO LOGGEADO
+export const getMiHistorialPagos = async () => {
+	return (await axiosInstance.get('/pagos/mi-historial')).data;
+};

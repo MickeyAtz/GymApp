@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import styles from './style/FormAtom.module.css';
 import Input from '../atoms/Input';
@@ -11,6 +10,7 @@ export default function FormAtom({
 	initialData = {},
 	onSubmit,
 	onCancel,
+	actionsClassName = '',
 }) {
 	const [formData, setFormData] = useState({});
 
@@ -75,7 +75,7 @@ export default function FormAtom({
 				);
 			})}
 
-			<div className={styles.actions}>
+			<div className={`${styles.actions} ${actionsClassName}`}>
 				<Button type="submit" variant="primary">
 					Guardar
 				</Button>

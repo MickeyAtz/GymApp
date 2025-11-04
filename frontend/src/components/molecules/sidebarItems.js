@@ -20,6 +20,12 @@ export const allItems = [
 		icon: 'addClass',
 		path: '/inscribir-clases',
 	},
+	{
+		id: 12,
+		label: 'Mi Perfil',
+		icon: 'user',
+		path: '/mi-perfil',
+	},
 ];
 
 export const itemsByRole = {
@@ -40,6 +46,6 @@ export const itemsByRole = {
 		['Dashboard', 'Mis Clases'].includes(i.label)
 	),
 	cliente: allItems.filter((i) =>
-		['Dashboard', 'Inscribir Clases'].includes(i.label)
+		['Dashboard', 'Inscribir Clases', 'Mi Perfil'].includes(i.label)
 	),
 };

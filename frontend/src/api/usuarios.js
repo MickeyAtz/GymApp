@@ -92,3 +92,21 @@ export const inscribirClase = async (idClase) => {
 export const darseDeBajaClase = async (idInscripcion) => {
 	return (await axiosInstance.put(`${API_URL}/baja/${idInscripcion}`)).data;
 };
+
+// GET /api/usuarios/mi-perfil
+// Obtiene los datos del perfil del cliente logueado
+export const getMiPerfil = async () => {
+	return (await axiosInstance.get(`${API_URL}/mi-perfil`)).data;
+};
+
+// PUT /api/usuarios/mi-perfil
+// Actualiza los datos del perfil del cliente logueado
+export const updateMiPerfil = async (data) => {
+	return (await axiosInstance.put(`${API_URL}/mi-perfil`, data)).data;
+};
+
+// PUT /api/usuarios/mi-password
+// Cambia la contraseña del cliente logueado
+export const changeMiPassword = async (data) => {
+	return (await axiosInstance.put(`${API_URL}/mi-password`, data)).data;
+};

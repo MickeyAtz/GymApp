@@ -1,0 +1,39 @@
+/* frontend/src/pages/styles/MiPerfilPage.module.css */
+
+.gridContainer {
+	display: grid;
+	grid-template-columns: 1fr; /* Una columna por defecto para móviles */
+	gap: 2rem;
+}
+
+.formsColumn {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+}
+
+.historyColumn {
+	display: flex; /* Para que las tablas se apilen */
+	flex-direction: column;
+	gap: 2rem; /* Espacio entre las dos tablas */
+	overflow-x: auto; /* Scroll horizontal si la tabla es muy ancha en móvil */
+}
+
+/* En pantallas más grandes, usamos dos columnas */
+@media (min-width: 992px) {
+	.gridContainer {
+		/* 1fr para formularios, 2fr para las tablas (más anchas) */
+		grid-template-columns: 1fr 2fr;
+	}
+}
+
+
+.formActions {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.formActions button {
+	width: 100%;
+}

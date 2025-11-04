@@ -14,9 +14,10 @@ import {
 	getClasesDisponibles,
 	inscribirEnClase,
 	darseDeBaja,
-	getMiperfil,
+	getMiPerfil,
 	updateMiPerfil,
-	changeMyPassword,
+	changeMiPassword,
+	
 } from '../controllers/usuariosController.js';
 
 import { verifyToken } from '../middleware/auth.js';
@@ -73,7 +74,7 @@ router.post('/register', authorizeRoles('admin', 'empleado'), createUsuario);
 
 // GET /api/usuarios/mi-perfil
 // Obtener los datos actuales y rellenar formulario
-router.get('/mi-perfil', authorizeRoles('cliente'), getMiperfil);
+router.get('/mi-perfil', authorizeRoles('cliente'), getMiPerfil);
 
 // PUT/api/usuarios/mi-perfil
 // Actualizar nombre, apellidos, telefono)
@@ -81,7 +82,7 @@ router.put('/mi-perfil', authorizeRoles('cliente'), updateMiPerfil);
 
 // PUT/api/usuarios/mi-password
 // Cambiar contraseña
-router.put('/mi-password', authorizeRoles('cliente'), changeMyPassword);
+router.put('/mi-password', authorizeRoles('cliente'), changeMiPassword);
 
 // GET /api/usuarios
 router.get('/', authorizeRoles('admin', 'empleado'), getAllUsuarios);

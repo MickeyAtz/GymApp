@@ -360,3 +360,27 @@ export const generarReportePDF = async (req, res) => {
 		res.status(500).json({ error: 'Error al generar el PDF.' });
 	}
 };
+
+// OBTENER INFORMACIÓN DE PAGOS DE CLIENTE
+export const getMiHistorialPagos = async (req, res) => {
+	const { perfil_id: usuarioId } = req.user; // <-- Obtenemos el ID del token
+
+	try {
+		// Es la misma lógica que getPagosByUsuarioId, pero usando el ID del token
+		const pagos = await pool.query(
+			`SELECT p.id AS pago_id, p.monto, p.tipo_pago, p.fecha_pago,
+				um.id AS usuario_membresia_id, um.fecha_inicio, um.fecha_fin,
+				m.id AS membresia_id, m.nombre AS membresia_nombre
+			FROM pagos p
+			JOIN usuario_membresia um ON p.usuario_membresia_id = um.id
+			JOIN membresias m ON um.membresia_id = m.id
+			WHERE um.usuario_id = $1
+			ORDER BY p.fecha_pago DESC`,
+			[usuarioId] // <-- Usamos el ID seguro del token
+		);
+		res.json(pagos.rows);
+	} catch (error) {
+		console.error('Error al obtener mi historial de pagos:', error);
+		res.status(500).json({ error: 'Error al obtener los pagos' });
+	}
+};
