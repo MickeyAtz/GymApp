@@ -58,7 +58,7 @@ export const authLogin = async (req, res) => {
 			perfilId = cuenta.instructor_id;
 
 			const { rows: instructorRows } = await pool.query(
-				`SELECT nombre, apellidos FROM instructores WHERE id = $1 AND fecha_baja IS NULL`,
+				`SELECT nombre, apellidos FROM instructores WHERE id = $1 AND fechabaja IS NULL`,
 				[perfilId]
 			);
 			if (instructorRows.length === 0) {

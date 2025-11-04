@@ -1,45 +1,21 @@
-/* src/pages/styles/VenderMembresiaPage.module.css */
-
-.ventaContainer {
-	padding: 2rem;
-	max-width: 750px;
-	margin: 0 auto; /* Lo centramos (sin margen superior) */
-	/* Usamos el fondo alternativo */
-	background-color: var(--color-bg-alt);
-	color: var(--color-text);
-	border-radius: 12px; /* Más redondeado */
-	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
-.ventaContainer h1 {
-	text-align: center;
-	margin-bottom: 2rem;
-	color: var(--color-primary);
-	font-weight: 700;
-	font-size: 1.8rem;
-	border-bottom: 1px solid var(--color-border);
-	padding-bottom: 1rem;
-}
-
-.ventaForm {
-	display: flex;
-	flex-direction: column;
-	gap: 2rem;
-}
+/* frontend/src/pages/styles/VenderMembresia.module.css */
+/* Este es un archivo NUEVO y limpio. */
 
 .formSection {
 	padding-bottom: 1.5rem;
 	border-bottom: 1px solid var(--color-border);
+	margin-bottom: 1.5rem; /* Añadimos espacio inferior */
 }
 .formSection:last-of-type {
 	border-bottom: none;
+	margin-bottom: 0;
 }
 
 .formSection h3 {
 	margin-top: 0;
 	margin-bottom: 1.2rem;
 	color: var(--color-text);
-	opacity: 0.8; /* Texto un poco más suave */
+	opacity: 0.8;
 	font-size: 1.15rem;
 	font-weight: 600;
 	border-left: 4px solid var(--color-primary);
@@ -69,12 +45,6 @@
 .searchResults li:hover {
 	background-color: #333;
 }
-.noResults {
-	color: #aaa;
-	font-style: italic;
-	margin-top: 0.5rem;
-	font-size: 0.9rem;
-}
 
 /* --- Cliente Seleccionado --- */
 .selectedClient {
@@ -90,7 +60,6 @@
 .selectedClient strong {
 	color: var(--color-primary);
 }
-/* (El botón "Cambiar" usará el Átomo Button) */
 
 /* --- Resumen de Venta --- */
 .resumenVenta {
@@ -140,23 +109,4 @@
 	margin-top: 24px;
 	display: flex;
 	justify-content: flex-end;
-}
-/* (El botón "Registrar Venta" usará el Átomo Button) */
-
-/* --- Mensajes de Error y Éxito --- */
-.errorMessage,
-.successMessage {
-	padding: 0.9rem 1.2rem;
-	border-radius: 8px;
-	margin: 0 0 1.5rem 0;
-	text-align: center;
-	font-weight: 500;
-	font-size: 0.95rem;
-	color: var(--color-text);
-}
-.errorMessage {
-	background-color: var(--color-accent); /* Rojo */
-}
-.successMessage {
-	background-color: var(--color-success); /* Verde */
 }
