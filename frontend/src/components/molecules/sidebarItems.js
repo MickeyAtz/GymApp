@@ -3,9 +3,10 @@ export const allItems = [
 	{
 		id: 2,
 		label: 'Vender Membresías',
-		icon: 'dashboard',
+		icon: 'bag',
 		path: '/vender-membresia',
 	},
+	{ id: 10, label: 'Registro de Visita', icon: 'barcode', path: '/check-in' },
 	{ id: 3, label: 'Clientes', icon: 'user', path: '/clientes' },
 	{ id: 4, label: 'Empleados', icon: 'corbata', path: '/empleados' },
 	{ id: 5, label: 'Clases', icon: 'teacher', path: '/clases' },
@@ -15,15 +16,24 @@ export const allItems = [
 	{
 		id: 9,
 		label: 'Inscribir Clases',
-		icon: 'clases',
+		icon: 'addClass',
 		path: '/inscribir-clases',
 	},
-	{ id: 10, label: 'Registro de Visita', icon: 'barcode', path: '/check-in' },
 ];
 
 export const itemsByRole = {
-	admin: allItems,
-	empleado: allItems,
+	empleado: allItems.filter((i) =>
+		[
+			'Dashboard',
+			'Registro de Visita',
+			'Vender Membresías',
+			'Clientes',
+			'Empleados',
+			'Clases',
+			'Membresías',
+			'Instructores',
+		].includes(i.label)
+	),
 	instructor: allItems.filter((i) =>
 		['Dashboard', 'Mis Clases'].includes(i.label)
 	),

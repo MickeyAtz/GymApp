@@ -13,6 +13,9 @@ import {
 	FaIdBadge,
 	FaUserTie,
 	FaChartLine,
+	FaBarcode,
+	FaPenSquare,
+	FaShoppingBag,
 } from 'react-icons/fa';
 
 export const iconMap = {
@@ -30,4 +33,7 @@ export const iconMap = {
 	empleado: FaIdBadge,
 	corbata: FaUserTie,
 	dashboard: FaChartLine,
+	barcode: FaBarcode,
+	addClass: FaPenSquare,
+	bag: FaShoppingBag,
 };

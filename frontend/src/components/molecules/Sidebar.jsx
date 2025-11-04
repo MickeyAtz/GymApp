@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { iconMap } from '../../icons/iconMap';
 import styles from './style/Sidebar.module.css';
@@ -13,7 +13,8 @@ import { toast } from 'react-toastify';
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
 	const { user, setUser } = useUser();
-	const [activeItem, setActiveItem] = React.useState(1);
+	const [activeItem, setActiveItem] = useState(1);
+	const [selectedItem, getSelectedItem] = useState(1);
 	const navigate = useNavigate();
 
 	const handleLogout = () => {

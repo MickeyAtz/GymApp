@@ -98,7 +98,7 @@ export default function VenderMembresiaPage() {
 		};
 
 		try {
-			const result = await createMembershipPayment(paymentData);
+			await createMembershipPayment(paymentData);
 			toast.success('¡Venta registrada con éxito!');
 			setSelectedClient(null);
 			setSelectedMembershipId('');
