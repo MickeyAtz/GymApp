@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import styles from './styles/DashboardPageAdmin.module.css';
+import styles from './styles/DashboardPages.module.css';
 import Card from '../components/molecules/Card';
 import CardDashboard from '../components/atoms/CardDashboard';
 import { Line, Bar } from 'react-chartjs-2';
@@ -59,10 +59,8 @@ export default function DashboardPageAdmin() {
 	}, []);
 
 	useEffect(() => {
-		console.log('Iniciando fetch: getTotalUsuarios');
 		getTotalUsuarios()
 			.then((data) => {
-				console.log('Éxito getTotalUsuarios:', data);
 				setDashboardData((prev) => ({
 					...prev,
 					totalUsuarios: data?.totalUsuarios ?? 0,
@@ -72,10 +70,8 @@ export default function DashboardPageAdmin() {
 	}, []);
 
 	useEffect(() => {
-		console.log('Iniciando fetch: getNuevosUsuarios');
 		getNuevosUsuarios()
 			.then((data) => {
-				console.log('Éxito getNuevosUsuarios:', data);
 				setDashboardData((prev) => ({
 					...prev,
 					nuevosUsuarios: {
@@ -89,10 +85,8 @@ export default function DashboardPageAdmin() {
 	}, []);
 
 	useEffect(() => {
-		console.log('Iniciando fetch: getUsuariosPorMes');
 		getUsuariosPorMes()
 			.then((data) => {
-				console.log('Éxito getUsuariosPorMes:', data);
 				setDashboardData((prev) => ({
 					...prev,
 					usuariosPorMes: {
@@ -105,10 +99,8 @@ export default function DashboardPageAdmin() {
 	}, []);
 
 	useEffect(() => {
-		console.log('Iniciando fetch: getTotalMembresiasMes');
 		getTotalMembresiasMes()
 			.then((data) => {
-				console.log('Éxito getTotalMembresiasMes:', data);
 				setDashboardData((prev) => ({
 					...prev,
 					totalMembresiasMes: {
@@ -122,10 +114,8 @@ export default function DashboardPageAdmin() {
 	}, []);
 
 	useEffect(() => {
-		console.log('Iniciando fetch: getTotalMembresiasActivas');
 		getTotalMembresiasActivas()
 			.then((data) => {
-				console.log('Éxito getTotalMembresiasActivas:', data);
 				setDashboardData((prev) => ({
 					...prev,
 					totalMembresiasActivas: data?.total ?? 0,
@@ -137,10 +127,8 @@ export default function DashboardPageAdmin() {
 	}, []);
 
 	useEffect(() => {
-		console.log('Iniciando fetch: getTotalClases');
 		getTotalClases()
 			.then((data) => {
-				console.log('Éxito getTotalClases:', data);
 				setDashboardData((prev) => ({
 					...prev,
 					totalClases: data?.total ?? 0,
@@ -150,10 +138,8 @@ export default function DashboardPageAdmin() {
 	}, []);
 
 	useEffect(() => {
-		console.log('Iniciando fetch: getInscripcionesPorClase');
 		getInscripcionesPorClase()
 			.then((data) => {
-				console.log('Éxito getInscripcionesPorClase:', data);
 				setDashboardData((prev) => ({
 					...prev,
 					inscripcionesPorClase: {
@@ -166,10 +152,8 @@ export default function DashboardPageAdmin() {
 	}, []);
 
 	useEffect(() => {
-		console.log('Iniciando fetch: getVisitasMes');
 		getVisitasMes()
 			.then((data) => {
-				console.log('Éxito getVisitasMes:', data);
 				setDashboardData((prev) => ({
 					...prev,
 					visitasMensuales: {
@@ -183,10 +167,8 @@ export default function DashboardPageAdmin() {
 	}, []);
 
 	useEffect(() => {
-		console.log('Iniciando fetch: getVisitasSemana');
 		getVisitasSemana()
 			.then((data) => {
-				console.log('Éxito getVisitasSemana:', data);
 				setDashboardData((prev) => ({
 					...prev,
 					visitasSemanales: {

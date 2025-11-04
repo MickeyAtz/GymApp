@@ -1,39 +1,36 @@
+/* src/components/molecules/style/VisitasChart.module.css */
 .chartContainer {
-	background-color: #111;
-	padding: 1rem;
-	border-radius: 1rem;
-	box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+	background-color: var(--color-bg-alt);
+	padding: 1.5rem;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
-
 .switchContainer {
 	display: flex;
 	justify-content: center;
 	gap: 1rem;
 	margin-bottom: 1rem;
 }
-
 .switchButton {
 	background-color: transparent;
-	color: white;
-	border: 2px solid #facc15;
+	color: var(--color-primary);
+	border: 2px solid var(--color-primary);
 	padding: 0.4rem 1rem;
 	border-radius: 10px;
 	cursor: pointer;
 	transition: all 0.3s;
+	font-weight: 600;
 }
-
 .switchButton:hover {
-	background-color: #facc15;
-	color: black;
+	background-color: var(--color-primary);
+	color: var(--color-bg);
 }
-
 .active {
-	background-color: #facc15;
-	color: black;
+	background-color: var(--color-primary);
+	color: var(--color-bg);
 }
-
 .loadingText {
 	text-align: center;
-	color: white;
+	color: var(--color-text);
 	margin-top: 1rem;
 }

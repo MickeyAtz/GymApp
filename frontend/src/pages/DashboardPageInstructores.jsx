@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useUser } from '../context/UserContext';
-import styles from './styles/DashboardPageAdmin.module.css';
+import styles from './styles/DashboardPages.module.css';
 import CardDashboard from '../components/atoms/CardDashboard';
-import Loading from '../components/atoms/Loading';
 import Card from '../components/molecules/Card.jsx';
 
 import {
@@ -29,23 +28,17 @@ export default function DashboardPageInstructor() {
 		clasesHoy: 0,
 	});
 
-	// State for the popularity chart
 	const [popularidadData, setPopularidadData] = useState({
 		labels: [],
 		datasets: [],
 	});
 
-	// General loading and error state
-	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
-	// --- Data Loading ---
 	useEffect(() => {
 		const fetchInstructorData = async () => {
-			setLoading(true);
 			setError(null);
 			try {
-				// 1. Fetch next class, total classes today, and popularity in parallel
 				const [proximaClaseResult, totalClasesHoyResult, popularidadResult] =
 					await Promise.allSettled([
 						getProximaClaseInstructor(),
@@ -129,8 +122,6 @@ export default function DashboardPageInstructor() {
 			} catch (error) {
 				console.error('Fatal error loading instructor dashboard data:', error);
 				setError('Could not load all dashboard data.');
-			} finally {
-				setLoading(false);
 			}
 		};
 
@@ -144,10 +135,9 @@ export default function DashboardPageInstructor() {
 				<p>Este es tu resumen de clases.</p>
 			</div>
 
-			{loading && <Loading />}
 			{error && <p style={{ color: 'red' }}>{error}</p>}
 
-			{!loading && !error && (
+			{!error && (
 				<>
 					<div className={styles.resumenGrid}>
 						<CardDashboard
@@ -167,7 +157,6 @@ export default function DashboardPageInstructor() {
 						/>
 					</div>
 
-					{/* --- Chart --- */}
 					<div className={styles.chartsGrid}>
 						<Card>
 							<h3>Popularidad de Clases (Inscritos este Mes)</h3>

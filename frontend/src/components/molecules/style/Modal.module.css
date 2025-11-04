@@ -1,4 +1,4 @@
-@import '../../../styles/variables.css';
+/* src/components/molecules/style/Modal.module.css */
 
 .overlay {
 	position: fixed;
@@ -6,7 +6,9 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0);
+	/* Fondo de overlay más oscuro para mejor contraste */
+	background-color: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(4px); /* Efecto desenfocado */
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -15,30 +17,26 @@
 	visibility: hidden;
 	transition:
 		opacity 0.3s ease,
-		background-color 0.3s ease,
 		visibility 0.3s;
 }
 
 .overlay.show {
 	opacity: 1;
 	visibility: visible;
-	background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal {
-	background-color: var(--color-bg);
+	/* Usa el fondo alternativo para contrastar */
+	background-color: var(--color-bg-alt);
 	color: var(--color-text);
-	padding: 20px;
-	border-radius: 10px;
+	padding: 2.5rem; /* Más padding */
+	border-radius: 12px;
 	max-width: 500px;
 	width: 90%;
 	position: relative;
 	transform: translateY(-20px);
 	opacity: 0;
-	display: flex;
-	box-sizing: border-box;
-	flex-direction: column;
-	align-items: center;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 	transition:
 		transform 0.3s ease,
 		opacity 0.3s ease;
@@ -51,14 +49,15 @@
 
 .closeBtn {
 	position: absolute;
-	top: 10px;
-	right: 10px;
+	top: 15px;
+	right: 15px;
 	width: 30px;
 	height: 30px;
-	border-radius: 50%; /* Hace el botón redondo */
+	border-radius: 50%;
 	border: none;
+	/* Usa tu color de acento (rojo) */
 	background-color: var(--color-accent);
-	color: #fff;
+	color: var(--color-text);
 	font-weight: bold;
 	cursor: pointer;
 	display: flex;
@@ -66,10 +65,10 @@
 	align-items: center;
 	transition:
 		transform 0.2s ease,
-		background-color 0.2s ease;
+		opacity 0.2s ease;
 }
 
 .closeBtn:hover {
-	background-color: #e63946cc; /* Color ligeramente más oscuro al pasar el mouse */
+	opacity: 0.8;
 	transform: scale(1.1);
 }

@@ -1,23 +1,19 @@
-@import '../../../styles/variables.css';
-
+/* src/components/atoms/style/ListItem.module.css */
 .item {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 0.5rem 1rem;
-	background-color: var(--color-bg);
-	border: 1px solid var(--color-primary);
+	padding: 0.75rem 1rem;
+	background-color: var(--color-bg-alt); /* Fondo alternativo */
+	border: 1px solid var(--color-border);
 	border-radius: 0.5rem;
 }
-
 .content {
 	flex: 1;
 }
-
 .badge {
 	margin-left: 0.5rem;
 }
-
 .actions {
 	display: flex;
 	gap: 0.5rem;

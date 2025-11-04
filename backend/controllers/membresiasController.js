@@ -1,4 +1,3 @@
-
 import pool from '../db.js';
 
 //Creación de la membresia
@@ -61,5 +60,21 @@ export const deleteMembresia = async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Error al eliminar la membresía' });
+	}
+};
+
+export const getActiveMembresias = async (req, res) => {
+	try {
+		const membresias = await pool.query(`
+				SELECT * FROM membresias
+				WHERE fecha_baja IS NULL 
+					AND activo = true
+				ORDER BY nombre ASC
+				LIMIT 20
+			`);
+		res.json(membresias.rows);
+	} catch (error) {
+		console.error('Error al obtener las membresías activas.', error);
+		res.status(500).json({ message: 'Error al consultar membresias activas.' });
 	}
 };

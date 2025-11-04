@@ -1,4 +1,3 @@
-
 import pool from '../db.js';
 
 // Crear clase
@@ -24,7 +23,7 @@ export const createClase = async (req, res) => {
 
 // Obtener todas las clases activas
 export const getAllClases = async (req, res) => {
-	try { 
+	try {
 		const clases = await pool.query(
 			`SELECT c.*, i.nombre AS instructor 
              FROM clases c
@@ -110,3 +109,4 @@ export const deleteClase = async (req, res) => {
 		res.status(500).json({ error: 'Error al eliminar la clase' });
 	}
 };
+

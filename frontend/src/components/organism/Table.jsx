@@ -6,7 +6,7 @@ export default function Table({
 	data = [],
 	renderCell,
 	renderActions,
-	rowsPerPage = 5,
+	rowsPerPage = 6,
 }) {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -83,7 +83,7 @@ export default function Table({
 				</thead>
 
 				<tbody>
-					{paginatedData.map((row) => (
+					{paginatedData.map((row, index) => (
 						<tr key={row.id}>
 							{columns.map((col) => (
 								<td key={col.field}>

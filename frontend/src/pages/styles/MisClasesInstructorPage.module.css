@@ -1,0 +1,34 @@
+/* pages/styles/CRUDPages.module.css */
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem 0;
+	margin-bottom: 1.5rem;
+	border-bottom: 2px solid #eee;
+}
+
+.header h2 {
+	margin: 0;
+	font-size: 1.75rem;
+	color: #333;
+}
+
+/* Estilo para el botón principal de "Agregar" */
+.addBtn {
+	/* Aquí puedes usar tus variables de color si tienes */
+	background-color: #007bff;
+	color: white;
+	border: none;
+	padding: 0.75rem 1.25rem;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.addBtn:hover {
+	background-color: #0056b3;
+}

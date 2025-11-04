@@ -1,4 +1,3 @@
-
 import express from 'express';
 
 import {
@@ -9,24 +8,23 @@ import {
 	getPagosByUsuarioIdAndFecha,
 } from '../controllers/pagosController.js';
 import { verifyToken } from '../middleware/auth.js';
+import { authorizeRoles } from '../middleware/checkRole.js';
 
 const router = express.Router();
 
+router.use(verifyToken);
+router.use(authorizeRoles('empleado'));
 // localhost/api/pagos
 //-------------------------CRUD-----------------------------
-router.post('/', verifyToken, createPago); //Creación del pago
-router.get('/usuario/:usuario_id', verifyToken, getPagosByUsuarioId);
-router.get('/', verifyToken, getAllPagos); //Obtener todos los pagos
-// //Obtención de pagos por rango de fechas
+router.post('/', createPago); //Creación del pago
+router.get('/usuario/:usuario_id', getPagosByUsuarioId);
+router.get('/', getAllPagos); //Obtener todos los pagos
 router.get(
 	'/fecha_inicio/:fecha_inicio/fecha_fin/:fecha_fin',
-	verifyToken,
 	getAllPagosByFecha
 );
-//Obtención de pagos por ID de usuario y rango de fechas
 router.get(
 	'/usuario/:usuario_id/fecha_inicio/:fecha_inicio/fecha_fin/:fecha_fin',
-	verifyToken,
 	getPagosByUsuarioIdAndFecha
 );
 

@@ -1,6 +1,114 @@
+/* frontend/src/styles/index.css */
+
+/* * PASO 1: Definimos tu paleta de colores.
+ * (Movemos el contenido de variables.css aquí)
+*/
+:root {
+	--color-bg: #121212;
+	--color-bg-alt: #1e1e1e; /* Un gris un poco más claro para 'Cards' */
+	--color-text: #f5f5f5;
+	--color-primary: #ffd700; /* Dorado (Principal) */
+	--color-accent: #e63946; /* Rojo (Error/Acento) */
+	--color-tertiary: #ff9800; /* Naranja (Advertencia/Salida) */
+	--color-success: #2a9d8f; /* Un verde azulado para Éxito */
+
+	/* Colores neutrales para bordes e inputs */
+	--color-border: #333;
+	--color-input-bg: #222;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box; /* Una mejor práctica para manejar anchos y padding */
+}
+
 body {
 	margin: 0;
 	min-height: 100vh;
-	background-color: #2e2e2e; /* gris oscuro */
-	color: #f5f5f5; /* texto claro */
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+		Arial, sans-serif;
+
+	/* ¡Usamos tus variables! */
+	background-color: var(--color-bg);
+	color: var(--color-text);
+
+	/* Suavizado de fuentes */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* * PASO 3: Estilos de tipografía globales.
+ * Todos los h1, h2, etc., usarán tu paleta.
+*/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0 0 1rem 0;
+	/* Los títulos por defecto usan el color primario (dorado) */
+	color: var(--color-primary);
+	font-weight: 600;
+}
+
+p {
+	margin: 0 0 1rem 0;
+}
+
+a {
+	color: var(--color-primary);
+	text-decoration: none;
+}
+
+/*
+ * =========================================
+ * Estilos Globales del Scrollbar
+ * =========================================
+ */
+
+/* --- 1. Para Firefox --- */
+/* (Firefox no soporta degradados en el scrollbar, 
+   así que le damos un color sólido) */
+html {
+	scrollbar-width: thin; /* "thin", "auto", o "none" */
+
+	/* (Color del "thumb", Color del "track") */
+	scrollbar-color: var(--color-primary) var(--color-bg-alt);
+}
+
+/* --- 2. Para Chrome, Edge, Safari (WebKit) --- */
+
+/* Define el ancho del scrollbar */
+::-webkit-scrollbar {
+	width: 12px;
+}
+
+/* Este es el fondo o "riel" (la parte que no se mueve) */
+::-webkit-scrollbar-track {
+	/* Lo ponemos del color de fondo de las 'Cards' */
+	background: var(--color-bg-alt);
+	border-radius: 10px;
+}
+
+/* Esta es la "barrita" (la que se mueve) */
+::-webkit-scrollbar-thumb {
+	/* ¡Aquí está tu degradado vertical! */
+	background-image: linear-gradient(
+		to bottom,
+		var(--color-primary),
+		/* Dorado arriba */ var(--color-tertiary) /* Naranja abajo */
+	);
+
+	border-radius: 10px; /* Bordes redondeados */
+
+	/* Un pequeño borde para que la barra "flote" sobre el riel */
+	border: 2px solid var(--color-bg-alt);
+}
+
+/* (Opcional) El 'thumb' al pasar el mouse sobre él */
+::-webkit-scrollbar-thumb:hover {
+	opacity: 0.9;
 }

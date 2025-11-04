@@ -1,19 +1,18 @@
-@import '../../styles/variables.css';
+/* src/pages/styles/CRUDPages.module.css */
+/* Este archivo reemplaza a MisClasesInstructorPage.module.css también */
 
 .header {
 	display: flex;
-	align-items: center; /* Alinea verticalmente */
-	justify-content: space-between; /* Empuja el botón a la derecha */
-	margin-bottom: 20px;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+	padding-bottom: 1rem;
+	/* Usamos el borde de nuestro index.css */
+	border-bottom: 1px solid var(--color-border);
 }
 
-.addBtn {
-	padding: 8px 16px;
-	background-color: #007bff;
-	color: white;
-	border: none;
-	border-radius: 8px;
-	cursor: pointer;
-	transition: background 0.2s;
+/* El título h2 ya hereda el color dorado (--color-primary) de index.css */
+.header h2 {
+	margin: 0;
+	font-size: 1.75rem;
 }
-

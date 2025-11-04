@@ -10,6 +10,7 @@ export default function Input({
 	onChange,
 	name,
 	variant = 'primary',
+	autoComplete,
 }) {
 	return (
 		<div className={styles.inputContainer}>
@@ -25,6 +26,7 @@ export default function Input({
 				value={value}
 				onChange={onChange}
 				className={`${styles.customInput} ${styles[variant]}`}
+				autoComplete={autoComplete}
 			/>
 		</div>
 	);

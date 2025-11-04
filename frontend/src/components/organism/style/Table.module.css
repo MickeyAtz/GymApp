@@ -1,66 +1,114 @@
+/* src/components/organism/style/Table.module.css */
+
 .tableWrapper {
 	width: 100%;
 	overflow-x: auto;
+
+	/* Le damos el fondo de 'Card' para que envuelva la tabla */
+	background-color: var(--color-bg-alt);
+	border: 1px solid var(--color-border);
+	border-radius: 12px;
+	padding: 1rem;
 }
 
 .table {
 	width: 100%;
 	border-collapse: collapse;
-	background-color: #121212; /* fondo negro de la tabla */
-	color: #f5f5f5; /* texto blanco */
+	background-color: var(--color-bg-alt);
+	color: var(--color-text);
+	/* Quitamos el borde de la tabla, lo pondremos en las celdas */
 }
 
 .table th,
 .table td {
-	padding: 10px;
-	border: 1px solid #333;
+	padding: 12px 15px; /* Más padding */
+	border-bottom: 1px solid var(--color-border); /* Solo borde inferior */
 	text-align: left;
 }
 
 .table th {
-	background-color: #1f1f1f; /* header un poco más oscuro */
+	/* Fondo más oscuro para el header, texto dorado */
+	background-color: var(--color-bg);
+	color: var(--color-primary);
 	cursor: pointer;
+	font-size: 0.9rem;
+	text-transform: uppercase;
 }
 
-.table tbody tr:nth-child(even) {
-	background-color: #1a1a1a;
+/* Quitamos el 'striped' (nth-child) y lo reemplazamos por un hover */
+.table tbody tr:hover {
+	background-color: var(--color-border);
 }
 
+/* --- Search Input --- */
+/* Hacemos que se vea EXACTAMENTE igual a tu Átomo Input */
 .searchInput {
-	margin-bottom: 10px;
-	padding: 8px;
+	margin-bottom: 1rem;
+	padding: 0.75rem 1rem;
 	width: 100%;
-	border-radius: 5px;
-	border: 1px solid #555;
-	background-color: #1f1f1f;
-	color: #f5f5f5;
+	max-width: 400px; /* Le damos un ancho máximo */
+	border: 2px solid var(--color-border);
+	border-radius: 8px;
+	background-color: var(--color-input-bg);
+	color: var(--color-text);
+	font-size: 1rem;
+	outline: none;
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease;
+}
+.searchInput:focus {
+	border-color: var(--color-primary);
+	box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
+/* --- Paginación --- */
 .pagination {
-	margin-top: 10px;
+	margin-top: 1rem;
 	display: flex;
 	justify-content: center;
-	gap: 10px;
+	align-items: center;
+	gap: 0.5rem;
 }
 
+/* Hacemos que se vea EXACTAMENTE igual a tu Átomo Button */
 .pagination button {
-	padding: 5px 10px;
+	font-weight: 600;
 	border: none;
-	border-radius: 5px;
-	background-color: #ffd700; /* amarillo */
-	color: #000;
+	border-radius: 8px;
 	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+	padding: 8px 16px; /* Tamaño Medium */
+	font-size: 1rem;
+
+	/* Estilo Primario */
+	background-color: var(--color-primary);
+	color: var(--color-bg);
+}
+
+.pagination button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
 }
 
 .pagination button:disabled {
-	opacity: 0.5;
+	background-color: var(--color-border);
+	color: #666;
 	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
 }
 
-.actionButton {
-	margin-right: 5px; /* separa cada botón */
+.pagination span {
+	font-weight: 600;
+	color: var(--color-text);
 }
 
-.actionButton:last-child {
-	margin-right: 0; /* elimina margen del último botón */
+/* --- Contenedor de Acciones --- */
+.actionsCell {
+	display: flex;
+	gap: 0.5rem;
 }
+
+/* (Tu componente Table.js debe usar los Átomos Button
+   para los botones de 'Editar' y 'Eliminar') */

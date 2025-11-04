@@ -1,3 +1,25 @@
+/* src/components/organism/style/Sidebar.module.css */
+
+.sidebar {
+	/* Fondo alternativo */
+	background-color: var(--color-bg-alt);
+	color: var(--color-text);
+	display: flex;
+	flex-direction: column;
+	transition: width 0.3s;
+	overflow-x: hidden;
+	height: 100vh;
+	flex-shrink: 0;
+	border-right: 1px solid var(--color-border); /* Borde sutil */
+}
+
+.sidebar.open {
+	width: 250px;
+}
+.sidebar.closed {
+	width: 80px; /* Un poco más angosto */
+}
+
 .topSection {
 	display: flex;
 	flex-direction: column;
@@ -13,82 +35,75 @@
 	gap: 10px;
 	flex-shrink: 0;
 }
-
 .logo {
 	width: 40px;
 	height: 40px;
 	object-fit: contain;
 	border-radius: 15%;
 }
-
 .logoText {
 	font-size: 1.2rem;
 	font-weight: bold;
 	white-space: nowrap;
+	color: var(--color-primary);
 }
 
 .toggleBtn {
 	width: 100%;
 	height: 40px;
-	background-color: #ffd700;
+	background-color: var(--color-primary);
+	color: var(--color-bg);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
-	transition: background 0.2s;
-	border-bottom: 1px solid #e0c000;
+	border: none;
+	transition: background-color 0.2s;
 	margin-bottom: 1rem;
 }
-
 .toggleBtn:hover {
-	background-color: #ffea00;
+	opacity: 0.8;
 }
 
 .items {
 	margin-top: 20px;
 	display: flex;
 	flex-direction: column;
-	align-items: center; /* centra los íconos cuando cerrado */
+	align-items: center;
 	overflow-y: auto;
-	overflow-x: hidden;
 	flex-grow: 1;
 	width: 100%;
+	padding: 0 0.5rem; /* Padding lateral */
 }
 
 .item {
 	display: flex;
 	align-items: center;
-	justify-content: center; /* centra contenido cerrado */
-	padding: 10px 0;
+	justify-content: center;
+	padding: 12px;
 	width: 100%;
 	cursor: pointer;
-	transition:
-		gap 0.3s,
-		background 0.2s,
-		color 0.2s,
-		justify-content 0.3s;
+	border-radius: 8px; /* Bordes redondeados */
+	transition: all 0.3s;
 }
-
 .sidebar.open .item {
-	justify-content: flex-start; /* icono a la izquierda abierto */
+	justify-content: flex-start;
 	padding-left: 20px;
-	gap: 12px; /* espacio entre icono y label */
+	gap: 12px;
 }
-
 .item:hover {
-	background-color: #1f1f1f;
+	background-color: var(--color-border); /* Fondo gris al pasar el mouse */
 }
-
 .active {
-	background-color: #ffd70033;
-	color: #ffd700;
+	/* El item activo tiene fondo y texto dorado */
+	background-color: rgba(255, 215, 0, 0.1); /* Fondo dorado traslúcido */
+	color: var(--color-primary);
 }
 
 .icon {
 	font-size: 1.5rem;
 	flex-shrink: 0;
 }
-
 .label {
 	white-space: nowrap;
 	transition:
@@ -96,27 +111,19 @@
 		transform 0.3s;
 	opacity: 1;
 }
-
 .sidebar.closed .label {
-	display: none; /* oculta labels cerrada */
+	display: none;
 }
-
 a {
 	text-decoration: none;
 	color: inherit;
 }
 
 .logoutContainer {
-	margin-top: auto; /* empuja al final */
+	margin-top: auto;
 	width: 100%;
-	display: flex;
-	justify-content: center; /* centra logout cerrado */
+	padding: 0 0.5rem 1rem 0.5rem; /* Padding para el botón */
 }
-
-.sidebar.open .logoutContainer {
-	justify-content: flex-start; /* alinea a la izquierda abierto */
-}
-
 .logoutBtn {
 	display: flex;
 	align-items: center;
@@ -124,19 +131,19 @@ a {
 	width: 100%;
 	background: none;
 	border: none;
-	color: white;
+	color: var(--color-text);
 	cursor: pointer;
-	padding: 10px 15px;
-	text-align: left;
-	justify-content: center; /* centra contenido cerrado */
+	padding: 12px;
+	border-radius: 8px;
+	justify-content: center;
 }
-
 .sidebar.open .logoutBtn {
-	justify-content: flex-start; /* alinea a la izquierda abierto */
+	justify-content: flex-start;
+	padding-left: 20px;
 }
-
 .logoutBtn:hover {
-	background-color: rgba(255, 255, 255, 0.1);
+	background-color: var(--color-accent); /* Fondo rojo al pasar el mouse */
+	color: var(--color-text);
 }
 
 .userInfo {
@@ -147,7 +154,6 @@ a {
 	gap: 0.3rem;
 	overflow: hidden;
 }
-
 .username {
 	font-weight: 600;
 	white-space: nowrap;
@@ -155,32 +161,9 @@ a {
 		transform 0.3s ease,
 		opacity 0.3s ease;
 	opacity: 1;
-	min-height: 1.2rem; /* reserva espacio */
+	min-height: 1.2rem;
 }
-
 .sidebar.closed .username {
 	transform: translateX(-20px);
 	opacity: 0;
-}
-
-.sidebar {
-	background-color: #222;
-	color: #fff;
-	display: flex;
-	flex-direction: column;
-	transition: width 0.3s;
-	overflow-x: hidden;
-	overflow-y: hidden;
-	border-top-right-radius: 5px;
-	border-bottom-right-radius: 5px;
-	flex-shrink: 0; /* importante para flexbox */
-	height: 100vh;
-}
-
-.sidebar.open {
-	width: 250px;
-}
-
-.sidebar.closed {
-	width: 100px;
 }

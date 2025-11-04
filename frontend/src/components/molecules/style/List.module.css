@@ -1,5 +1,4 @@
-@import '../../../styles/variables.css';
-
+/* src/components/molecules/style/List.module.css */
 .list {
 	list-style: none;
 	padding: 0;
@@ -8,12 +7,11 @@
 	flex-direction: column;
 	gap: 0.5rem;
 }
-
 .badge {
 	margin-left: 0.5rem;
 	padding: 0.15rem 0.4rem;
 	background-color: var(--color-primary);
-	color: var(--color-text);
+	color: var(--color-bg); /* Texto oscuro */
 	border-radius: 0.25rem;
 	font-size: 0.75rem;
 }

@@ -6,6 +6,8 @@ import Button from '../components/atoms/Button';
 import Card from '../components/molecules/Card';
 import Table from '../components/organism/Table';
 
+import { toast } from 'react-toastify';
+
 import styles from './styles/CRUDPages.module.css';
 
 import {
@@ -24,6 +26,7 @@ export default function EmpleadosPage() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalTitle, setModalTitle] = useState('');
 	const [editData, setEditData] = useState(null);
+	const [itemParaBorrar, setItemParaBorrar] = useState(null);
 
 	useEffect(() => {
 		document.title = 'Gym App - Empleados';
@@ -115,35 +118,60 @@ export default function EmpleadosPage() {
 	};
 
 	const handleSubmit = async (formData) => {
-		if (modalTitle === 'Cambiar contraseña') {
-			if (formData.password !== formData.confirmPassword) {
-				alert('Las contraseñas no coinciden');
-				return;
+		try {
+			if (modalTitle === 'Cambiar contraseña') {
+				if (formData.password !== formData.confirmPassword) {
+					alert('Las contraseñas no coinciden');
+					return;
+				}
+				await updatePassword(editData.empleado_id, {
+					password: formData.password,
+				});
+				toast.success('¡Contraseña actualizada con éxito!');
+			} else if (editData) {
+				await updateEmpleado(editData.empleado_id, formData);
+				toast.succes('¡Empleado actualizado con éxito!');
+			} else {
+				await createEmpleado(formData);
+				toast.succes('¡Empleado creado con éxito!');
 			}
-			await updatePassword(editData.id, { password: formData.password });
-		} else if (editData) {
-			await updateEmpleado(editData.id, formData);
-		} else {
-			await createEmpleado(formData);
+			setIsModalOpen(false);
+			setEditData(null);
+			fetchEmpleados();
+		} catch (err) {
+			console.error(err);
+			toast.error(
+				err.response?.data?.error || 'No se pudo guardar el empleado.'
+			);
 		}
-		setIsModalOpen(false);
-		setEditData(null);
-		fetchEmpleados();
 	};
 
 	const handleEdit = (empleado) => {
 		setModalTitle('Editar Empleado');
 		setEditData({
 			...empleado,
-			rol: empleado.role_id,
+			rol: empleado.rol,
 		});
 		setIsModalOpen(true);
 	};
 
 	const handleDelete = async (id) => {
-		if (window.confirm('¿Seguro que deseas eliminar este cliente?')) {
+		setItemParaBorrar(id);
+	};
+
+	const handleConfirmDelete = async () => {
+		if (!itemParaBorrar) return;
+		try {
 			await deleteEmpleado(id);
+			toast.info('Empleado eliminado correctamente.');
 			fetchEmpleados();
+		} catch (err) {
+			console.error(err);
+			toast.error(
+				err.response?.data?.error || 'No se pudo eliminar el empleado.'
+			);
+		} finally {
+			setItemParaBorrar(null);
 		}
 	};
 
@@ -184,7 +212,7 @@ export default function EmpleadosPage() {
 								Editar
 							</Button>
 							<Button
-								onClick={() => handleDelete(empleado.id)}
+								onClick={() => handleDelete(empleado.empleado_id)}
 								variant="secondary"
 								size="small"
 							>
@@ -231,6 +259,41 @@ export default function EmpleadosPage() {
 						setEditData(null);
 					}}
 				></FormAtom>
+			</Modal>
+
+			<Modal
+				title="Confirmar Eliminación"
+				isOpen={itemParaBorrar !== null} // Se abre si 'itemParaBorrar' no es null
+				onClose={() => setItemParaBorrar(null)} // Se cierra al cancelar
+			>
+				<div style={{ padding: '1rem' }}>
+					<p>
+						¿Estás seguro de que deseas eliminar a este empleado? Esta acción no
+						se puede deshacer.
+					</p>
+
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'flex-end',
+							gap: '1rem',
+							marginTop: '2rem',
+						}}
+					>
+						<Button
+							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							onClick={handleConfirmDelete}
+						>
+							Sí, Eliminar
+						</Button>
+						<Button
+							variant="primary" // (O un botón neutral/dorado)
+							onClick={() => setItemParaBorrar(null)}
+						>
+							Cancelar
+						</Button>
+					</div>
+				</div>
 			</Modal>
 		</div>
 	);
