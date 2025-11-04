@@ -6,6 +6,7 @@ export const allItems = [
 		icon: 'bag',
 		path: '/vender-membresia',
 	},
+	{ id: 11, label: 'Reportes', icon: 'money', path: '/reportes' },
 	{ id: 10, label: 'Registro de Visita', icon: 'barcode', path: '/check-in' },
 	{ id: 3, label: 'Clientes', icon: 'user', path: '/clientes' },
 	{ id: 4, label: 'Empleados', icon: 'corbata', path: '/empleados' },
@@ -19,6 +20,12 @@ export const allItems = [
 		icon: 'addClass',
 		path: '/inscribir-clases',
 	},
+	{
+		id: 12,
+		label: 'Mi Perfil',
+		icon: 'user',
+		path: '/mi-perfil',
+	},
 ];
 
 export const itemsByRole = {
@@ -27,6 +34,7 @@ export const itemsByRole = {
 			'Dashboard',
 			'Registro de Visita',
 			'Vender Membresías',
+			'Reportes',
 			'Clientes',
 			'Empleados',
 			'Clases',
@@ -38,6 +46,6 @@ export const itemsByRole = {
 		['Dashboard', 'Mis Clases'].includes(i.label)
 	),
 	cliente: allItems.filter((i) =>
-		['Dashboard', 'Inscribir Clases'].includes(i.label)
+		['Dashboard', 'Inscribir Clases', 'Mi Perfil'].includes(i.label)
 	),
 };

@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 
 export const getRoles = async () => {
-	const response = await axios.get('http://localhost:3000/api/roles');
+	const response = await axiosInstance.get('/roles');
 	return response.data;
 };

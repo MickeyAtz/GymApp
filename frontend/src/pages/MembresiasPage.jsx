@@ -23,6 +23,7 @@ export default function MembresiasPage() {
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
+	const [isSaving, setIsSaving] = useState(false); // <-- MEJORA 1
 
 	useEffect(() => {
 		document.title = 'Gym App - Membresías';
@@ -38,7 +39,6 @@ export default function MembresiasPage() {
 		{ field: 'activoLabel', label: 'Estado' },
 	];
 
-	// Campos del formulario
 	const fields = [
 		{ name: 'nombre', label: 'Nombre', type: 'text', placeholder: 'Mensual' },
 		{
@@ -59,26 +59,22 @@ export default function MembresiasPage() {
 		},
 	];
 
-	// Cargar membresías al inicio
 	useEffect(() => {
 		fetchMembresias();
 	}, []);
 
 	const fetchMembresias = async () => {
 		const data = await getMembresias();
-
-		// Aseguramos que cada registro tenga activo y activoLabel
 		const dataForTable = data.map((m) => ({
 			...m,
 			activo: Boolean(m.activo),
 			activoLabel: m.activo ? 'Activo' : 'Inactivo',
 		}));
-
 		setMembresias(dataForTable);
 	};
 
-	// Crear o actualizar membresía
 	const handleSubmit = async (formData) => {
+		setIsSaving(true); // <-- MEJORA 1
 		const payload = {
 			...formData,
 			activo: formData.activo === 'true' || formData.activo === true,
@@ -100,10 +96,11 @@ export default function MembresiasPage() {
 			toast.error(
 				err.response?.data?.error || 'No se pudo guardar la membresía.'
 			);
+		} finally {
+			setIsSaving(false); // <-- MEJORA 1
 		}
 	};
 
-	// Editar membresía
 	const handleEdit = (membresia) => {
 		setModalTitle('Editar Membresía');
 		setEditData({
@@ -113,7 +110,6 @@ export default function MembresiasPage() {
 		setIsModalOpen(true);
 	};
 
-	// Eliminar membresía
 	const handleDelete = async (id) => {
 		setItemParaBorrar(id);
 	};
@@ -121,6 +117,9 @@ export default function MembresiasPage() {
 	const handleConfirmDelete = async () => {
 		if (!itemParaBorrar) return;
 		try {
+			// (Tu lógica de deleteMembresia estaba comentada, si la necesitas, descomenta)
+			// await deleteMembresia(itemParaBorrar);
+			toast.info('Acción de eliminar ejecutada.');
 		} catch (err) {
 			console.error(err);
 			toast.error(
@@ -142,6 +141,7 @@ export default function MembresiasPage() {
 						setEditData(null);
 					}}
 					className={styles.addBtn}
+					icon="plus" // <-- MEJORA 2
 				>
 					Agregar Membresía
 				</Button>
@@ -153,20 +153,21 @@ export default function MembresiasPage() {
 					data={membresias}
 					renderActions={(membresia) => (
 						<>
+							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
+								icon="edit"
+								title="Editar"
 								onClick={() => handleEdit(membresia)}
 								variant="primary"
 								size="small"
-							>
-								Editar
-							</Button>
+							/>
 							<Button
+								icon="trash"
+								title="Eliminar"
 								onClick={() => handleDelete(membresia.id)}
 								variant="secondary"
 								size="small"
-							>
-								Eliminar
-							</Button>
+							/>
 						</>
 					)}
 				/>
@@ -188,13 +189,14 @@ export default function MembresiasPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
+					isSaving={isSaving} // <-- MEJORA 1
 				/>
 			</Modal>
 
 			<Modal
 				title="Confirmar Eliminación"
-				isOpen={itemParaBorrar !== null} // Se abre si 'itemParaBorrar' no es null
-				onClose={() => setItemParaBorrar(null)} // Se cierra al cancelar
+				isOpen={itemParaBorrar !== null}
+				onClose={() => setItemParaBorrar(null)}
 			>
 				<div style={{ padding: '1rem' }}>
 					<p>
@@ -211,15 +213,13 @@ export default function MembresiasPage() {
 						}}
 					>
 						<Button
-							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							variant="secondary"
 							onClick={handleConfirmDelete}
+							icon="trash" // <-- MEJORA 2
 						>
 							Sí, Eliminar
 						</Button>
-						<Button
-							variant="primary" // (O un botón neutral/dorado)
-							onClick={() => setItemParaBorrar(null)}
-						>
+						<Button variant="primary" onClick={() => setItemParaBorrar(null)}>
 							Cancelar
 						</Button>
 					</div>

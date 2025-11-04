@@ -24,6 +24,7 @@ export default function InstructoresPage() {
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
+	const [isSaving, setIsSaving] = useState(false); // <-- MEJORA 1
 
 	useEffect(() => {
 		document.title = 'Gym App - Instructores';
@@ -104,10 +105,11 @@ export default function InstructoresPage() {
 	};
 
 	const handleSubmit = async (formData) => {
+		setIsSaving(true); // <-- MEJORA 1
 		try {
 			if (modalTitle === 'Cambiar contraseña') {
 				if (formData.password !== formData.confirmPassword) {
-					alert('Las contraseñas no coinciden');
+					toast.error('Las contraseñas no coinciden');
 					return;
 				}
 				await updatePassword(editData.instructor_id, {
@@ -130,6 +132,8 @@ export default function InstructoresPage() {
 			toast.error(
 				err.response?.data?.error || 'No se pudo guardar el instructor.'
 			);
+		} finally {
+			setIsSaving(false); // <-- MEJORA 1
 		}
 	};
 
@@ -179,6 +183,7 @@ export default function InstructoresPage() {
 						setIsModalOpen(true)
 					)}
 					clasName={styles.addBtn}
+					icon="plus" // <-- MEJORA 2
 				>
 					Agregar Instructor
 				</Button>
@@ -190,24 +195,26 @@ export default function InstructoresPage() {
 					data={instructores}
 					renderActions={(instructor) => (
 						<>
+							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
+								icon="edit"
+								title="Editar"
 								onClick={() => handleEdit(instructor)}
 								variant="primary"
 								size="small"
-							>
-								Editar
-							</Button>
+							/>
 							<Button
+								icon="trash"
+								title="Eliminar"
 								onClick={() => handleDelete(instructor.instructor_id)}
 								variant="secondary"
 								size="small"
-							>
-								Eliminar
-							</Button>
+							/>
 							<Button
 								onClick={() => handlePasswordChange(instructor)}
 								variant="tertiary"
 								size="small"
+								title="Cambiar contraseña"
 							>
 								Cambiar contraseña
 							</Button>
@@ -238,12 +245,13 @@ export default function InstructoresPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
+					isSaving={isSaving} // <-- MEJORA 1
 				></FormAtom>
 			</Modal>
 			<Modal
 				title="Confirmar Eliminación"
-				isOpen={itemParaBorrar !== null} // Se abre si 'itemParaBorrar' no es null
-				onClose={() => setItemParaBorrar(null)} // Se cierra al cancelar
+				isOpen={itemParaBorrar !== null}
+				onClose={() => setItemParaBorrar(null)}
 			>
 				<div style={{ padding: '1rem' }}>
 					<p>
@@ -260,15 +268,13 @@ export default function InstructoresPage() {
 						}}
 					>
 						<Button
-							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							variant="secondary"
 							onClick={handleConfirmDelete}
+							icon="trash" // <-- MEJORA 2
 						>
 							Sí, Eliminar
 						</Button>
-						<Button
-							variant="primary" // (O un botón neutral/dorado)
-							onClick={() => setItemParaBorrar(null)}
-						>
+						<Button variant="primary" onClick={() => setItemParaBorrar(null)}>
 							Cancelar
 						</Button>
 					</div>

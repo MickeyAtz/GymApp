@@ -13,8 +13,11 @@ import { toast } from 'react-toastify';
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
 	const { user, setUser } = useUser();
-	const [activeItem, setActiveItem] = useState(1);
-	const [selectedItem, getSelectedItem] = useState(1);
+
+	const [activeItem, setActiveItem] = useState(() => {
+		return parseInt(localStorage.getItem('activeSidebarItem') || '1');
+	});
+
 	const navigate = useNavigate();
 
 	const handleLogout = () => {
@@ -28,6 +31,11 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 	if (!user) return null;
 
 	const items = itemsByRole[user.perfil.toLowerCase()];
+
+	const handleItemClick = (id) => {
+		setActiveItem(id);
+		localStorage.setItem('activeSidebarItem', id.toString());
+	};
 
 	return (
 		<div
@@ -51,17 +59,44 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 			<div className={styles.items}>
 				{items.map((item) => {
 					const Icon = iconMap[item.icon];
+					const ExternalIcon = item.isExternal ? iconMap['external'] : null;
 					const isActive = item.id === activeItem;
+
+					const linkContent = (
+						<>
+							{Icon && <Icon className={styles.icon} />}
+							{isOpen && <span className={styles.label}>{item.label}</span>}
+							{isOpen && ExternalIcon && (
+								<ExternalIcon className={styles.externalIcon} />
+							)}
+						</>
+					);
+
+					if (item.isExternal) {
+						return (
+							<a
+								href={item.path}
+								target="_blank"
+								rel="noopener noreferrer"
+								key={item.id}
+								className={`${styles.item} ${isActive ? styles.active : ''}`}
+								onClick={() => handleItemClick(item.id)}
+								title={!isOpen ? item.label : ''}
+							>
+								{linkContent}
+							</a>
+						);
+					}
+
 					return (
 						<Link
 							to={item.path}
 							key={item.id}
 							className={`${styles.item} ${isActive ? styles.active : ''}`}
-							onClick={() => setActiveItem(item.id)}
+							onClick={() => handleItemClick(item.id)}
 							title={!isOpen ? item.label : ''}
 						>
-							{Icon && <Icon className={styles.icon} />}
-							{isOpen && <span className={styles.label}>{item.label}</span>}
+							{linkContent}
 						</Link>
 					);
 				})}
