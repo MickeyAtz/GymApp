@@ -49,7 +49,6 @@ export const authLogin = async (req, res) => {
 			if (usuarioRows.length === 0) {
 				return res.status(403).json({ message: 'El usuario no está activo.' });
 			}
-
 			nombre = usuarioRows[0].nombre;
 			apellidos = usuarioRows[0].apellidos;
 			rol = 'cliente';
@@ -58,7 +57,7 @@ export const authLogin = async (req, res) => {
 			perfilId = cuenta.instructor_id;
 
 			const { rows: instructorRows } = await pool.query(
-				`SELECT nombre, apellidos FROM instructores WHERE id = $1 AND fechabaja IS NULL`,
+				`SELECT nombre, apellidos FROM instructores WHERE id = $1 AND fecha_baja IS NULL`,
 				[perfilId]
 			);
 			if (instructorRows.length === 0) {
@@ -66,7 +65,6 @@ export const authLogin = async (req, res) => {
 					.status(403)
 					.json({ message: 'El instructor no está activo.' });
 			}
-
 			nombre = instructorRows[0].nombre;
 			apellidos = instructorRows[0].apellidos;
 			rol = 'instructor';
@@ -87,7 +85,6 @@ export const authLogin = async (req, res) => {
 			if (empleadoRows.length === 0) {
 				return res.status(403).json({ message: 'El empleado no está activo.' });
 			}
-
 			nombre = empleadoRows[0].nombre;
 			apellidos = empleadoRows[0].apellidos;
 		}

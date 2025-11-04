@@ -2,16 +2,18 @@
 
 .filtrosContainer {
 	display: flex;
-	flex-wrap: wrap; /* Para responsiveness */
+	flex-wrap: wrap;
 	gap: 1.5rem;
-	align-items: flex-end; /* Alinea los botones con el input */
+	align-items: flex-end;
+	border-bottom: 1px solid var(--color-border);
+	padding-bottom: 1.5rem;
 }
 
 .datePickerWrapper {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
-	flex-grow: 1; /* Ocupa el espacio disponible */
+	flex-grow: 1;
 }
 
 .datePickerWrapper label {
@@ -32,7 +34,7 @@
 		border-color 0.2s ease,
 		box-shadow 0.2s ease;
 	width: 100%;
-	min-width: 250px; /* Ancho mínimo */
+	min-width: 250px;
 }
 .datePicker:focus {
 	border-color: var(--color-primary);
@@ -48,9 +50,9 @@
 	margin-top: 2rem;
 	display: flex;
 	flex-direction: column;
-	gap: 2rem;
+	gap: 2rem; 
 }
 
 .totalCard {
-	max-width: 400px; /* El total no necesita ocupar toda la fila */
+	max-width: 400px;
 }

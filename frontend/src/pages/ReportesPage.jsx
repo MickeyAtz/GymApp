@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-
 import Flatpickr from 'react-flatpickr';
-import 'flatpickr/dist/themes/dark.css'; 
+import 'flatpickr/dist/themes/dark.css';
 
+// Tus componentes
 import Card from '../components/molecules/Card';
 import Table from '../components/organism/Table';
 import Button from '../components/atoms/Button';
-import CardDashboard from '../components/atoms/CardDashboard'; 
+import CardDashboard from '../components/atoms/CardDashboard'; // Para el total
 
+// Tus funciones de API
 import { getReportePagosJSON, getReportePagosPDF } from '../api/reportes.js';
 
 // Estilos
-import styles from './styles/CRUDPages.module.css'; 
-import stylesReporte from './styles/ReportesPage.module.css'; 
+import styles from './styles/CRUDPages.module.css'; // Estilo de header
+import stylesReporte from './styles/ReportesPage.module.css'; // Estilos específicos
 
 export default function ReportesPage() {
 	const [dateRange, setDateRange] = useState([new Date(), new Date()]);
-	const [reportData, setReportData] = useState(null); // { pagos: [], total_ingresos: 0 }
+	const [reportData, setReportData] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
@@ -37,8 +38,7 @@ export default function ReportesPage() {
 		{
 			field: 'cliente',
 			label: 'Cliente',
-			render: (pago) =>
-				`${pago.cliente_nombre || ''} ${pago.cliente_apellidos || ''}`,
+			render: (pago) => `${pago.cliente_nombre} ${pago.cliente_apellidos}`,
 		},
 		{ field: 'membresia_nombre', label: 'Membresía' },
 		{ field: 'tipo_pago', label: 'Método' },
@@ -83,7 +83,6 @@ export default function ReportesPage() {
 
 		try {
 			const blob = await getReportePagosPDF(inicio, fin);
-
 			const url = window.URL.createObjectURL(blob);
 			const link = document.createElement('a');
 			link.href = url;
@@ -104,13 +103,13 @@ export default function ReportesPage() {
 				<h2>Reporte de Ingresos</h2>
 			</div>
 
-			<Card title="Filtrar por Fecha">
+			<Card title="Reporte de Ingresos">
 				<div className={stylesReporte.filtrosContainer}>
 					<div className={stylesReporte.datePickerWrapper}>
 						<label>Selecciona un rango de fechas:</label>
 						<Flatpickr
 							options={{
-								mode: 'range', 
+								mode: 'range',
 								dateFormat: 'Y-m-d',
 								defaultDate: [new Date(), new Date()],
 							}}
@@ -129,34 +128,27 @@ export default function ReportesPage() {
 						</Button>
 						<Button
 							onClick={handleExportar}
-							disabled={!reportData} 
-							variant="tertiary" 
+							disabled={!reportData}
+							variant="tertiary"
 						>
 							Exportar a PDF
 						</Button>
 					</div>
 				</div>
-			</Card>
 
-			{reportData && (
-				<div className={stylesReporte.resultados}>
-					<div className={stylesReporte.totalCard}>
-						<CardDashboard
-							title={`Total de Ingresos (${reportData.fecha_inicio} al ${reportData.fecha_fin})`}
-							value={`$${reportData.total_ingresos.toFixed(2)}`}
-							icon="money"
-						/>
+				{reportData && (
+					<div className={stylesReporte.resultados}>
+						<div className={stylesReporte.totalCard}>
+							<CardDashboard
+								title={`Total de Ingresos (${reportData.fecha_inicio} al ${reportData.fecha_fin})`}
+								value={`$${reportData.total_ingresos.toFixed(2)}`}
+								icon="money"
+							/>
+						</div>
+						<Table columns={columns} data={reportData.pagos} rowsPerPage={10} />
 					</div>
-
-					<Card title="Pagos Detallados">
-						<Table
-							columns={columns}
-							data={reportData.pagos}
-							rowsPerPage={10} 
-						/>
-					</Card>
-				</div>
-			)}
+				)}
+			</Card>
 		</div>
 	);
 }
