@@ -6,6 +6,8 @@ import {
 	getAllPagos,
 	getAllPagosByFecha,
 	getPagosByUsuarioIdAndFecha,
+	getReportePagos,
+	generarReportePDF,
 } from '../controllers/pagosController.js';
 import { verifyToken } from '../middleware/auth.js';
 import { authorizeRoles } from '../middleware/checkRole.js';
@@ -19,6 +21,10 @@ router.use(authorizeRoles('empleado'));
 router.post('/', createPago); //Creación del pago
 router.get('/usuario/:usuario_id', getPagosByUsuarioId);
 router.get('/', getAllPagos); //Obtener todos los pagos
+
+router.get('/reporte', authorizeRoles('empleado'), getReportePagos);
+router.get('/reporte/pdf', authorizeRoles('empleado'), generarReportePDF);
+
 router.get(
 	'/fecha_inicio/:fecha_inicio/fecha_fin/:fecha_fin',
 	getAllPagosByFecha

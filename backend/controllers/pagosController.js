@@ -1,11 +1,12 @@
 import pool from '../db.js';
 import moment from 'moment';
+import PDFDocument from 'pdfkit';
 
 //Creación del pago
 export const createPago = async (req, res) => {
 	const { usuario_id, membresia_id, monto, tipo_pago } = req.body;
 	const cliente = await pool.connect();
-	
+
 	console.log(req.body);
 
 	try {
@@ -197,5 +198,165 @@ export const getPagosByUsuarioIdAndFecha = async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Error al obtener la información de pagos' });
+	}
+};
+
+export const getReportePagos = async (req, res) => {
+	const { fecha_inicio, fecha_fin } = req.query;
+
+	if (!fecha_inicio || !fecha_fin)
+		return res
+			.status(400)
+			.json({ error: 'Se requieren fecha de inicio y fecha de fin.' });
+
+	try {
+		const pagosResult = await pool.query(
+			`SELECT 
+				p.id AS pago_id,
+				p.monto,
+				p.tipo_pago,
+				p.fecha_pago,
+				u.nombre AS cliente_nombre,
+				u.apellidos AS cliente_apellidos,
+				m.nombre AS membresia_nombre
+			FROM pagos p 
+			JOIN usuario_membresia um ON p.usuario_membresia_id = um.id
+			JOIN usuarios u ON um.usuario_id = u.id
+			JOIN membresias m ON um.membresia_id = m.id
+			WHERE DATE(p.fecha_pago) BETWEEN $1 AND $2
+			ORDER BY p.fecha_pago ASC
+			`,
+			[fecha_inicio, fecha_fin]
+		);
+
+		const totalResult = await pool.query(
+			`
+				SELECT COALESCE(SUM(monto), 0) AS total_ingresos
+				FROM pagos
+				WHERE DATE(fecha_pago) BETWEEN $1 AND $2
+			`,
+			[fecha_inicio, fecha_fin]
+		);
+
+		res.json({
+			pagos: pagosResult.rows,
+			total_ingresos: parseFloat(totalResult.rows[0].total_ingresos),
+			fecha_inicio,
+			fecha_fin,
+		});
+	} catch (error) {
+		console.error(error);
+		return res
+			.status(500)
+			.json({ error: 'Error al generar el reporte de pagos.', error });
+	}
+};
+
+export const generarReportePDF = async (req, res) => {
+	const { fecha_inicio, fecha_fin } = req.query;
+
+	if (!fecha_inicio || !fecha_fin)
+		return res
+			.status(400)
+			.json({ error: 'Se requieren fecha de inicio y fecha de fin.' });
+
+	try {
+		const { rows: pagos } = await pool.query(
+			`
+				SELECT
+					p.fecha_pago,
+					u.nombre,
+					u.apellidos,
+					m.nombre AS membresia,
+					p.tipo_pago,
+					p.monto
+				FROM pagos p
+				JOIN usuario_membresia um ON p.usuario_membresia_id = um.id
+				JOIN usuarios u ON usuario_id = u.id
+				JOIN membresias m ON um.membresia_id = m.id
+				WHERE DATE(p.fecha_pago) BETWEEN $1 AND $2
+				ORDER BY p.fecha_pago ASC
+			`,
+			[fecha_inicio, fecha_fin]
+		);
+		const { rows: totalRows } = await pool.query(
+			`SELECT COALESCE(SUM(monto), 0) AS total_ingresos FROM pagos
+				WHERE DATE(fecha_pago) BETWEEN $1 AND $2
+			`,
+			[fecha_inicio, fecha_fin]
+		);
+
+		const total = parseFloat(totalRows[0].total_ingresos);
+
+		const doc = new PDFDocument({ margin: 50, size: 'LETTER' });
+
+		res.setHeader(
+			'Content-Disposition',
+			`attachment; filename = "reporte_pagos_${fecha_inicio}_al_${fecha_fin}.pdf"`
+		);
+
+		res.setHeader('Content-Type', 'application/pdf');
+		doc.pipe(res);
+
+		// CONTENIDO DEL PDF
+		doc.rect(0, 0, doc.page.width, doc.page.height).fill('#121212');
+		doc.fontSize(18).fillColor('#FFD700').text('Reporte de Ingresos', {
+			align: 'center',
+		});
+
+		doc.moveDown(0.5);
+		doc
+			.fontSize(12)
+			.fillColor('#FFFFFF')
+			.text(
+				`Periodo: ${moment(fecha_inicio).format(
+					'DD/MM/YYYY'
+				)} - ${moment(fecha_fin).format('DD/MM/YYYY')}`
+			);
+		doc
+			.fontSize(14)
+			.fillColor('#FFD700')
+			.text(`Total de Ingresos: $${total.toFixed(2)}`, { align: 'right' });
+
+		doc.moveDown(1);
+
+		const yInicioTabla = doc.y;
+		doc.fontSize(10).fillColor('#FFFFFF');
+		doc.text('Fecha', 50, yInicioTabla, { width: 80, lineBreak: false });
+		doc.text('Cliente', 130, yInicioTabla, { width: 150, lineBreak: false });
+		doc.text('Membresía', 280, yInicioTabla, { width: 100, lineBreak: false });
+		doc.text('Tipo Pago', 380, yInicioTabla, { width: 80, lineBreak: false });
+		doc.text('Monto', 500, yInicioTabla, { width: 60, align: 'right' });
+		doc
+			.strokeColor('#FFD700')
+			.moveTo(50, doc.y + 5)
+			.lineTo(560, doc.y + 5)
+			.stroke();
+		doc.moveDown(0.5);
+
+		for (const pago of pagos) {
+			const y = doc.y;
+			doc
+				.fontSize(9)
+				.fillColor('#DDDDDD')
+				.text(moment(pago.fecha_pago).format('DD/MM/YY HH:mm'), 50, y, {
+					width: 80,
+				});
+			doc.text(`${pago.nombre} ${pago.apellidos || ''}`, 130, y, {
+				width: 150,
+			});
+			doc.text(pago.membresia, 280, y, { width: 100 });
+			doc.text(pago.tipo_pago, 380, y, { width: 80 });
+			doc.text(`$${parseFloat(pago.monto).toFixed(2)}`, 500, y, {
+				width: 60,
+				align: 'right',
+			});
+			doc.moveDown(0.5);
+		}
+		// --- Fin del PDF ---
+		doc.end();
+	} catch (error) {
+		console.error('Error al generar PDF de pagos: ', error);
+		res.status(500).json({ error: 'Error al generar el PDF.' });
 	}
 };
