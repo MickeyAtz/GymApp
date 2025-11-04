@@ -17,17 +17,18 @@ import {
 	createClase,
 	updateClase,
 	deleteClase,
-} from '../api/instructores.js'; // (Tu archivo API que ya creamos)
+} from '../api/instructores.js';
 
 export default function MisClasesInstructorPage() {
 	const [misClases, setMisClases] = useState([]);
-	const [alumnos, setAlumnos] = useState([]); // Estado para los alumnos del modal
+	const [alumnos, setAlumnos] = useState([]);
 
 	const [isCrudModalOpen, setIsCrudModalOpen] = useState(false);
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
 	const [deleteCliente, setDeleteCliente] = useState(null);
+	const [isSaving, setIsSaving] = useState(false); // <-- MEJORA 1
 
 	const [isAlumnosModalOpen, setIsAlumnosModalOpen] = useState(false);
 	const [selectedClase, setSelectedClase] = useState(null);
@@ -95,6 +96,7 @@ export default function MisClasesInstructorPage() {
 	};
 
 	const handleSubmitClase = async (formData) => {
+		setIsSaving(true); // <-- MEJORA 1
 		try {
 			if (editData) {
 				await updateClase(editData.id, formData);
@@ -109,6 +111,8 @@ export default function MisClasesInstructorPage() {
 		} catch (error) {
 			console.error(error.message);
 			toast.error('No se pudo guardar la información.');
+		} finally {
+			setIsSaving(false); // <-- MEJORA 1
 		}
 	};
 
@@ -184,6 +188,7 @@ export default function MisClasesInstructorPage() {
 						setEditData(null);
 					}}
 					className={styles.addBtn}
+					icon="plus" // <-- MEJORA 2
 				>
 					Agregar Clase
 				</Button>
@@ -199,24 +204,26 @@ export default function MisClasesInstructorPage() {
 								onClick={() => handleOpenAlumnosModal(clase)}
 								variant="tertiary"
 								size="small"
+								title="Gestionar Cupos"
 							>
 								Gestionar Cupos ({clase.inscritos})
 							</Button>
 
+							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
+								icon="edit"
+								title="Editar"
 								onClick={() => handleEditClase(clase)}
 								variant="primary"
 								size="small"
-							>
-								Editar
-							</Button>
+							/>
 							<Button
+								icon="trash"
+								title="Eliminar"
 								onClick={() => handleDeleteClase(clase.id)}
 								variant="secondary"
 								size="small"
-							>
-								Eliminar
-							</Button>
+							/>
 						</>
 					)}
 				></Table>
@@ -235,6 +242,7 @@ export default function MisClasesInstructorPage() {
 					initialData={editData || {}}
 					onSubmit={handleSubmitClase}
 					onCancel={() => setIsCrudModalOpen(false)}
+					isSaving={isSaving} // <-- MEJORA 1
 				></FormAtom>
 			</Modal>
 
@@ -248,6 +256,8 @@ export default function MisClasesInstructorPage() {
 					data={alumnos}
 					renderActions={(alumno) => (
 						<Button
+							icon="trash" // <-- MEJORA 2
+							title="Eliminar Alumno"
 							onClick={() => handleEliminarAlumno(alumno.inscripcion_id)}
 							variant="secondary"
 							size="small"
@@ -267,7 +277,6 @@ export default function MisClasesInstructorPage() {
 						¿Estás seguro de que deseas eliminar a esta clase? Esta acción no se
 						puede deshacer.
 					</p>
-
 					<div
 						style={{
 							display: 'flex',
@@ -276,7 +285,11 @@ export default function MisClasesInstructorPage() {
 							marginTop: '2rem',
 						}}
 					>
-						<Button variant="secondary" onClick={handleConfirmDelete}>
+						<Button
+							variant="secondary"
+							onClick={handleConfirmDelete}
+							icon="trash" // <-- MEJORA 2
+						>
 							Sí, Eliminar
 						</Button>
 						<Button variant="primary" onClick={() => setItemParaBorrar(null)}>
@@ -296,7 +309,6 @@ export default function MisClasesInstructorPage() {
 						¿Estás seguro de que deseas eliminar al usuario de esta clase? Esta
 						acción no se puede deshacer.
 					</p>
-
 					<div
 						style={{
 							display: 'flex',
@@ -305,7 +317,11 @@ export default function MisClasesInstructorPage() {
 							marginTop: '2rem',
 						}}
 					>
-						<Button variant="secondary" onClick={handleConfirmDeleteUsuario}>
+						<Button
+							variant="secondary"
+							onClick={handleConfirmDeleteUsuario}
+							icon="trash" // <-- MEJORA 2
+						>
 							Sí, Eliminar
 						</Button>
 						<Button variant="primary" onClick={() => setDeleteCliente(null)}>

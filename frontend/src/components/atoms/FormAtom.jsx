@@ -10,7 +10,8 @@ export default function FormAtom({
 	initialData = {},
 	onSubmit,
 	onCancel,
-	actionsClassName = '',
+	isSaving = false, // <-- Nueva prop
+	children, // <-- Nueva prop (para sobrescribir botones)
 }) {
 	const [formData, setFormData] = useState({});
 
@@ -33,7 +34,6 @@ export default function FormAtom({
 				const value = formData[field.name] || '';
 
 				if (field.type === 'select') {
-					// Renderizamos tu Select
 					return (
 						<div className={styles.formGroup} key={field.name}>
 							<label className={styles.label}>{field.label}</label>
@@ -75,13 +75,24 @@ export default function FormAtom({
 				);
 			})}
 
-			<div className={`${styles.actions} ${actionsClassName}`}>
-				<Button type="submit" variant="primary">
-					Guardar
-				</Button>
-				<Button type="button" variant="secondary" onClick={onCancel}>
-					Cancelar
-				</Button>
+			<div className={styles.actions}>
+				{children ? (
+					children
+				) : (
+					<>
+						<Button type="submit" variant="primary" disabled={isSaving}>
+							{isSaving ? 'Guardando...' : 'Guardar'}
+						</Button>
+						<Button
+							type="button"
+							variant="secondary"
+							onClick={onCancel}
+							disabled={isSaving}
+						>
+							Cancelar
+						</Button>
+					</>
+				)}
 			</div>
 		</form>
 	);
