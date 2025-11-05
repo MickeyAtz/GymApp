@@ -3,9 +3,9 @@ import { verifyToken } from '../middleware/auth.js';
 import { authorizeRoles } from '../middleware/checkRole.js';
 import {
 	registrarVisita,
-	getVisitasByUsuarioId,
 	getVisitasUsuarioByFecha,
 	getAllVisitas,
+	getMiHistorialVisitas,
 } from '../controllers/visitasController.js';
 
 const router = express.Router();
@@ -22,19 +22,18 @@ router.get(
 	getVisitasUsuarioByFecha
 );
 
-// Obtener todas las visitas con el ID del usuario.
-// Params -> usuario_id
-router.get(
-	'/usuario/:usuario_id',
-	authorizeRoles('admin', 'empleado'),
-	getVisitasByUsuarioId
-);
-
 // Obtener TODAS las visitas (probablemente sin params)
 router.get(
 	'/:fecha_inicio/:fecha_fin',
 	authorizeRoles('admin', 'empleado'),
 	getAllVisitas
+);
+
+//HISTORIAL DE VISITAS DEL USUARIO
+router.get(
+	'/mi-historial',
+	authorizeRoles('cliente'),
+	getMiHistorialVisitas // <-- Nueva función
 );
 
 export default router;

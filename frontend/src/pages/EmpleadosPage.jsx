@@ -27,6 +27,7 @@ export default function EmpleadosPage() {
 	const [modalTitle, setModalTitle] = useState('');
 	const [editData, setEditData] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
+	const [isSaving, setIsSaving] = useState(false); // <-- MEJORA 1
 
 	useEffect(() => {
 		document.title = 'Gym App - Empleados';
@@ -118,10 +119,11 @@ export default function EmpleadosPage() {
 	};
 
 	const handleSubmit = async (formData) => {
+		setIsSaving(true); // <-- MEJORA 1
 		try {
 			if (modalTitle === 'Cambiar contraseña') {
 				if (formData.password !== formData.confirmPassword) {
-					alert('Las contraseñas no coinciden');
+					toast.error('Las contraseñas no coinciden');
 					return;
 				}
 				await updatePassword(editData.empleado_id, {
@@ -143,6 +145,8 @@ export default function EmpleadosPage() {
 			toast.error(
 				err.response?.data?.error || 'No se pudo guardar el empleado.'
 			);
+		} finally {
+			setIsSaving(false); // <-- MEJORA 1
 		}
 	};
 
@@ -162,7 +166,7 @@ export default function EmpleadosPage() {
 	const handleConfirmDelete = async () => {
 		if (!itemParaBorrar) return;
 		try {
-			await deleteEmpleado(id);
+			await deleteEmpleado(itemParaBorrar); // Corregido: usaba 'id' en lugar de 'itemParaBorrar'
 			toast.info('Empleado eliminado correctamente.');
 			fetchEmpleados();
 		} catch (err) {
@@ -193,6 +197,7 @@ export default function EmpleadosPage() {
 						(setIsModalOpen(true), setModalTitle('Nuevo Empleado'));
 					}}
 					className={styles.addBtn}
+					icon="plus" // <-- MEJORA 2
 				>
 					Agregar Empleado
 				</Button>
@@ -204,24 +209,26 @@ export default function EmpleadosPage() {
 					data={empleados}
 					renderActions={(empleado) => (
 						<>
+							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
+								icon="edit"
+								title="Editar"
 								onClick={() => handleEdit(empleado)}
 								variant="primary"
 								size="small"
-							>
-								Editar
-							</Button>
+							/>
 							<Button
+								icon="trash"
+								title="Eliminar"
 								onClick={() => handleDelete(empleado.empleado_id)}
 								variant="secondary"
 								size="small"
-							>
-								Eliminar
-							</Button>
+							/>
 							<Button
 								onClick={() => handlePasswordChange(empleado)}
 								variant="tertiary"
 								size="small"
+								title="Cambiar contraseña"
 							>
 								Cambiar contraseña
 							</Button>
@@ -258,13 +265,14 @@ export default function EmpleadosPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
+					isSaving={isSaving} // <-- MEJORA 1
 				></FormAtom>
 			</Modal>
 
 			<Modal
 				title="Confirmar Eliminación"
-				isOpen={itemParaBorrar !== null} // Se abre si 'itemParaBorrar' no es null
-				onClose={() => setItemParaBorrar(null)} // Se cierra al cancelar
+				isOpen={itemParaBorrar !== null}
+				onClose={() => setItemParaBorrar(null)}
 			>
 				<div style={{ padding: '1rem' }}>
 					<p>
@@ -281,15 +289,13 @@ export default function EmpleadosPage() {
 						}}
 					>
 						<Button
-							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							variant="secondary"
 							onClick={handleConfirmDelete}
+							icon="trash" // <-- MEJORA 2
 						>
 							Sí, Eliminar
 						</Button>
-						<Button
-							variant="primary" // (O un botón neutral/dorado)
-							onClick={() => setItemParaBorrar(null)}
-						>
+						<Button variant="primary" onClick={() => setItemParaBorrar(null)}>
 							Cancelar
 						</Button>
 					</div>

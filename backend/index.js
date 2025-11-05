@@ -16,10 +16,8 @@ import usuariosRouter from './routes/usuarios.js'; //CRUD Usuarios
 import empleadosRouter from './routes/empleados.js'; //CRUD Empleados
 import visitasRouter from './routes/visitas.js'; //CRUD Visitas
 import pagosRouter from './routes/pagos.js';
-import usuarioMembresiaRouter from './routes/usuarioMembresia.js';
 import clasesRouter from './routes/clases.js';
 import instructoresRouter from './routes/instructores.js';
-import inscripcionesRouter from './routes/inscripciones.js';
 import rolesRouter from './routes/roles.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import dashboardClienteRoutes from './routes/dashboardClienteRoutes.js';
@@ -51,10 +49,8 @@ app.use('/api/usuarios', usuariosRouter);
 app.use('/api/empleados', empleadosRouter);
 app.use('/api/visitas', visitasRouter);
 app.use('/api/pagos', pagosRouter);
-app.use('/api/usuario_membresia', usuarioMembresiaRouter);
 app.use('/api/instructores', instructoresRouter);
 app.use('/api/clases', clasesRouter);
-app.use('/api/inscripciones', inscripcionesRouter);
 app.use('/api/roles', rolesRouter);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/dashboard-cliente', dashboardClienteRoutes);

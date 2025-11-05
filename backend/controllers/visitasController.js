@@ -47,7 +47,7 @@ export const registrarVisita = async (req, res) => {
 				status: 'error',
 				message: 'Acceso Denegado: Membresía Vencida o Inactiva',
 				usuario: usuario,
-			}); 
+			});
 
 		const visitaAbierta = await client.query(
 			'SELECT * FROM visitas WHERE usuario_id = $1 AND fecha_salida IS NULL AND DATE(fecha_entrada) = CURRENT_DATE',
@@ -132,5 +132,23 @@ export const getAllVisitas = async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ message: 'Error al obtener las visitas' });
+	}
+};
+
+export const getMiHistorialVisitas = async (req, res) => {
+	const { perfil_id: usuarioId } = req.user; 
+
+	try {
+		const visitas = await pool.query(
+			`SELECT id, fecha_entrada, fecha_salida, duracion_minutos
+			 FROM visitas
+			 WHERE usuario_id = $1
+			 ORDER BY fecha_entrada DESC`, 
+			[usuarioId]
+		);
+		res.json(visitas.rows);
+	} catch (error) {
+		console.error('Error al obtener mi historial de visitas:', error);
+		res.status(500).json({ error: 'Error al obtener las visitas' });
 	}
 };

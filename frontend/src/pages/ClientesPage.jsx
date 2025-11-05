@@ -38,6 +38,9 @@ export default function ClientesPage() {
 	const [usuario, setUsuario] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
 
+	// --- MEJORA 1: Estado de carga ---
+	const [isSaving, setIsSaving] = useState(false);
+
 	const obtenerUsuario = () => {
 		const localUsuario = localStorage.getItem('usuario');
 		setUsuario(localUsuario);
@@ -105,10 +108,11 @@ export default function ClientesPage() {
 	};
 
 	const handleSubmit = async (formData) => {
+		setIsSaving(true); // <-- MEJORA 1: Activar estado de carga
 		try {
 			if (modalTitle === 'Cambiar contraseña') {
 				if (formData.password !== formData.confirmPassword) {
-					alert('Las contraseñas no coinciden');
+					toast.error('Las contraseñas no coinciden');
 					return;
 				}
 				await updatePasswordUsuario(editData.usuario_id, {
@@ -117,11 +121,6 @@ export default function ClientesPage() {
 				toast.success('Contraseña actualizada con éxito.');
 			}
 			if (editData) {
-				console.log(
-					'Cliente a editar - HandleSubmit_editData: ',
-					formData,
-					editData
-				);
 				await updateUsuario(editData.usuario_id, formData);
 				toast.success('¡Cliente actualizado con éxito!');
 			} else {
@@ -133,7 +132,12 @@ export default function ClientesPage() {
 			fetchClientes();
 		} catch (err) {
 			console.error('Error en el handleSubmit:', err);
-			toast.error('Ocurrió un error. Por favor, intenta de nuevo.');
+			toast.error(
+				err.response?.data?.error ||
+					'Ocurrió un error. Por favor, intenta de nuevo.'
+			);
+		} finally {
+			setIsSaving(false); // <-- MEJORA 1: Desactivar estado de carga
 		}
 	};
 
@@ -165,7 +169,6 @@ export default function ClientesPage() {
 
 	const handlePasswordChange = async (cliente) => {
 		setModalTitle('Cambiar contraseña');
-		console.log('Cliente a editar - handlePasswordChange: ', cliente);
 		setEditData({
 			...cliente,
 			password: '',
@@ -179,7 +182,7 @@ export default function ClientesPage() {
 				<h2>Gestión de clientes</h2>
 				<Button
 					onClick={() => (setIsModalOpen(true), setModalTitle('Nuevo Cliente'))}
-					clasName={styles.addBtn}
+					icon="plus" // <-- MEJORA 2: Ícono en el botón
 				>
 					Agregar Cliente
 				</Button>
@@ -191,25 +194,31 @@ export default function ClientesPage() {
 					data={clientes}
 					renderActions={(cliente) => (
 						<>
+							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
+								icon="edit"
+								title="Editar"
 								onClick={() => handleEdit(cliente)}
 								variant="primary"
 								size="small"
-							>
-								Editar
-							</Button>
+							/>
 							<Button
+								icon="trash"
+								title="Eliminar"
 								onClick={() => handleDelete(cliente.usuario_id)}
 								variant="secondary"
 								size="small"
-							>
-								Eliminar
-							</Button>
+							/>
 							<Button
 								onClick={() => handlePasswordChange(cliente)}
 								variant="tertiary"
 								size="small"
+								title="Cambiar contraseña"
 							>
+								{/* No tenemos un ícono de 'llave' en el iconMap, 
+                  así que dejamos el texto. O podrías añadir 'FaKey' al iconMap 
+                  y usar 'icon="key"'. Por ahora, con texto está bien.
+                */}
 								Cambiar contraseña
 							</Button>
 						</>
@@ -239,13 +248,14 @@ export default function ClientesPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
+					isSaving={isSaving} // <-- MEJORA 1: Pasar el estado de carga
 				></FormAtom>
 			</Modal>
 
 			<Modal
 				title="Confirmar Eliminación"
-				isOpen={itemParaBorrar !== null} // Se abre si 'itemParaBorrar' no es null
-				onClose={() => setItemParaBorrar(null)} // Se cierra al cancelar
+				isOpen={itemParaBorrar !== null}
+				onClose={() => setItemParaBorrar(null)}
 			>
 				<div style={{ padding: '1rem' }}>
 					<p>
@@ -262,15 +272,13 @@ export default function ClientesPage() {
 						}}
 					>
 						<Button
-							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							variant="secondary"
 							onClick={handleConfirmDelete}
+							icon="trash"
 						>
 							Sí, Eliminar
 						</Button>
-						<Button
-							variant="primary" // (O un botón neutral/dorado)
-							onClick={() => setItemParaBorrar(null)}
-						>
+						<Button variant="primary" onClick={() => setItemParaBorrar(null)}>
 							Cancelar
 						</Button>
 					</div>

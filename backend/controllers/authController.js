@@ -43,29 +43,34 @@ export const authLogin = async (req, res) => {
 			perfilId = cuenta.usuario_id;
 
 			const { rows: usuarioRows } = await pool.query(
-				`SELECT nombre, apellidos FROM usuarios WHERE id = $1`,
+				`SELECT nombre, apellidos FROM usuarios WHERE id = $1 AND fecha_baja IS NULL`,
 				[perfilId]
 			);
-			if (usuarioRows.length > 0) {
-				nombre = usuarioRows[0].nombre;
-				apellidos = usuarioRows[0].apellidos;
-				rol = 'cliente';
+			if (usuarioRows.length === 0) {
+				return res.status(403).json({ message: 'El usuario no está activo.' });
 			}
+			nombre = usuarioRows[0].nombre;
+			apellidos = usuarioRows[0].apellidos;
+			rol = 'cliente';
 		} else if (cuenta.instructor_id) {
 			perfil = 'instructor';
 			perfilId = cuenta.instructor_id;
 
 			const { rows: instructorRows } = await pool.query(
-				`SELECT nombre, apellidos FROM instructores WHERE id = $1`,
+				`SELECT nombre, apellidos FROM instructores WHERE id = $1 AND fecha_baja IS NULL`,
 				[perfilId]
 			);
-			if (instructorRows.length > 0) {
-				nombre = instructorRows[0].nombre;
-				apellidos = instructorRows[0].apellidos;
-				rol = 'instructor';
+			if (instructorRows.length === 0) {
+				return res
+					.status(403)
+					.json({ message: 'El instructor no está activo.' });
 			}
+			nombre = instructorRows[0].nombre;
+			apellidos = instructorRows[0].apellidos;
+			rol = 'instructor';
 		} else if (cuenta.empleado_id) {
 			perfil = 'empleado';
+			rol = 'empleado';
 			perfilId = cuenta.empleado_id;
 
 			const { rows: empleadoRows } = await pool.query(
@@ -73,16 +78,15 @@ export const authLogin = async (req, res) => {
 					SELECT e.nombre, e.apellidos, r.nombre AS rol
 					FROM empleados e
 					JOIN roles r ON r.id = e.role_id
-					WHERE e.id = $1
+					WHERE e.id = $1 AND e.fecha_baja IS NULL
 				`,
 				[perfilId]
 			);
-
-			if (empleadoRows.length > 0) {
-				nombre = empleadoRows[0].nombre;
-				apellidos = empleadoRows[0].apellidos;
-				rol = empleadoRows[0].rol;
+			if (empleadoRows.length === 0) {
+				return res.status(403).json({ message: 'El empleado no está activo.' });
 			}
+			nombre = empleadoRows[0].nombre;
+			apellidos = empleadoRows[0].apellidos;
 		}
 
 		const payload = {

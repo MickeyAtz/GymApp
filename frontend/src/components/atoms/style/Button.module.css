@@ -7,34 +7,45 @@
 	border-radius: 8px;
 	cursor: pointer;
 	transition: all 0.2s ease-in-out;
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem; /* Espacio entre ícono y texto */
 }
+
+/* --- NUEVO ESTILO: Tamaño del ícono dentro del botón --- */
+.button svg {
+	font-size: 1.1em; /* El ícono será un 1.1 veces el tamaño del texto del botón */
+}
+/* --- FIN NUEVO ESTILO --- */
 
 /* --- Variantes de Color (Usando tus variables) --- */
 .primary {
 	background-color: var(--color-primary);
-	color: var(--color-bg); /* Texto oscuro sobre fondo dorado */
+	color: var(--color-bg);
 }
 .primary:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2); /* Brillo dorado */
+	box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
 }
 
 .secondary {
 	background-color: var(--color-accent);
-	color: var(--color-text); /* Texto claro sobre fondo rojo */
+	color: var(--color-text);
 }
 .secondary:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2); /* Brillo rojo */
+	box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2);
 }
 
 .tertiary {
 	background-color: var(--color-tertiary);
-	color: var(--color-bg); /* Texto oscuro sobre fondo naranja */
+	color: var(--color-bg);
 }
 .tertiary:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2); /* Brillo naranja */
+	box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
 }
 
 /* --- Tamaños --- */
@@ -51,6 +62,22 @@
 .large {
 	padding: 12px 24px;
 	font-size: 1.125rem;
+}
+
+/* --- NUEVO: Estilo para botones que SÓLO tienen ícono --- */
+.iconOnly {
+	padding: 8px; /* Padding cuadrado para el botón */
+	aspect-ratio: 1 / 1;
+	/* Ajustamos el tamaño de la fuente para que el ícono sea más grande */
+	font-size: 1.2rem; /* <-- ESTO HACE EL ÍCONO MÁS GRANDE */
+}
+.iconOnly.small {
+	padding: 6px; /* Ajustamos el padding para el tamaño small */
+	font-size: 1.1rem; /* Ajustamos el tamaño del ícono small */
+}
+.iconOnly.medium {
+	padding: 8px;
+	font-size: 1.3rem; /* Ajustamos el tamaño del ícono medium */
 }
 
 /* --- Estado Deshabilitado --- */

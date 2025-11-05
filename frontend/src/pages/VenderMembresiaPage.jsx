@@ -13,7 +13,8 @@ import {
 	createMembershipPayment,
 } from '../api/venderMembresias';
 
-import styles from './styles/VenderMembresiaPage.module.css';
+import styles from './styles/CRUDPages.module.css';
+import formStyles from './styles/VenderMembresiaPage.module.css';
 
 export default function VenderMembresiaPage() {
 	const [searchTerm, setSearchTerm] = useState('');
@@ -54,6 +55,7 @@ export default function VenderMembresiaPage() {
 
 	useEffect(() => {
 		fetchMembresias();
+		document.title = 'Gym App - Vender Membresía';
 	}, []);
 
 	const handleSelectClient = (client) => {
@@ -111,11 +113,14 @@ export default function VenderMembresiaPage() {
 	};
 
 	return (
-		<div className={styles.ventaContainer}>
-			<h1>Registrar Venta de Membresía</h1>
+		<div>
+			<div className={styles.header}>
+				<h2>Registrar Venta de Membresía</h2>
+			</div>
+
 			<Card title="Detalles de la venta">
 				<form onSubmit={handleSubmit}>
-					<section className={styles.formSection}>
+					<section className={formStyles.formSection}>
 						<h3>1. Buscar Cliente</h3>
 						{!selectedClient ? (
 							<>
@@ -127,7 +132,7 @@ export default function VenderMembresiaPage() {
 									aria-label="Buscar cliente"
 								/>
 								{searchResult.length > 0 && (
-									<ul className={styles.searchResults}>
+									<ul className={formStyles.searchResults}>
 										{searchResult.map((client) => (
 											<li
 												key={client.id}
@@ -146,7 +151,7 @@ export default function VenderMembresiaPage() {
 								)}
 							</>
 						) : (
-							<div className={styles.selectedClient}>
+							<div className={formStyles.selectedClient}>
 								<span>
 									Cliente:{' '}
 									<strong>
@@ -157,7 +162,7 @@ export default function VenderMembresiaPage() {
 								<Button
 									onClick={() => setSelectedClient(null)}
 									type="button"
-									variant="seondary"
+									variant="tertiary"
 									size="small"
 								>
 									Cambiar
@@ -166,7 +171,7 @@ export default function VenderMembresiaPage() {
 						)}
 					</section>
 					{selectedClient && (
-						<section className={styles.formSection}>
+						<section className={formStyles.formSection}>
 							<h3>2. Seleccionar Membresía</h3>
 							{memberships.length > 0 ? (
 								<Select
@@ -182,22 +187,22 @@ export default function VenderMembresiaPage() {
 					)}
 					{selectedClient && selectedMembershipId && (
 						<>
-							<section className={styles.formSection}>
+							<section className={formStyles.formSection}>
 								<h3>3. Resumen y Pago</h3>
-								<div className={styles.resumenVenta}>
-									<div className={styles.resumenItem}>
+								<div className={formStyles.resumenVenta}>
+									<div className={formStyles.resumenItem}>
 										<span>Cliente:</span>
 										<strong>
 											{selectedClient.nombre} {selectedClient.apellidos || ''}
 										</strong>
 									</div>
-									<div className={styles.resumenItem}>
+									<div className={formStyles.resumenItem}>
 										<span>Membresia:</span>
 										<strong>
 											{selectedMem.nombre} ({selectedMem.duracion_dias} días)
 										</strong>
 									</div>
-									<div className={styles.resumenItemTotal}>
+									<div className={formStyles.resumenItemTotal}>
 										<span>Monto a Pagar: </span>
 										<strong>{payAmount}</strong>
 									</div>
@@ -214,7 +219,7 @@ export default function VenderMembresiaPage() {
 									placeholder="-- Método de pago -- "
 								/>
 							</section>
-							<div className={styles.submitButtonContainer}>
+							<div className={formStyles.submitButtonContainer}>
 								<Button type="submit" variant="primary" size="large">
 									Registrar Venta
 								</Button>

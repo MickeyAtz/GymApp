@@ -49,3 +49,12 @@ export const getAllVisitas = async (fecha_inicio, fecha_fin) => {
 	return (await axiosInstance.get(`${API_URL}/${fecha_inicio}/${fecha_fin}`))
 		.data;
 };
+
+/**
+ * GET /api/visitas/mi-historial
+ * Necesita: Token de cliente
+ * Descripción: Obtiene el historial de visitas del cliente logueado.
+ */
+export const getMiHistorialVisitas = async () => {
+	return (await axiosInstance.get(`${API_URL}/mi-historial`)).data;
+};

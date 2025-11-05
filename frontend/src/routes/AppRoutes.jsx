@@ -38,6 +38,8 @@ import VenderMembresiaPage from '../pages/VenderMembresiaPage';
 import MisClasesInstructorPage from '../pages/MisClasesInstructorPage';
 import InscripcionClientePage from '../pages/InscripcionClientePage';
 import CheckInPage from '../pages/CheckInPage';
+import ReportesPage from '../pages/ReportesPage';
+import MiPerfilPage from '../pages/MiPerfilPage';
 
 import { isAuthenticated } from '../utils/auth';
 import HomeRedirect from '../components/HomeRedirect';
@@ -136,6 +138,16 @@ export default function AppRoutes() {
 						</ProtectedRoute>
 					}
 				/>
+
+				<Route
+					path="reportes"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+							<ReportesPage></ReportesPage>
+						</ProtectedRoute>
+					}
+				/>
+
 				{/* FIN PÁGINAS CRUD - ADMINISTRACIÓN */}
 
 				{/* PÁGINAS DEL CLIENTE */}
@@ -153,6 +165,15 @@ export default function AppRoutes() {
 					element={
 						<ProtectedRoute allowedRoles={[ROLES.CLIENTE]}>
 							<InscripcionClientePage />
+						</ProtectedRoute>
+					}
+				/>
+
+				<Route
+					path="mi-perfil"
+					element={
+						<ProtectedRoute allowedRoles={[ROLES.CLIENTE]}>
+							<MiPerfilPage />
 						</ProtectedRoute>
 					}
 				/>

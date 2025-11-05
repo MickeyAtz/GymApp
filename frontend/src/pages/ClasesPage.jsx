@@ -35,6 +35,7 @@ export default function ClasesPage() {
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
+	const [isSaving, setIsSaving] = useState(false); // <-- MEJORA 1
 
 	const [usuario, setUsuario] = useState(null);
 
@@ -117,6 +118,7 @@ export default function ClasesPage() {
 	};
 
 	const handleSubmit = async (formData) => {
+		setIsSaving(true); // <-- MEJORA 1
 		const payload = { ...formData };
 
 		try {
@@ -133,6 +135,8 @@ export default function ClasesPage() {
 		} catch (err) {
 			console.error(err);
 			toast.error(err.response?.data?.error || 'No se pudo guardar la clase.');
+		} finally {
+			setIsSaving(false); // <-- MEJORA 1
 		}
 	};
 
@@ -187,6 +191,7 @@ export default function ClasesPage() {
 							setEditData(null));
 					}}
 					className={styles.addBtn}
+					icon="plus" // <-- MEJORA 2
 				>
 					Agregar Clase
 				</Button>
@@ -198,20 +203,21 @@ export default function ClasesPage() {
 					data={clases}
 					renderActions={(clase) => (
 						<>
+							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
+								icon="edit"
+								title="Editar"
 								onClick={() => handleEdit(clase)}
 								variant="primary"
 								size="small"
-							>
-								Editar
-							</Button>
+							/>
 							<Button
+								icon="trash"
+								title="Eliminar"
 								onClick={() => handleDelete(clase.id)}
 								variant="secondary"
 								size="small"
-							>
-								Eliminar
-							</Button>
+							/>
 						</>
 					)}
 				></Table>
@@ -240,13 +246,14 @@ export default function ClasesPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
+					isSaving={isSaving} // <-- MEJORA 1
 				></FormAtom>
 			</Modal>
 
 			<Modal
 				title="Confirmar Eliminación"
-				isOpen={itemParaBorrar !== null} // Se abre si 'itemParaBorrar' no es null
-				onClose={() => setItemParaBorrar(null)} // Se cierra al cancelar
+				isOpen={itemParaBorrar !== null}
+				onClose={() => setItemParaBorrar(null)}
 			>
 				<div style={{ padding: '1rem' }}>
 					<p>
@@ -263,15 +270,13 @@ export default function ClasesPage() {
 						}}
 					>
 						<Button
-							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							variant="secondary"
 							onClick={handleConfirmDelete}
+							icon="trash" // <-- MEJORA 2
 						>
 							Sí, Eliminar
 						</Button>
-						<Button
-							variant="primary" // (O un botón neutral/dorado)
-							onClick={() => setItemParaBorrar(null)}
-						>
+						<Button variant="primary" onClick={() => setItemParaBorrar(null)}>
 							Cancelar
 						</Button>
 					</div>

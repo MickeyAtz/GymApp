@@ -385,3 +385,129 @@ export const darseDeBaja = async (req, res) => {
 		return res.status(500).json({ message: 'Error al dar de baja' });
 	}
 };
+
+// =================================================================
+//  Funciones de CLIENTE (Gestión de "Mi Perfil")
+// =================================================================
+
+// GET /api/usuarios/mi-perfil
+export const getMiPerfil = async (req, res) => {
+	const { perfil_id: usuarioId } = req.user;
+
+	try {
+		const usuarioResult = await pool.query(
+			`SELECT nombre, apellidos, telefono 
+             FROM usuarios 
+             WHERE id = $1 AND fecha_baja IS NULL`,
+			[usuarioId]
+		);
+
+		const cuentaResult = await pool.query(
+			`SELECT email 
+             FROM cuentas_acceso 
+             WHERE usuario_id = $1`,
+			[usuarioId]
+		);
+		// --- FIN DE LA CORRECCIÓN ---
+
+		if (usuarioResult.rows.length === 0 || cuentaResult.rows.length === 0) {
+			return res.status(404).json({ error: 'Usuario no encontrado.' });
+		}
+
+		// Combinamos los resultados de ambas consultas
+		const perfil = {
+			...usuarioResult.rows[0],
+			...cuentaResult.rows[0],
+		};
+
+		res.json(perfil);
+	} catch (error) {
+		console.error('Error al obtener mi perfil:', error);
+		res.status(500).json({ error: 'Error en el servidor.' });
+	}
+};
+
+
+// PUT /api/usuarios/mi-perfil
+export const updateMiPerfil = async (req, res) => {
+	const { perfil_id: usuarioId } = req.user;
+	const { nombre, apellidos, telefono, email } = req.body;
+
+	try {
+		const emailCheck = await pool.query(
+			'SELECT * FROM cuentas_acceso WHERE email = $1 AND usuario_id != $2',
+			[email, usuarioId]
+		);
+
+		if (emailCheck.rows.length > 0) {
+			return res
+				.status(400)
+				.json({ error: 'El email ya está en uso por otra cuenta.' });
+		}
+
+		await pool.query('SELECT modificar_usuario($1, $2, $3, $4, $5)', [
+			usuarioId,
+			nombre,
+			apellidos,
+			telefono,
+			email,
+		]);
+
+		return res.json({ message: 'Perfil actualizado exitosamente.' });
+	} catch (error) {
+		console.error('Error al actualizar mi perfil:', error);
+		res.status(500).json({ error: 'Error al actualizar el perfil.' });
+	}
+};
+
+// PUT /api/usuarios/mi-password
+export const changeMiPassword = async (req, res) => {
+	const { perfil_id: usuarioId } = req.user;
+	const { password_actual, password_nueva } = req.body;
+
+	if (!password_actual || !password_nueva) {
+		return res.status(400).json({ error: 'Todos los campos son requeridos.' });
+	}
+
+	const client = await pool.connect();
+
+	try {
+		const { rows } = await client.query(
+			'SELECT password_hash FROM cuentas_acceso WHERE usuario_id = $1',
+			[usuarioId]
+		);
+		if (rows.length === 0) {
+			return res
+				.status(404)
+				.json({ error: 'Cuenta de usuario no encontrada.' });
+		}
+
+		const cuenta = rows[0];
+		const validPassword = await bcrypt.compare(
+			password_actual,
+			cuenta.password_hash
+		);
+
+		if (!validPassword) {
+			return res
+				.status(401)
+				.json({ error: 'La contraseña actual es incorrecta.' });
+		}
+
+		const salt = await bcrypt.genSalt(10);
+		const hashedPassword = await bcrypt.hash(password_nueva, salt);
+
+		await client.query('SELECT cambio_password_usuario($1, $2)', [
+			usuarioId,
+			hashedPassword,
+		]);
+
+		res.json({ message: 'Contraseña actualizada exitosamente.' });
+	} catch (error) {
+		console.error('Error al cambiar la contraseña:', error);
+		res.status(500).json({ error: 'Error al cambiar la contraseña.' });
+	} finally {
+		client.release();
+	}
+};
+
