@@ -1,7 +1,6 @@
 import pool from '../db.js';
 import moment from 'moment';
 
-//OPERACIONES dashboard empleados
 export const totalusuarios = async (req, res) => {
 	try {
 		const result = await pool.query(
@@ -22,8 +21,8 @@ export const nuevosUsuarios = async (req, res) => {
 		const result = await pool.query(`
                 SELECT COUNT(*) AS total
                 FROM usuarios
-                WHERE EXTRACT(MONTH FROM fecha_registro) = EXTRACT(MONTH FROM CURRENT_DATE)
-                AND EXTRACT(YEAR FROM fecha_registro) = EXTRACT(YEAR FROM CURRENT_DATE)
+                WHERE fecha_registro >= DATE_TRUNC('month', CURRENT_DATE)
+                  AND fecha_registro < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
             `);
 		res.json({
 			nuevosUsuarios: parseInt(result.rows[0].total),
@@ -38,17 +37,31 @@ export const nuevosUsuarios = async (req, res) => {
 export const usuariosPorMes = async (req, res) => {
 	try {
 		const result = await pool.query(`
-                SELECT TO_CHAR(fecha_registro, 'Month') AS mes, COUNT(*) AS total
-                FROM usuarios
-                WHERE fecha_baja IS NULL
-                GROUP BY mes, EXTRACT(MONTH FROM fecha_registro)
-                ORDER BY EXTRACT(MONTH FROM fecha_registro)
+            WITH meses AS (
+                -- 1. Genera una serie de los últimos 12 meses
+                SELECT DATE_TRUNC('month', GENERATE_SERIES(
+                    CURRENT_DATE - INTERVAL '11 months',
+                    CURRENT_DATE,
+                    INTERVAL '1 month'
+                )) AS mes_inicio
+            )
+            -- 2. Cuenta los usuarios por mes y hace un LEFT JOIN
+            SELECT 
+                TO_CHAR(m.mes_inicio, 'Mon YYYY') AS mes,
+                COUNT(u.id) AS total
+            FROM meses m
+            LEFT JOIN usuarios u ON DATE_TRUNC('month', u.fecha_registro) = m.mes_inicio
+                                 AND u.fecha_baja IS NULL
+            GROUP BY m.mes_inicio
+            ORDER BY m.mes_inicio ASC;
             `);
+
 		res.json({
 			labels: result.rows.map((r) => r.mes.trim()),
 			data: result.rows.map((r) => parseInt(r.total)),
 		});
 	} catch (error) {
+		console.error('Error en usuariosPorMes:', error);
 		res.status(500).json({ error: 'Error al obtener usuarios por mes' });
 	}
 };
@@ -60,15 +73,14 @@ export const totalMembresiasMes = async (req, res) => {
 		const anio = ahora.getFullYear();
 
 		const result = await pool.query(`
-                SELECT COALESCE(SUM(m.precio), 0) AS total
-                FROM usuario_membresia um
-                INNER JOIN membresias m ON um.membresia_id = m.id
-                WHERE EXTRACT(MONTH FROM um.fecha_inicio) = EXTRACT(MONTH FROM CURRENT_DATE)
-                AND EXTRACT(YEAR FROM um.fecha_inicio) = EXTRACT(YEAR FROM CURRENT_DATE)
+                SELECT COALESCE(SUM(p.monto), 0) AS total
+                FROM pagos p
+                WHERE p.fecha_pago >= DATE_TRUNC('month', CURRENT_DATE)
+                  AND p.fecha_pago < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
             `);
 
 		res.json({
-			totalMembresias: parseFloat(result.rows[0].total),
+			totalMembresias: parseFloat(result.rows[0].total), // El frontend lo lee como 'totalMembresias'
 			mes: mes.charAt(0).toUpperCase() + mes.slice(1),
 			anio: anio,
 		});
@@ -84,9 +96,10 @@ export const totalMembresiasActivas = async (req, res) => {
 		const result = await pool.query(`
                 SELECT COUNT(*) AS total
                 FROM usuario_membresia
-                WHERE fecha_fin >= CURRENT_DATE
+                WHERE status = 'activo'
+                  AND fecha_fin >= CURRENT_DATE
             `);
-		res.json({ totalMembresiasActivas: parseInt(result.rows[0].total, 10) });
+		res.json({ total: parseInt(result.rows[0].total, 10) }); // El frontend lo lee como 'total'
 	} catch (error) {
 		res.status(500).json({ error: 'Error al obtener total de membresias' });
 	}
@@ -97,7 +110,7 @@ export const totalClases = async (req, res) => {
 		const result = await pool.query(
 			'SELECT COUNT(*) AS total FROM clases WHERE fechabaja IS NULL'
 		);
-		res.json({ totalClases: parseInt(result.rows[0].total) });
+		res.json({ total: parseInt(result.rows[0].total) }); // El frontend lo lee como 'total'
 	} catch (error) {
 		res.status(500).json({ error: 'Error al obtener total de clases' });
 	}
@@ -109,9 +122,10 @@ export const inscripcionesPorClase = async (req, res) => {
             SELECT c.nombre AS clase, COUNT(i.id) AS total
             FROM inscripciones i
             JOIN clases c ON i.clase_id = c.id
-            WHERE i.fechabaja IS NULL
+            WHERE i.fechabaja IS NULL AND c.fechabaja IS NULL
             GROUP BY c.nombre
             ORDER BY total DESC
+            LIMIT 10; -- Muestra solo las 10 más populares
         `);
 		res.json({
 			labels: result.rows.map((r) => r.clase),
@@ -122,66 +136,39 @@ export const inscripcionesPorClase = async (req, res) => {
 	}
 };
 
-export const estadisticasGenerales = async (req, res) => {
-	try {
-		const resultUsuarios = await pool.query(
-			'SELECT COUNT(*) AS total FROM usuarios WHERE fecha_baja IS NULL'
-		);
-		const resultClases = await pool.query(
-			'SELECT COUNT(*) AS total FROM clases WHERE fechabaja IS NULL'
-		);
-		const resultNuevos = await pool.query(`
-                SELECT COUNT(*) AS total
-                FROM usuarios
-                WHERE EXTRACT(MONTH FROM fecha_registro) = EXTRACT(MONTH FROM CURRENT_DATE)
-            `);
-
-		res.json({
-			usuariosActivos: parseInt(resultUsuarios.rows[0].total),
-			clasesActivas: parseInt(resultClases.rows[0].total),
-			nuevosUsuarios: parseInt(resultNuevos.rows[0].total),
-		});
-	} catch (error) {
-		res.status(500).json({ error: 'Error al obtener estadísticas generales' });
-	}
-};
-
+// (Las consultas de Visitas ya estaban bien y eran robustas)
 export const visitasMes = async (req, res) => {
 	try {
 		const inicioMes = moment().startOf('month').format('YYYY-MM-DD');
 		const finMes = moment().endOf('month').format('YYYY-MM-DD');
 
-		console.log(inicioMes, finMes);
-
 		const { rows } = await pool.query(
 			`
-            WITH conteo_diario AS (
+            WITH dias_mes AS (
+                SELECT GENERATE_SERIES($1::date, $2::date, '1 day'::interval) AS dia
+            ),
+            conteo_diario AS (
                 SELECT 
-                    CAST(TO_CHAR(fecha_entrada, 'DD') AS INTEGER) AS dia,
+                    DATE_TRUNC('day', fecha_entrada) AS dia,
                     COUNT(*) AS total
                 FROM visitas
                 WHERE fecha_entrada::date BETWEEN $1 AND $2
-                GROUP BY dia
+                GROUP BY 1
             )
-            SELECT json_build_object(
-                'labels', json_agg(dia ORDER BY dia ASC),
-                'data', json_agg(total ORDER BY dia ASC)
-            ) AS chart_data
-            FROM conteo_diario;
+            SELECT 
+                TO_CHAR(d.dia, 'DD') AS dia_label,
+                COALESCE(cd.total, 0) AS total
+            FROM dias_mes d
+            LEFT JOIN conteo_diario cd ON d.dia = cd.dia
+            ORDER BY d.dia;
             `,
 			[inicioMes, finMes]
 		);
 
-		let data = { labels: [], data: [] };
-
-		if (rows.length > 0 && rows[0].chart_data) {
-			data = {
-				labels: rows[0].chart_data.labels ?? [],
-				data: rows[0].chart_data.data ?? [],
-			};
-		}
-
-		res.json(data);
+		res.json({
+			labels: rows.map((r) => r.dia_label),
+			data: rows.map((r) => parseInt(r.total)),
+		});
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ message: 'Error al obtener visitas mensuales.' });
@@ -195,53 +182,35 @@ export const visitasSemana = async (req, res) => {
 
 		const { rows } = await pool.query(
 			`
-            WITH conteo_semanal AS (
+            WITH dias_semana AS (
                 SELECT 
-                    EXTRACT(DOW FROM fecha_entrada) AS dia_num, /* 0=Domingo, 1=Lunes... */
+                    GENERATE_SERIES(0, 6) AS dia_num,
+                    TO_CHAR( ($1::date + MAKE_INTERVAL(days => GENERATE_SERIES(0, 6))), 'Day') AS dia_nombre
+            ),
+            conteo_semanal AS (
+                SELECT 
+                    EXTRACT(DOW FROM fecha_entrada) AS dia_num,
                     COUNT(*) AS total
                 FROM visitas
                 WHERE fecha_entrada::date BETWEEN $1 AND $2 
                 GROUP BY dia_num
-            ),
-            conteo_traducido AS (
-                SELECT 
-                    total,
-                    dia_num,
-                    CASE dia_num
-                        WHEN 0 THEN 'Domingo'
-                        WHEN 1 THEN 'Lunes'
-                        WHEN 2 THEN 'Martes'
-                        WHEN 3 THEN 'Miércoles'
-                        WHEN 4 THEN 'Jueves'
-                        WHEN 5 THEN 'Viernes'
-                        WHEN 6 THEN 'Sábado'
-                    END AS dia
-                FROM conteo_semanal
             )
-            SELECT json_build_object(
-                'labels', json_agg(dia ORDER BY dia_num ASC),
-                'data', json_agg(total ORDER BY dia_num ASC)
-            ) AS chart_data
-            FROM conteo_traducido;
+            SELECT 
+                TRIM(ds.dia_nombre) AS dia,
+                COALESCE(cs.total, 0) AS total
+            FROM dias_semana ds
+            LEFT JOIN conteo_semanal cs ON ds.dia_num = cs.dia_num
+            ORDER BY ds.dia_num;
             `,
 			[inicioSemana, finSemana]
 		);
 
-		let data = { labels: [], data: [] };
-
-		if (rows.length > 0 && rows[0].chart_data) {
-			data = {
-				labels: rows[0].chart_data.labels ?? [],
-				data: rows[0].chart_data.data ?? [],
-			};
-		}
-
-		res.json(data);
+		res.json({
+			labels: rows.map((r) => r.dia),
+			data: rows.map((r) => parseInt(r.total)),
+		});
 	} catch (error) {
 		console.error('Error al recuperar visitas semanales: ', error);
 		res.status(500).json({ message: 'Error al obtener visitas semanales.' });
 	}
 };
-//OPERACIONES clientes
-
-//OPERACIONES instructores

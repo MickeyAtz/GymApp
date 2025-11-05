@@ -7,7 +7,6 @@ import {
 	totalMembresiasActivas,
 	totalClases,
 	inscripcionesPorClase,
-	estadisticasGenerales,
 	visitasSemana,
 	visitasMes,
 } from '../controllers/dashboardController.js';
@@ -23,8 +22,6 @@ router.get('/membresias/activas', totalMembresiasActivas);
 
 router.get('/clases/total', totalClases);
 router.get('/clases/inscripciones', inscripcionesPorClase);
-
-router.get('/estadisticas/generales', estadisticasGenerales);
 
 router.get('/visitas-semana', visitasSemana);
 router.get('/visitas-mes', visitasMes);

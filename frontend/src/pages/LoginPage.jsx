@@ -14,7 +14,6 @@ export default function LoginPage() {
 	const { user, setUser } = useUser();
 	const [dataForm, setDataForm] = useState({ email: '', password: '' });
 	const [error, setError] = useState('');
-	// Añadamos un estado de carga para el botón
 	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
@@ -61,8 +60,23 @@ export default function LoginPage() {
 	return (
 		<div className={styles.loginWrapper}>
 			<div className={styles.scanLight}></div>
+
+			{/* --- INICIO DE LA MODIFICACIÓN --- */}
+			{/* 1. Contenedor del Logo (va primero) */}
+			<div className={styles.logoContainer}>
+				<img
+					src="/logo.png" // Apunta a /public/logo.png
+					alt="Logo del Gym"
+					className={styles.logo}
+				/>
+			</div>
+
+			{/* 2. El formulario (va después) */}
 			<form className={styles.loginForm} onSubmit={handleSubmit}>
+				{/* El <h2> se mueve aquí para estar dentro del card */}
 				<h2>Inicio de Sesión</h2>
+				{/* --- FIN DE LA MODIFICACIÓN --- */}
+
 				{error && <p className={styles.error}>{error}</p>}
 				<Input
 					type="email"

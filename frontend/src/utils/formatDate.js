@@ -1,4 +1,3 @@
-
 export const formatDateTime = (isoString) => {
 	if (!isoString) return '--'; // Maneja valores nulos (como una 'fecha_salida')
 
@@ -13,4 +12,9 @@ export const formatDateTime = (isoString) => {
 		minute: '2-digit', // 33
 		hour12: true, // AM/PM
 	});
+};
+
+export const capitalizeFirstLetter = (string) => {
+	if (!string) return '--';
+	return string.charAt(0).toUpperCase() + string.slice(1);
 };

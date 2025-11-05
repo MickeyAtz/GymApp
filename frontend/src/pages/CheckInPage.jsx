@@ -17,6 +17,13 @@ export default function CheckInPage() {
 	const [scanResult, setScanResult] = useState(null);
 	const inputRef = useRef(null);
 
+	useEffect(() => {
+		document.title = 'Gym App - Check-In';
+		return () => {
+			document.title = 'Gym App';
+		};
+	}, []);
+
 	// --- Lógica de Submit (sin cambios) ---
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -117,7 +124,7 @@ export default function CheckInPage() {
 						<input
 							ref={inputRef}
 							type="text"
-							className={styles.scanInput} 
+							className={styles.scanInput}
 							value={scanData}
 							onChange={(e) => setScanData(e.target.value)}
 							autoComplete="off"

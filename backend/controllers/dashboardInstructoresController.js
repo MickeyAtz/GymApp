@@ -2,7 +2,7 @@ import pool from '../db.js';
 import moment from 'moment';
 
 export const getProximaClaseInstructor = async (req, res) => {
-	const { id: instructorId } = req.user;
+	const { perfil_id: instructorId } = req.user;
 
 	try {
 		const { rows } = await pool.query(
@@ -15,8 +15,11 @@ export const getProximaClaseInstructor = async (req, res) => {
             FROM clases c
             WHERE
                 c.id_instructor = $1
+                AND c.fechabaja IS NULL
+                -- 1. Comprueba que la clase sea hoy
+                AND c.dia = TO_CHAR(NOW(), 'Day')
+                -- 2. Comprueba que la hora sea futura
                 AND c.hora >= NOW()::time 
-                -- AND c.dia ILIKE '%' || TO_CHAR(NOW(), 'Dy') || '%' 
             ORDER BY c.hora ASC
             LIMIT 1;
             `,
@@ -37,7 +40,7 @@ export const getProximaClaseInstructor = async (req, res) => {
 
 		return res.json({
 			tieneProxima: true,
-			mensaje: `${proximaClase.clase_nombre} - Hoy a las ${horaFormateada}`,
+			mensaje: `${proximaClase.clase_nombre} - Hoy ${horaFormateada}`,
 			clase_id: proximaClase.id,
 			capacidad: proximaClase.capacidad,
 		});
@@ -61,7 +64,8 @@ export const getInscritosClase = async (req, res) => {
 			`
             SELECT COUNT(*) AS total_inscritos
             FROM inscripciones
-            WHERE clase_id = $1;
+            WHERE clase_id = $1
+              AND fechabaja IS NULL; -- <-- CORRECCIÓN
             `,
 			[parseInt(claseId)]
 		);
@@ -75,7 +79,7 @@ export const getInscritosClase = async (req, res) => {
 };
 
 export const getTotalClasesHoy = async (req, res) => {
-	const { id: instructorId } = req.user;
+	const { perfil_id: instructorId } = req.user;
 
 	try {
 		const { rows } = await pool.query(
@@ -84,18 +88,8 @@ export const getTotalClasesHoy = async (req, res) => {
             FROM clases
             WHERE
                 id_instructor = $1
-                AND dia ILIKE '%' || 
-                    CASE EXTRACT(DOW FROM NOW()) 
-                        WHEN 0 THEN 'Domingo'
-                        WHEN 1 THEN 'Lunes'
-                        WHEN 2 THEN 'Martes'
-                        WHEN 3 THEN 'Miércoles'
-                        WHEN 4 THEN 'Jueves'
-                        WHEN 5 THEN 'Viernes'
-                        WHEN 6 THEN 'Sábado'
-                    END 
-                || '%' 
-                AND fechabaja IS NULL; -- Clases activas
+                AND dia = TO_CHAR(NOW(), 'Day')
+                AND fechabaja IS NULL;
             `,
 			[instructorId]
 		);
@@ -109,7 +103,7 @@ export const getTotalClasesHoy = async (req, res) => {
 };
 
 export const getPopularidadClasesInstructor = async (req, res) => {
-	const { id: instructorId } = req.user;
+	const { perfil_id: instructorId } = req.user;
 
 	try {
 		const inicioMes = moment().startOf('month').format('YYYY-MM-DD HH:mm:ss');
@@ -117,29 +111,26 @@ export const getPopularidadClasesInstructor = async (req, res) => {
 
 		const { rows } = await pool.query(
 			`
-            WITH conteo_clases AS (
-                SELECT 
-                    c.nombre AS clase_nombre,
-                    COUNT(i.id) AS total_inscritos 
-                FROM clases c
-                JOIN inscripciones i ON c.id = i.clase_id
-                WHERE
-                    c.id_instructor = $1
-                    AND i.fecha_inscripcion BETWEEN $2 AND $3 -- Inscripciones del mes
-                    AND c.fechabaja IS NULL -- Clases activas
-                GROUP BY c.nombre 
-            )
-            SELECT json_build_object(
-                'labels', COALESCE(json_agg(clase_nombre ORDER BY total_inscritos DESC), '[]'::json),
-                'data', COALESCE(json_agg(total_inscritos ORDER BY total_inscritos DESC), '[]'::json)
-            ) AS chart_data
-            FROM conteo_clases;
+            SELECT 
+                c.nombre AS clase_nombre,
+                COUNT(i.id) AS total_inscritos 
+            FROM clases c
+            LEFT JOIN inscripciones i ON c.id = i.clase_id
+                AND i.fecha_inscripcion BETWEEN $2 AND $3 -- Inscripciones del mes
+                AND i.fechabaja IS NULL -- Inscripciones activas
+            WHERE
+                c.id_instructor = $1
+                AND c.fechabaja IS NULL -- Clases activas
+            GROUP BY c.nombre 
+            ORDER BY total_inscritos DESC;
             `,
 			[instructorId, inicioMes, finMes]
 		);
 
-		const data = rows[0]?.chart_data || { labels: [], data: [] };
-		return res.json(data);
+		res.json({
+			labels: rows.map((r) => r.clase_nombre),
+			data: rows.map((r) => parseInt(r.total_inscritos)),
+		});
 	} catch (error) {
 		console.error('Error al obtener popularidad clases instructor:', error);
 		return res.status(500).json({ message: 'Error en el servidor' });

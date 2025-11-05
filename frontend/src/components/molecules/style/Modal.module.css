@@ -6,9 +6,8 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	/* Fondo de overlay más oscuro para mejor contraste */
 	background-color: rgba(0, 0, 0, 0.7);
-	backdrop-filter: blur(4px); /* Efecto desenfocado */
+	backdrop-filter: blur(4px);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -25,14 +24,13 @@
 	visibility: visible;
 }
 
+/* --- ESTILOS BASE DEL MODAL (SIN ANCHO) --- */
 .modal {
-	/* Usa el fondo alternativo para contrastar */
 	background-color: var(--color-bg-alt);
 	color: var(--color-text);
-	padding: 2.5rem; /* Más padding */
+	padding: 2.5rem;
 	border-radius: 12px;
-	max-width: 500px;
-	width: 90%;
+	width: 90%; /* Ancho en móviles */
 	position: relative;
 	transform: translateY(-20px);
 	opacity: 0;
@@ -40,6 +38,13 @@
 	transition:
 		transform 0.3s ease,
 		opacity 0.3s ease;
+}
+
+.medium {
+	max-width: 500px;
+}
+.large {
+	max-width: 800px;
 }
 
 .overlay.show .modal {
@@ -55,7 +60,6 @@
 	height: 30px;
 	border-radius: 50%;
 	border: none;
-	/* Usa tu color de acento (rojo) */
 	background-color: var(--color-accent);
 	color: var(--color-text);
 	font-weight: bold;

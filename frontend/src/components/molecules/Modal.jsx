@@ -1,16 +1,20 @@
-// Modal.jsx
 import React, { useEffect, useState } from 'react';
 import styles from './style/Modal.module.css';
 
-export default function Modal({ isOpen, onClose, title, children }) {
+export default function Modal({
+	isOpen,
+	onClose,
+	title,
+	children,
+	size = 'medium', 
+}) {
 	const [show, setShow] = useState(false);
 
 	useEffect(() => {
 		if (isOpen) {
-			setShow(true); // Abrir modal
+			setShow(true);
 		} else {
-			// Esperar la animación antes de ocultar
-			const timeout = setTimeout(() => setShow(false), 300); // 300ms = duración CSS
+			const timeout = setTimeout(() => setShow(false), 300);
 			return () => clearTimeout(timeout);
 		}
 	}, [isOpen]);
@@ -22,7 +26,10 @@ export default function Modal({ isOpen, onClose, title, children }) {
 			className={`${styles.overlay} ${isOpen ? styles.show : ''}`}
 			onClick={onClose}
 		>
-			<div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+			<div
+				className={`${styles.modal} ${styles[size]}`}
+				onClick={(e) => e.stopPropagation()}
+			>
 				{title && <h2>{title}</h2>}
 				{children}
 				<button className={styles.closeBtn} onClick={onClose}>

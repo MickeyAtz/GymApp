@@ -16,6 +16,7 @@ import {
 	FaBarcode,
 	FaPenSquare,
 	FaShoppingBag,
+	FaExternalLinkAlt,
 } from 'react-icons/fa';
 
 export const iconMap = {
@@ -36,4 +37,5 @@ export const iconMap = {
 	barcode: FaBarcode,
 	addClass: FaPenSquare,
 	bag: FaShoppingBag,
+	external: FaExternalLinkAlt,
 };
