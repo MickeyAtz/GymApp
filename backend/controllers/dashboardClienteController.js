@@ -1,10 +1,6 @@
 import pool from '../db.js';
 import moment from 'moment';
 
-/**
- * KPI 1: Obtiene el estado de la membresía activa.
- * (Esta función estaba correcta, usaba perfil_id correctamente)
- */
 export const getEstadoMembresia = async (req, res) => {
 	const { perfil_id: usuarioId } = req.user;
 
@@ -58,64 +54,25 @@ export const getEstadoMembresia = async (req, res) => {
 	}
 };
 
-/**
- * KPI 2: Obtiene la próxima clase agendada del usuario.
- * CORREGIDO:
- * 1. Usa 'perfil_id' en lugar de 'id'.
- * 2. La consulta SQL ahora calcula el día de la semana actual y lo compara
- * con el día (string) de la clase para encontrar la próxima clase real.
- */
 export const getProximaClase = async (req, res) => {
-	// --- CORRECCIÓN 1: Usar perfil_id ---
 	const { perfil_id: usuarioId } = req.user;
 
 	try {
-		// --- CORRECCIÓN 2: Consulta SQL robusta ---
 		const { rows } = await pool.query(
 			`
-            WITH mis_clases AS (
-                SELECT 
-                    c.nombre AS clase_nombre,
-                    c.hora,
-                    c.dia,
-                    ins.nombre AS instructor_nombre,
-                    ins.apellidos AS instructor_apellidos,
-                    -- Mapea el día de la clase (string) a un número (0=Domingo, 1=Lunes...)
-                    CASE 
-                        WHEN c.dia = 'Domingo' THEN 0
-                        WHEN c.dia = 'Lunes' THEN 1
-                        WHEN c.dia = 'Martes' THEN 2
-                        WHEN c.dia = 'Miercoles' THEN 3
-                        WHEN c.dia = 'Jueves' THEN 4
-                        WHEN c.dia = 'Viernes' THEN 5
-                        WHEN c.dia = 'Sabado' THEN 6
-                    END AS clase_dow
-                FROM inscripciones i
-                JOIN clases c ON i.clase_id = c.id 
-                JOIN instructores ins ON c.id_instructor = ins.id 
-                WHERE
-                    i.usuario_id = $1
-                    AND i.fechabaja IS NULL -- Inscripción activa
-                    AND c.fechabaja IS NULL -- Clase activa
-            ),
-            calculos_hoy AS (
-                SELECT 
-                    EXTRACT(DOW FROM NOW()) AS hoy_dow, -- Día de la semana (num)
-                    NOW()::time AS ahora_time
-            )
-            -- Selecciona la próxima clase
-            SELECT * FROM mis_clases
-            WHERE 
-                -- Opción 1: La clase es más tarde hoy
-                (clase_dow = (SELECT hoy_dow FROM calculos_hoy) AND hora > (SELECT ahora_time FROM calculos_hoy))
-                OR
-                -- Opción 2: La clase no es hoy (así la ordenamos)
-                (clase_dow != (SELECT hoy_dow FROM calculos_hoy))
-            ORDER BY
-                -- Esta fórmula ordena por el "siguiente" día de la semana,
-                -- manejando el salto de Sábado (6) a Domingo (0).
-                (clase_dow - (SELECT hoy_dow FROM calculos_hoy) + 7) % 7 ASC,
-                hora ASC
+            SELECT 
+                c.nombre AS clase_nombre,
+                c.hora
+            FROM inscripciones i
+            JOIN clases c ON i.clase_id = c.id
+            WHERE i.usuario_id = $1
+                AND i.fechabaja IS NULL
+                AND c.fechabaja IS NULL
+                -- 1. Obtiene el nombre del día de hoy (Ej: 'Lunes')
+                AND c.dia = TO_CHAR(NOW(), 'Day')
+                -- 2. Filtra solo las clases que aún no han pasado hoy
+                AND c.hora > NOW()::time
+            ORDER BY c.hora ASC -- Ordena por la más próxima
             LIMIT 1;
             `,
 			[usuarioId]
@@ -124,20 +81,18 @@ export const getProximaClase = async (req, res) => {
 		if (rows.length === 0) {
 			return res.json({
 				tieneProxima: false,
-				mensaje: 'No tienes clases agendadas',
+				mensaje: 'No tienes más clases hoy',
 			});
 		}
 
 		const proximaClase = rows[0];
-		// Formateamos la hora a un formato legible
 		const horaFormateada = moment(proximaClase.hora, 'HH:mm:ss').format(
 			'h:mm A'
 		);
 
 		return res.json({
 			tieneProxima: true,
-			mensaje: `${proximaClase.clase_nombre} - ${proximaClase.dia} ${horaFormateada}`,
-			instructor: `${proximaClase.instructor_nombre} ${proximaClase.instructor_apellidos}`,
+			mensaje: `${proximaClase.clase_nombre} - Hoy ${horaFormateada}`,
 		});
 	} catch (error) {
 		console.error('Error al obtener próxima clase:', error);
@@ -147,12 +102,7 @@ export const getProximaClase = async (req, res) => {
 	}
 };
 
-/**
- * KPI 3: Obtiene el total de asistencias en el mes actual.
- * CORREGIDO: Usa 'perfil_id' en lugar de 'id'.
- */
 export const getAsistenciasMes = async (req, res) => {
-	// --- CORRECCIÓN: Usar perfil_id ---
 	const { perfil_id: usuarioId } = req.user;
 
 	try {
@@ -178,12 +128,7 @@ export const getAsistenciasMes = async (req, res) => {
 	}
 };
 
-/**
- * KPI 4: Obtiene los datos para la gráfica de asistencias.
- * CORREGIDO: Usa 'perfil_id' en lugar de 'id'.
- */
 export const getGraficaAsistencias = async (req, res) => {
-	// --- CORRECCIÓN: Usar perfil_id ---
 	const { perfil_id: usuarioId } = req.user;
 
 	const inicioMes = moment().startOf('month').format('YYYY-MM-DD');
@@ -192,27 +137,33 @@ export const getGraficaAsistencias = async (req, res) => {
 	try {
 		const { rows } = await pool.query(
 			`
-            WITH conteo_diario AS (
+            WITH dias_mes AS (
+                SELECT GENERATE_SERIES($2::date, $3::date, '1 day'::interval) AS dia
+            ),
+            conteo_diario AS (
                 SELECT 
-                    CAST(TO_CHAR(fecha_entrada, 'DD') AS INTEGER) AS dia,
+                    DATE_TRUNC('day', fecha_entrada) AS dia,
                     COUNT(*) AS total
                 FROM visitas
                 WHERE
                     usuario_id = $1
                     AND fecha_entrada::date BETWEEN $2 AND $3 
-                GROUP BY dia 
+                GROUP BY 1
             )
-            SELECT json_build_object(
-                'labels', COALESCE(json_agg(dia ORDER BY dia ASC), '[]'::json),
-                'data', COALESCE(json_agg(total ORDER BY dia ASC), '[]'::json)
-            ) AS chart_data
-            FROM conteo_diario; 
+            SELECT 
+                TO_CHAR(d.dia, 'DD') AS dia_label,
+                COALESCE(cd.total, 0) AS total
+            FROM dias_mes d
+            LEFT JOIN conteo_diario cd ON d.dia = cd.dia
+            ORDER BY d.dia;
             `,
 			[usuarioId, inicioMes, finMes]
 		);
 
-		const data = rows[0]?.chart_data || { labels: [], data: [] };
-		return res.json(data);
+		res.json({
+			labels: rows.map((r) => r.dia_label),
+			data: rows.map((r) => parseInt(r.total)),
+		});
 	} catch (error) {
 		console.error('Error al obtener gráfica de asistencias:', error);
 		return res

@@ -7,14 +7,17 @@ import 'flatpickr/dist/themes/dark.css';
 import Card from '../components/molecules/Card';
 import Table from '../components/organism/Table';
 import Button from '../components/atoms/Button';
-import CardDashboard from '../components/atoms/CardDashboard'; // Para el total
+import CardDashboard from '../components/atoms/CardDashboard';
 
 // Tus funciones de API
 import { getReportePagosJSON, getReportePagosPDF } from '../api/reportes.js';
 
+// --- ¡IMPORTAMOS LA NUEVA FUNCIÓN! ---
+import { formatDateTime, capitalizeFirstLetter } from '../utils/formatDate.js';
+
 // Estilos
-import styles from './styles/CRUDPages.module.css'; // Estilo de header
-import stylesReporte from './styles/ReportesPage.module.css'; // Estilos específicos
+import styles from './styles/CRUDPages.module.css';
+import stylesReporte from './styles/ReportesPage.module.css';
 
 export default function ReportesPage() {
 	const [dateRange, setDateRange] = useState([new Date(), new Date()]);
@@ -28,24 +31,20 @@ export default function ReportesPage() {
 	const columns = [
 		{
 			field: 'fecha_pago',
-			label: 'Fecha y Hora',
-			render: (pago) =>
-				new Date(pago.fecha_pago).toLocaleString('es-ES', {
-					dateStyle: 'short',
-					timeStyle: 'short',
-				}),
+			label: 'FECHA Y HORA',
 		},
 		{
-			field: 'cliente',
-			label: 'Cliente',
-			render: (pago) => `${pago.cliente_nombre} ${pago.cliente_apellidos}`,
+			field: 'cliente_completo',
+			label: 'CLIENTE',
 		},
-		{ field: 'membresia_nombre', label: 'Membresía' },
-		{ field: 'tipo_pago', label: 'Método' },
+		{ field: 'membresia_nombre', label: 'MEMBRESÍA' },
+		{
+			field: 'tipo_pago', // <-- AHORA APUNTA AL DATO FORMATEADO
+			label: 'MÉTODO',
+		},
 		{
 			field: 'monto',
-			label: 'Monto',
-			render: (pago) => `$${parseFloat(pago.monto).toFixed(2)}`,
+			label: 'MONTO',
 		},
 	];
 
@@ -63,7 +62,21 @@ export default function ReportesPage() {
 		try {
 			const [inicio, fin] = dateRange.map(formatDateForAPI);
 			const data = await getReportePagosJSON(inicio, fin);
-			setReportData(data);
+
+			const formattedPagos = data.pagos.map((pago) => ({
+				...pago,
+				cliente_completo:
+					`${pago.cliente_nombre || ''} ${pago.cliente_apellidos || ''}`.trim(),
+				fecha_pago: formatDateTime(pago.fecha_pago),
+				monto: `$${parseFloat(pago.monto).toFixed(2)}`,
+				// --- ¡AQUÍ ESTÁ LA MODIFICACIÓN! ---
+				tipo_pago: capitalizeFirstLetter(pago.tipo_pago),
+			}));
+
+			setReportData({
+				...data,
+				pagos: formattedPagos,
+			});
 		} catch (err) {
 			console.error(err);
 			toast.error(err.response?.data?.error || 'Error al generar el reporte.');

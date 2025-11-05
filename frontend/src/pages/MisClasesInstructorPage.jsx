@@ -250,6 +250,7 @@ export default function MisClasesInstructorPage() {
 				title={`Alumnos en: ${selectedClase?.nombre || ''}`}
 				isOpen={isAlumnosModalOpen}
 				onClose={handleCloseAlumnosModal}
+				size="large"
 			>
 				<Table
 					columns={columnsAlumnos}
@@ -320,7 +321,7 @@ export default function MisClasesInstructorPage() {
 						<Button
 							variant="secondary"
 							onClick={handleConfirmDeleteUsuario}
-							icon="trash" // <-- MEJORA 2
+							icon="trash"
 						>
 							Sí, Eliminar
 						</Button>
