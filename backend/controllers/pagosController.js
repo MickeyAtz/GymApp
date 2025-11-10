@@ -1,6 +1,7 @@
 import pool from '../db.js';
 import moment from 'moment';
 import PDFDocument from 'pdfkit';
+import { sendMembershipPurchaseEmail } from '../services/notificacionService.js';
 
 //Creación del pago
 export const createPago = async (req, res) => {
@@ -12,6 +13,23 @@ export const createPago = async (req, res) => {
 	try {
 		await cliente.query('BEGIN');
 
+		const userInfoResult = await cliente.query(
+			`
+				SELECT u.nombre, u.apellidos, ca.email
+				FROM usuarios u
+				JOIN cuentas_acceso ca ON u.id = ca.usuario_id
+				WHERE u.id = $1
+			`,
+			[usuario_id]
+		);
+
+		if (userInfoResult.rows.length === 0) {
+			await cliente.query('ROLLBACK');
+			return res.status(404).json({ error: 'Usuario no encontrado' });
+		}
+
+		const { nombre, apellidos, email } = userInfoResult.rows[0];
+
 		const membresiaResult = await cliente.query(
 			'SELECT * FROM membresias WHERE id = $1 AND fecha_baja IS NULL',
 			[membresia_id]
@@ -21,6 +39,8 @@ export const createPago = async (req, res) => {
 			await cliente.query('ROLLBACK');
 			return res.status(404).json({ error: 'Membresía no encontrada' });
 		}
+
+		const membresia_nombre = membresiaResult.rows[0].nombre;
 
 		const duracion_dias_nueva = membresiaResult.rows[0].duracion_dias;
 		let dias_restantes_vieja = 0;
@@ -105,6 +125,24 @@ export const createPago = async (req, res) => {
 		console.log(`Nuevo registro de pago creado (ID: ${newPago.rows[0].id})`);
 		await cliente.query('COMMIT');
 		console.log('Transacción completada (COMMIT)');
+
+		const fecha_fin_formateada = moment(fecha_fin_db).format('DD/MM/YYYY');
+
+		sendMembershipPurchaseEmail(
+			nombre,
+			apellidos,
+			email,
+			membresia_nombre,
+			monto,
+			tipo_pago,
+			fecha_fin_formateada,
+			dias_restantes_vieja
+		).catch((err) => {
+			console.error(
+				'Error enviando email de compra de membresía: ',
+				err.message
+			);
+		});
 
 		return res.status(201).json({
 			message:

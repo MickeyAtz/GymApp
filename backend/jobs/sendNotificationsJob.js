@@ -1,19 +1,10 @@
 import pool from '../db.js';
 import cron from 'node-cron';
-import nodemailer from 'nodemailer';
+import { sendEmail } from '../services/emailService.js';
 import dotenv from 'dotenv';
 import { differenceInCalendarDays } from 'date-fns';
 
 dotenv.config();
-
-// Configuración del transportador de nodemailer
-const transporter = nodemailer.createTransport({
-	service: process.env.EMAIL_SERVICE,
-	auth: {
-		user: process.env.EMAIL_ADDRESS,
-		pass: process.env.EMAIL_PASS,
-	},
-});
 
 // Función que inicializa el job
 export const sendNotificationsJob = () => {
@@ -85,23 +76,20 @@ const generarNotificaciones = async () => {
 const enviarNotificaciones = async () => {
 	try {
 		const pendientes = await pool.query(`
-            SELECT n.id, n.mensaje, u.email, u.nombre
+            SELECT n.id, n.mensaje, ca.email, u.nombre
             FROM notificaciones_membresia n
             JOIN usuario_membresia um ON um.id = n.usuario_membresia_id
             JOIN usuarios u ON u.id = um.usuario_id
+            JOIN cuentas_acceso ca ON ca.usuario_id = u.id  
             WHERE n.enviado = false
         `);
 
 		for (const notificacion of pendientes.rows) {
-			const mailOptions = {
-				from: process.env.EMAIL_ADDRESS,
-				to: notificacion.email,
-				subject: 'Recordatorio de membresía',
-				text: `Hola ${notificacion.nombre}, ${notificacion.mensaje}`,
-			};
+			const subject = 'Recordatorio de Membresía';
+			const text = `Hola ${notificacion.nombre}, ${notificacion.mensaje}`;
 
 			try {
-				await transporter.sendMail(mailOptions);
+				await sendEmail(notificacion.email, subject, text);
 
 				await pool.query(
 					`UPDATE notificaciones_membresia

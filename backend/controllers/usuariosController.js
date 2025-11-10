@@ -2,6 +2,8 @@ import pool from '../db.js';
 import bcrypt from 'bcrypt';
 import { generarCodigoBarras } from '../utils/generarCodigoBarras.js';
 import { generarTarjetaPDF } from '../services/generarTarjetaPDF.js';
+import { sendWelcomeEmail } from '../services/notificacionService.js';
+import { generarTarjetaDigitalPDF } from '../services/generarTarjetaDigitalPDF.js';
 
 // POST /api/usuarios/register
 // Necesita: req.body (datos del usuario), req.user.perfil_id (empleado_id)
@@ -45,12 +47,25 @@ export const createUsuario = async (req, res) => {
 
 		await generarTarjetaPDF(cliente);
 
+		let pdfPath = null;
+		try {
+			pdfPath = await generarTarjetaDigitalPDF(cliente);
+		} catch (pdfError) {
+			console.error('ERROR EN LA GENERACIÓN DE PDF DIGITAL');
+			pdfPath = null;
+		}
+
 		console.log(cliente);
+
+		sendWelcomeEmail(nombre, apellidos, email, codigo, pdfPath).catch((err) => {
+			console.error('Error enviando email de bienvenida: ', err.message);
+		});
 
 		return res.json({
 			message: 'Usuario registrado exitosamente',
 			user: newUser.rows[0],
 		});
+		
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Error en el servidor' });
@@ -188,7 +203,6 @@ export const searchUsuarios = async (req, res) => {
 		res.status(500).json({ error: 'Error al buscar los usuarios.' });
 	}
 };
-
 
 // GET /api/usuarios/mis-inscripciones
 // Necesita: req.user.perfil_id (del token del cliente)
@@ -411,7 +425,6 @@ export const getMiPerfil = async (req, res) => {
 	}
 };
 
-
 // PUT /api/usuarios/mi-perfil
 export const updateMiPerfil = async (req, res) => {
 	const { perfil_id: usuarioId } = req.user;
@@ -494,4 +507,3 @@ export const changeMiPassword = async (req, res) => {
 		client.release();
 	}
 };
-
