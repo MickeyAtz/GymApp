@@ -1,9 +1,5 @@
 import axiosInstance from './axiosInstance';
 
-// =================================================================
-//  Funciones de ADMIN (Gestión de Instructores)
-// =================================================================
-
 // GET /api/instructores
 // Necesita: -
 // Descripción: Obtiene la lista de todos los instructores.
@@ -46,10 +42,6 @@ export const updatePassword = async (id, data) => {
 	return (await axiosInstance.put(`/instructores/${id}/passwordChange`, data))
 		.data;
 };
-
-// =================================================================
-//  Funciones de INSTRUCTOR (Gestión de "Mis Clases")
-// =================================================================
 
 // GET /api/instructores/mis-clases
 // Necesita: - (El token se encarga de identificar al instructor)

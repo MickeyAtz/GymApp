@@ -24,7 +24,7 @@ export default function InstructoresPage() {
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
-	const [isSaving, setIsSaving] = useState(false); // <-- MEJORA 1
+	const [isSaving, setIsSaving] = useState(false); 
 
 	useEffect(() => {
 		document.title = 'Gym App - Instructores';
@@ -105,7 +105,7 @@ export default function InstructoresPage() {
 	};
 
 	const handleSubmit = async (formData) => {
-		setIsSaving(true); // <-- MEJORA 1
+		setIsSaving(true); 
 		try {
 			if (modalTitle === 'Cambiar contraseña') {
 				if (formData.password !== formData.confirmPassword) {
@@ -133,7 +133,7 @@ export default function InstructoresPage() {
 				err.response?.data?.error || 'No se pudo guardar el instructor.'
 			);
 		} finally {
-			setIsSaving(false); // <-- MEJORA 1
+			setIsSaving(false); 
 		}
 	};
 
@@ -183,7 +183,7 @@ export default function InstructoresPage() {
 						setIsModalOpen(true)
 					)}
 					clasName={styles.addBtn}
-					icon="plus" // <-- MEJORA 2
+					icon="plus" 
 				>
 					Agregar Instructor
 				</Button>
@@ -195,7 +195,6 @@ export default function InstructoresPage() {
 					data={instructores}
 					renderActions={(instructor) => (
 						<>
-							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
 								icon="edit"
 								title="Editar"
@@ -245,7 +244,7 @@ export default function InstructoresPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
-					isSaving={isSaving} // <-- MEJORA 1
+					isSaving={isSaving} 
 				></FormAtom>
 			</Modal>
 			<Modal
@@ -270,7 +269,7 @@ export default function InstructoresPage() {
 						<Button
 							variant="secondary"
 							onClick={handleConfirmDelete}
-							icon="trash" // <-- MEJORA 2
+							icon="trash" 
 						>
 							Sí, Eliminar
 						</Button>

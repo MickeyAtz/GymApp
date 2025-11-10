@@ -58,7 +58,7 @@ export default function ClasesPage() {
 		'Martes',
 		'Miercoles',
 		'Jueves',
-		'Viernes',
+		'Viernes', 	
 		'Sabado',
 		'Domingo',
 	];
@@ -118,7 +118,7 @@ export default function ClasesPage() {
 	};
 
 	const handleSubmit = async (formData) => {
-		setIsSaving(true); // <-- MEJORA 1
+		setIsSaving(true);
 		const payload = { ...formData };
 
 		try {
@@ -136,7 +136,7 @@ export default function ClasesPage() {
 			console.error(err);
 			toast.error(err.response?.data?.error || 'No se pudo guardar la clase.');
 		} finally {
-			setIsSaving(false); // <-- MEJORA 1
+			setIsSaving(false);
 		}
 	};
 
@@ -191,7 +191,7 @@ export default function ClasesPage() {
 							setEditData(null));
 					}}
 					className={styles.addBtn}
-					icon="plus" // <-- MEJORA 2
+					icon="plus" 
 				>
 					Agregar Clase
 				</Button>
@@ -203,7 +203,6 @@ export default function ClasesPage() {
 					data={clases}
 					renderActions={(clase) => (
 						<>
-							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
 								icon="edit"
 								title="Editar"
@@ -246,7 +245,7 @@ export default function ClasesPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
-					isSaving={isSaving} // <-- MEJORA 1
+					isSaving={isSaving} 
 				></FormAtom>
 			</Modal>
 
@@ -272,7 +271,7 @@ export default function ClasesPage() {
 						<Button
 							variant="secondary"
 							onClick={handleConfirmDelete}
-							icon="trash" // <-- MEJORA 2
+							icon="trash" 
 						>
 							Sí, Eliminar
 						</Button>

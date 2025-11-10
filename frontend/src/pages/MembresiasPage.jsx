@@ -23,7 +23,7 @@ export default function MembresiasPage() {
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
-	const [isSaving, setIsSaving] = useState(false); // <-- MEJORA 1
+	const [isSaving, setIsSaving] = useState(false); 
 
 	useEffect(() => {
 		document.title = 'Gym App - Membresías';
@@ -74,7 +74,7 @@ export default function MembresiasPage() {
 	};
 
 	const handleSubmit = async (formData) => {
-		setIsSaving(true); // <-- MEJORA 1
+		setIsSaving(true); 
 		const payload = {
 			...formData,
 			activo: formData.activo === 'true' || formData.activo === true,
@@ -97,7 +97,7 @@ export default function MembresiasPage() {
 				err.response?.data?.error || 'No se pudo guardar la membresía.'
 			);
 		} finally {
-			setIsSaving(false); // <-- MEJORA 1
+			setIsSaving(false); 
 		}
 	};
 
@@ -117,8 +117,6 @@ export default function MembresiasPage() {
 	const handleConfirmDelete = async () => {
 		if (!itemParaBorrar) return;
 		try {
-			// (Tu lógica de deleteMembresia estaba comentada, si la necesitas, descomenta)
-			// await deleteMembresia(itemParaBorrar);
 			toast.info('Acción de eliminar ejecutada.');
 		} catch (err) {
 			console.error(err);
@@ -141,7 +139,7 @@ export default function MembresiasPage() {
 						setEditData(null);
 					}}
 					className={styles.addBtn}
-					icon="plus" // <-- MEJORA 2
+					icon="plus"
 				>
 					Agregar Membresía
 				</Button>
@@ -153,7 +151,6 @@ export default function MembresiasPage() {
 					data={membresias}
 					renderActions={(membresia) => (
 						<>
-							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
 								icon="edit"
 								title="Editar"
@@ -189,7 +186,7 @@ export default function MembresiasPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
-					isSaving={isSaving} // <-- MEJORA 1
+					isSaving={isSaving} 
 				/>
 			</Modal>
 
@@ -215,7 +212,7 @@ export default function MembresiasPage() {
 						<Button
 							variant="secondary"
 							onClick={handleConfirmDelete}
-							icon="trash" // <-- MEJORA 2
+							icon="trash" 
 						>
 							Sí, Eliminar
 						</Button>

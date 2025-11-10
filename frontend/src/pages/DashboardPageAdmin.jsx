@@ -157,7 +157,6 @@ export default function DashboardPageAdmin() {
 				setDashboardData((prev) => ({
 					...prev,
 					visitasMensuales: {
-						// Asumimos que el backend ya da el formato {labels, data}
 						labels: data?.labels ?? [],
 						data: data?.data ?? [],
 					},
@@ -172,7 +171,6 @@ export default function DashboardPageAdmin() {
 				setDashboardData((prev) => ({
 					...prev,
 					visitasSemanales: {
-						// Asumimos que el backend ya da el formato {labels, data}
 						labels: data?.labels ?? [],
 						data: data?.data ?? [],
 					},

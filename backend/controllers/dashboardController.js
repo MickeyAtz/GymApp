@@ -38,14 +38,12 @@ export const usuariosPorMes = async (req, res) => {
 	try {
 		const result = await pool.query(`
             WITH meses AS (
-                -- 1. Genera una serie de los últimos 12 meses
                 SELECT DATE_TRUNC('month', GENERATE_SERIES(
                     CURRENT_DATE - INTERVAL '11 months',
                     CURRENT_DATE,
                     INTERVAL '1 month'
                 )) AS mes_inicio
             )
-            -- 2. Cuenta los usuarios por mes y hace un LEFT JOIN
             SELECT 
                 TO_CHAR(m.mes_inicio, 'Mon YYYY') AS mes,
                 COUNT(u.id) AS total

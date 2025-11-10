@@ -27,7 +27,7 @@ export default function EmpleadosPage() {
 	const [modalTitle, setModalTitle] = useState('');
 	const [editData, setEditData] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
-	const [isSaving, setIsSaving] = useState(false); // <-- MEJORA 1
+	const [isSaving, setIsSaving] = useState(false); 
 
 	useEffect(() => {
 		document.title = 'Gym App - Empleados';
@@ -119,7 +119,7 @@ export default function EmpleadosPage() {
 	};
 
 	const handleSubmit = async (formData) => {
-		setIsSaving(true); // <-- MEJORA 1
+		setIsSaving(true); 
 		try {
 			if (modalTitle === 'Cambiar contraseña') {
 				if (formData.password !== formData.confirmPassword) {
@@ -146,7 +146,7 @@ export default function EmpleadosPage() {
 				err.response?.data?.error || 'No se pudo guardar el empleado.'
 			);
 		} finally {
-			setIsSaving(false); // <-- MEJORA 1
+			setIsSaving(false); 
 		}
 	};
 
@@ -166,7 +166,7 @@ export default function EmpleadosPage() {
 	const handleConfirmDelete = async () => {
 		if (!itemParaBorrar) return;
 		try {
-			await deleteEmpleado(itemParaBorrar); // Corregido: usaba 'id' en lugar de 'itemParaBorrar'
+			await deleteEmpleado(itemParaBorrar); 
 			toast.info('Empleado eliminado correctamente.');
 			fetchEmpleados();
 		} catch (err) {
@@ -197,7 +197,7 @@ export default function EmpleadosPage() {
 						(setIsModalOpen(true), setModalTitle('Nuevo Empleado'));
 					}}
 					className={styles.addBtn}
-					icon="plus" // <-- MEJORA 2
+					icon="plus"
 				>
 					Agregar Empleado
 				</Button>
@@ -209,7 +209,6 @@ export default function EmpleadosPage() {
 					data={empleados}
 					renderActions={(empleado) => (
 						<>
-							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
 								icon="edit"
 								title="Editar"
@@ -265,7 +264,7 @@ export default function EmpleadosPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
-					isSaving={isSaving} // <-- MEJORA 1
+					isSaving={isSaving}
 				></FormAtom>
 			</Modal>
 
@@ -291,7 +290,7 @@ export default function EmpleadosPage() {
 						<Button
 							variant="secondary"
 							onClick={handleConfirmDelete}
-							icon="trash" // <-- MEJORA 2
+							icon="trash" 
 						>
 							Sí, Eliminar
 						</Button>

@@ -77,7 +77,7 @@ export default function DashboardPageInstructor() {
 							{
 								label: 'Total Enrolled (Month)',
 								data: popularidadResult.value.data,
-								backgroundColor: 'rgba(255, 159, 64, 0.5)', // Orange color
+								backgroundColor: 'rgba(255, 159, 64, 0.5)',
 								borderColor: 'rgba(255, 159, 64, 1)',
 								borderWidth: 1,
 							},

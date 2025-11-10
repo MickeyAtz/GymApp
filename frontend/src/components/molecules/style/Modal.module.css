@@ -24,13 +24,12 @@
 	visibility: visible;
 }
 
-/* --- ESTILOS BASE DEL MODAL (SIN ANCHO) --- */
 .modal {
 	background-color: var(--color-bg-alt);
 	color: var(--color-text);
 	padding: 2.5rem;
 	border-radius: 12px;
-	width: 90%; /* Ancho en móviles */
+	width: 90%;
 	position: relative;
 	transform: translateY(-20px);
 	opacity: 0;

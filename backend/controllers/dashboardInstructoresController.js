@@ -16,9 +16,7 @@ export const getProximaClaseInstructor = async (req, res) => {
             WHERE
                 c.id_instructor = $1
                 AND c.fechabaja IS NULL
-                -- 1. Comprueba que la clase sea hoy
                 AND c.dia = TO_CHAR(NOW(), 'Day')
-                -- 2. Comprueba que la hora sea futura
                 AND c.hora >= NOW()::time 
             ORDER BY c.hora ASC
             LIMIT 1;
@@ -116,11 +114,11 @@ export const getPopularidadClasesInstructor = async (req, res) => {
                 COUNT(i.id) AS total_inscritos 
             FROM clases c
             LEFT JOIN inscripciones i ON c.id = i.clase_id
-                AND i.fecha_inscripcion BETWEEN $2 AND $3 -- Inscripciones del mes
-                AND i.fechabaja IS NULL -- Inscripciones activas
+                AND i.fecha_inscripcion BETWEEN $2 AND $3
+                AND i.fechabaja IS NULL 
             WHERE
                 c.id_instructor = $1
-                AND c.fechabaja IS NULL -- Clases activas
+                AND c.fechabaja IS NULL
             GROUP BY c.nombre 
             ORDER BY total_inscritos DESC;
             `,

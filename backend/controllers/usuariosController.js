@@ -3,10 +3,6 @@ import bcrypt from 'bcrypt';
 import { generarCodigoBarras } from '../utils/generarCodigoBarras.js';
 import { generarTarjetaPDF } from '../services/generarTarjetaPDF.js';
 
-// =================================================================
-//  Funciones de ADMIN (Gestión de Clientes/Usuarios)
-// =================================================================
-
 // POST /api/usuarios/register
 // Necesita: req.body (datos del usuario), req.user.perfil_id (empleado_id)
 // Descripción: Registra un nuevo cliente (usuario) y su cuenta de acceso usando un SP.
@@ -193,9 +189,6 @@ export const searchUsuarios = async (req, res) => {
 	}
 };
 
-// =================================================================
-//  Funciones de CLIENTE (Gestión de "Mis Inscripciones")
-// =================================================================
 
 // GET /api/usuarios/mis-inscripciones
 // Necesita: req.user.perfil_id (del token del cliente)
@@ -266,9 +259,6 @@ export const getClasesDisponibles = async (req, res) => {
 	}
 };
 
-// POST /api/usuarios/inscribir/:clase_id
-// Necesita: req.params.clase_id, req.user.perfil_id (del token)
-// Descripción: Inscribe al cliente en una clase, verificando cupo y concurrencia.
 // POST /api/cliente/inscribir/:clase_id
 // Necesita: req.params.clase_id, req.user.perfil_id (del token)
 // Descripción: Inscribe al cliente en una clase (con lógica UPSERT).
@@ -386,10 +376,6 @@ export const darseDeBaja = async (req, res) => {
 	}
 };
 
-// =================================================================
-//  Funciones de CLIENTE (Gestión de "Mi Perfil")
-// =================================================================
-
 // GET /api/usuarios/mi-perfil
 export const getMiPerfil = async (req, res) => {
 	const { perfil_id: usuarioId } = req.user;
@@ -408,13 +394,11 @@ export const getMiPerfil = async (req, res) => {
              WHERE usuario_id = $1`,
 			[usuarioId]
 		);
-		// --- FIN DE LA CORRECCIÓN ---
 
 		if (usuarioResult.rows.length === 0 || cuentaResult.rows.length === 0) {
 			return res.status(404).json({ error: 'Usuario no encontrado.' });
 		}
 
-		// Combinamos los resultados de ambas consultas
 		const perfil = {
 			...usuarioResult.rows[0],
 			...cuentaResult.rows[0],

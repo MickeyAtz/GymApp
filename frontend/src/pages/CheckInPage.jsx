@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { registrarVisita } from '../api/visitas.js';
-import styles from './styles/CheckInPage.module.css'; // ¡CSS 100% Nuevo!
+import styles from './styles/CheckInPage.module.css'; 
 
-// Importamos los íconos
 import {
 	FaCheckCircle,
 	FaTimesCircle,
@@ -24,7 +23,6 @@ export default function CheckInPage() {
 		};
 	}, []);
 
-	// --- Lógica de Submit (sin cambios) ---
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (!scanData || isLoading) return;
@@ -51,9 +49,7 @@ export default function CheckInPage() {
 		}
 	};
 
-	// --- Lógica de Focus y Reseteo (sin cambios) ---
 	useEffect(() => {
-		// Enfoca el input al cargar y si se pierde el foco
 		inputRef.current?.focus();
 		const handleFocusLoss = () => inputRef.current?.focus();
 		window.addEventListener('blur', handleFocusLoss);
@@ -61,7 +57,6 @@ export default function CheckInPage() {
 	}, []);
 
 	useEffect(() => {
-		// Resetea el formulario después de 4s
 		if (scanResult) {
 			const timer = setTimeout(() => {
 				setScanResult(null);
@@ -72,7 +67,6 @@ export default function CheckInPage() {
 		}
 	}, [scanResult]);
 
-	// --- Funciones de Renderizado (Actualizadas) ---
 	const getResultClass = () => {
 		if (!scanResult) return '';
 		if (scanResult.status === 'success_in') return styles.success;

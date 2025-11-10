@@ -8,3 +8,4 @@ const Badge = ({ children, variant = 'primary' }) => {
 };
 
 export default Badge;
+	

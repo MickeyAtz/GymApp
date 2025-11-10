@@ -3,19 +3,15 @@ import { toast } from 'react-toastify';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/themes/dark.css';
 
-// Tus componentes
 import Card from '../components/molecules/Card';
 import Table from '../components/organism/Table';
 import Button from '../components/atoms/Button';
 import CardDashboard from '../components/atoms/CardDashboard';
 
-// Tus funciones de API
 import { getReportePagosJSON, getReportePagosPDF } from '../api/reportes.js';
 
-// --- ¡IMPORTAMOS LA NUEVA FUNCIÓN! ---
 import { formatDateTime, capitalizeFirstLetter } from '../utils/formatDate.js';
 
-// Estilos
 import styles from './styles/CRUDPages.module.css';
 import stylesReporte from './styles/ReportesPage.module.css';
 
@@ -39,7 +35,7 @@ export default function ReportesPage() {
 		},
 		{ field: 'membresia_nombre', label: 'MEMBRESÍA' },
 		{
-			field: 'tipo_pago', // <-- AHORA APUNTA AL DATO FORMATEADO
+			field: 'tipo_pago',
 			label: 'MÉTODO',
 		},
 		{
@@ -69,7 +65,6 @@ export default function ReportesPage() {
 					`${pago.cliente_nombre || ''} ${pago.cliente_apellidos || ''}`.trim(),
 				fecha_pago: formatDateTime(pago.fecha_pago),
 				monto: `$${parseFloat(pago.monto).toFixed(2)}`,
-				// --- ¡AQUÍ ESTÁ LA MODIFICACIÓN! ---
 				tipo_pago: capitalizeFirstLetter(pago.tipo_pago),
 			}));
 

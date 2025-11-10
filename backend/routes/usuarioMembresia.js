@@ -18,4 +18,3 @@ router.get('/activo/:usuario_id', getUsuarioMembresiaActiva);
 
 export default router;
 
-//FALTA IMPLEMENTAR CHECKROLE Y VERIFY TOKEN, POR AHORA QUEDAN DESASCTIVADOS EN TODOS LADOS

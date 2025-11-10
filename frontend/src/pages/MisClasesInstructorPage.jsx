@@ -96,7 +96,7 @@ export default function MisClasesInstructorPage() {
 	};
 
 	const handleSubmitClase = async (formData) => {
-		setIsSaving(true); // <-- MEJORA 1
+		setIsSaving(true); 
 		try {
 			if (editData) {
 				await updateClase(editData.id, formData);
@@ -112,7 +112,7 @@ export default function MisClasesInstructorPage() {
 			console.error(error.message);
 			toast.error('No se pudo guardar la información.');
 		} finally {
-			setIsSaving(false); // <-- MEJORA 1
+			setIsSaving(false);
 		}
 	};
 
@@ -188,7 +188,7 @@ export default function MisClasesInstructorPage() {
 						setEditData(null);
 					}}
 					className={styles.addBtn}
-					icon="plus" // <-- MEJORA 2
+					icon="plus" 
 				>
 					Agregar Clase
 				</Button>
@@ -209,7 +209,6 @@ export default function MisClasesInstructorPage() {
 								Gestionar Cupos ({clase.inscritos})
 							</Button>
 
-							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
 								icon="edit"
 								title="Editar"
@@ -242,7 +241,7 @@ export default function MisClasesInstructorPage() {
 					initialData={editData || {}}
 					onSubmit={handleSubmitClase}
 					onCancel={() => setIsCrudModalOpen(false)}
-					isSaving={isSaving} // <-- MEJORA 1
+					isSaving={isSaving} 
 				></FormAtom>
 			</Modal>
 
@@ -257,7 +256,7 @@ export default function MisClasesInstructorPage() {
 					data={alumnos}
 					renderActions={(alumno) => (
 						<Button
-							icon="trash" // <-- MEJORA 2
+							icon="trash"
 							title="Eliminar Alumno"
 							onClick={() => handleEliminarAlumno(alumno.inscripcion_id)}
 							variant="secondary"
@@ -289,7 +288,7 @@ export default function MisClasesInstructorPage() {
 						<Button
 							variant="secondary"
 							onClick={handleConfirmDelete}
-							icon="trash" // <-- MEJORA 2
+							icon="trash" 
 						>
 							Sí, Eliminar
 						</Button>

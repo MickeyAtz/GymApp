@@ -11,16 +11,13 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.5rem; /* Espacio entre ícono y texto */
+	gap: 0.5rem; 
 }
 
-/* --- NUEVO ESTILO: Tamaño del ícono dentro del botón --- */
 .button svg {
-	font-size: 1.1em; /* El ícono será un 1.1 veces el tamaño del texto del botón */
+	font-size: 1.1em; 
 }
-/* --- FIN NUEVO ESTILO --- */
 
-/* --- Variantes de Color (Usando tus variables) --- */
 .primary {
 	background-color: var(--color-primary);
 	color: var(--color-bg);
@@ -64,23 +61,20 @@
 	font-size: 1.125rem;
 }
 
-/* --- NUEVO: Estilo para botones que SÓLO tienen ícono --- */
 .iconOnly {
-	padding: 8px; /* Padding cuadrado para el botón */
+	padding: 8px;
 	aspect-ratio: 1 / 1;
-	/* Ajustamos el tamaño de la fuente para que el ícono sea más grande */
-	font-size: 1.2rem; /* <-- ESTO HACE EL ÍCONO MÁS GRANDE */
+	font-size: 1.2rem; 
 }
 .iconOnly.small {
-	padding: 6px; /* Ajustamos el padding para el tamaño small */
-	font-size: 1.1rem; /* Ajustamos el tamaño del ícono small */
+	padding: 6px; 
+	font-size: 1.1rem; 
 }
 .iconOnly.medium {
 	padding: 8px;
-	font-size: 1.3rem; /* Ajustamos el tamaño del ícono medium */
+	font-size: 1.3rem; 
 }
 
-/* --- Estado Deshabilitado --- */
 .button:disabled {
 	background-color: var(--color-border);
 	color: #666;

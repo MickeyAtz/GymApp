@@ -31,6 +31,3 @@ export const getVisitasMes = async () =>
 
 export const getVisitasSemana = async () =>
 	(await axiosInstance.get('/dashboard/visitas-semana')).data;
-//DASHBOARD clientes
-
-//DASHBOARD instructores

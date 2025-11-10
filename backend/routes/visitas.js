@@ -33,7 +33,7 @@ router.get(
 router.get(
 	'/mi-historial',
 	authorizeRoles('cliente'),
-	getMiHistorialVisitas // <-- Nueva función
+	getMiHistorialVisitas 
 );
 
 export default router;

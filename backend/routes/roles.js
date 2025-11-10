@@ -1,4 +1,3 @@
-
 import express from 'express';
 import {
 	createRol,
@@ -12,6 +11,7 @@ import { verifyToken } from '../middleware/auth.js';
 import { authorizeRoles } from '../middleware/checkRole.js';
 
 const router = express.Router();
+router.use(verifyToken);
 
 // ----------------------------CRUD-----------------------------
 router.post('/', createRol);
@@ -21,5 +21,3 @@ router.put('/:id', updateRol);
 router.put('/:id/baja', deleteRol);
 
 export default router;
-
-//FALTA IMPLEMENTAR CHECKROLE Y VERIFY TOKEN, POR AHORA QUEDAN DESASCTIVADOS EN TODOS LADOS

@@ -10,8 +10,8 @@ export default function FormAtom({
 	initialData = {},
 	onSubmit,
 	onCancel,
-	isSaving = false, // <-- Nueva prop
-	children, // <-- Nueva prop (para sobrescribir botones)
+	isSaving = false, 
+	children,
 }) {
 	const [formData, setFormData] = useState({});
 

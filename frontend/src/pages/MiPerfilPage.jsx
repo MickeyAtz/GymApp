@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-// Tus componentes
 import Card from '../components/molecules/Card';
 import Table from '../components/organism/Table';
 import Button from '../components/atoms/Button';
 import FormAtom from '../components/atoms/FormAtom';
 import Loading from '../components/atoms/Loading';
 
-// Tus funciones de API
 import {
 	getMiPerfil,
 	updateMiPerfil,
@@ -17,10 +15,8 @@ import {
 import { getMiHistorialPagos } from '../api/reportes.js';
 import { getMiHistorialVisitas } from '../api/visitas.js';
 
-// --- ¡NUEVA IMPORTACIÓN! ---
 import { formatDateTime } from '../utils/formatDate.js';
 
-// Estilos
 import styles from './styles/CRUDPages.module.css';
 import stylesPerfil from './styles/MiPerfilPage.module.css';
 
@@ -49,8 +45,8 @@ export default function MiPerfilPage() {
 
 			const formattedPagos = pagos.map((pago) => ({
 				...pago,
-				fecha_pago: formatDateTime(pago.fecha_pago), // Sobreescribimos la fecha
-				monto: `$${parseFloat(pago.monto).toFixed(2)}`, // Formateamos el monto
+				fecha_pago: formatDateTime(pago.fecha_pago), 
+				monto: `$${parseFloat(pago.monto).toFixed(2)}`, 
 			}));
 
 			const formattedVisitas = visitas.map((visita) => ({
@@ -114,7 +110,6 @@ export default function MiPerfilPage() {
 		},
 	];
 
-	// --- Tabla de Pagos (Simple, sin 'render') ---
 	const columnsPagos = [
 		{ field: 'fecha_pago', label: 'Fecha' },
 		{ field: 'membresia_nombre', label: 'Membresía' },
@@ -122,7 +117,6 @@ export default function MiPerfilPage() {
 		{ field: 'tipo_pago', label: 'Método' },
 	];
 
-	// --- Tabla de Visitas (Simple, sin 'render') ---
 	const columnsVisitas = [
 		{ field: 'fecha_entrada', label: 'Entrada' },
 		{ field: 'fecha_salida', label: 'Salida' },
@@ -135,7 +129,6 @@ export default function MiPerfilPage() {
 		try {
 			await updateMiPerfil(formData);
 			toast.success('¡Perfil actualizado con éxito!');
-			// Refrescamos solo el perfil, no las tablas
 			const perfil = await getMiPerfil();
 			setPerfilData(perfil);
 		} catch (err) {

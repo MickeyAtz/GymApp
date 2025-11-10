@@ -1,24 +1,21 @@
 /* src/components/molecules/style/Card.module.css */
 
 .card {
-	/* Usamos --color-bg-alt para que contraste con el fondo --color-bg */
 	background-color: var(--color-bg-alt);
 	color: var(--color-text);
 	border-radius: 12px;
-	padding: 1.5rem; /* Más padding */
+	padding: 1.5rem; 
 
-	/* Sombra más sutil para un tema oscuro */
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 	display: flex;
 	flex-direction: column;
-	gap: 1rem; /* Espacio entre título y contenido */
+	gap: 1rem; 
 	transition:
 		transform 0.3s ease,
 		box-shadow 0.3s ease;
 }
 
 .card:hover {
-	/* El efecto "lift" (levantarse) que mencionamos */
 	transform: translateY(-4px);
 	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
 }
@@ -26,17 +23,15 @@
 .title {
 	font-size: 1.25rem;
 	font-weight: 600;
-	/* El título usa el color primario (dorado) */
 	color: var(--color-primary);
-	padding-bottom: 0.75rem; /* Separador */
+	padding-bottom: 0.75rem;
 	border-bottom: 1px solid var(--color-border);
 }
 
 .subtitle {
 	font-size: 0.9rem;
-	/* El subtítulo usa el color terciario (naranja) */
 	color: var(--color-tertiary);
-	margin-top: -0.75rem; /* Pega el subtítulo al título */
+	margin-top: -0.75rem; 
 }
 
 .content {

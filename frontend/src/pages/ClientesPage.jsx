@@ -38,7 +38,6 @@ export default function ClientesPage() {
 	const [usuario, setUsuario] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
 
-	// --- MEJORA 1: Estado de carga ---
 	const [isSaving, setIsSaving] = useState(false);
 
 	const obtenerUsuario = () => {
@@ -137,7 +136,7 @@ export default function ClientesPage() {
 					'Ocurrió un error. Por favor, intenta de nuevo.'
 			);
 		} finally {
-			setIsSaving(false); // <-- MEJORA 1: Desactivar estado de carga
+			setIsSaving(false);
 		}
 	};
 
@@ -182,7 +181,7 @@ export default function ClientesPage() {
 				<h2>Gestión de clientes</h2>
 				<Button
 					onClick={() => (setIsModalOpen(true), setModalTitle('Nuevo Cliente'))}
-					icon="plus" // <-- MEJORA 2: Ícono en el botón
+					icon="plus"
 				>
 					Agregar Cliente
 				</Button>
@@ -194,7 +193,6 @@ export default function ClientesPage() {
 					data={clientes}
 					renderActions={(cliente) => (
 						<>
-							{/* --- MEJORA 2: Botones de Íconos --- */}
 							<Button
 								icon="edit"
 								title="Editar"
@@ -215,10 +213,6 @@ export default function ClientesPage() {
 								size="small"
 								title="Cambiar contraseña"
 							>
-								{/* No tenemos un ícono de 'llave' en el iconMap, 
-                  así que dejamos el texto. O podrías añadir 'FaKey' al iconMap 
-                  y usar 'icon="key"'. Por ahora, con texto está bien.
-                */}
 								Cambiar contraseña
 							</Button>
 						</>
@@ -248,7 +242,7 @@ export default function ClientesPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
-					isSaving={isSaving} // <-- MEJORA 1: Pasar el estado de carga
+					isSaving={isSaving}
 				></FormAtom>
 			</Modal>
 

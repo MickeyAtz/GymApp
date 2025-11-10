@@ -3,7 +3,7 @@ import Table from '../components/organism/Table';
 import Card from '../components/molecules/Card';
 import Button from '../components/atoms/Button';
 import styles from './styles/CRUDPages.module.css';
-import './styles/InscripcionCliente.css'; // (Este archivo CSS ya no sería tan necesario)
+import './styles/InscripcionCliente.css'; 
 
 import Modal from '../components/molecules/Modal';
 
@@ -32,7 +32,6 @@ export default function InscripcionClientePage() {
 		},
 	];
 
-	// --- ¡NUEVO! Columnas para la Tabla 2 (Clases Disponibles) ---
 	const columnsDisponibles = [
 		{ field: 'nombre', label: 'Clase' },
 		{ field: 'instructor_nombre', label: 'Instructor' },
@@ -162,13 +161,13 @@ export default function InscripcionClientePage() {
 						}}
 					>
 						<Button
-							variant="secondary" // (Asumiendo que 'secondary' es tu botón rojo)
+							variant="secondary"
 							onClick={handleConfirmDelete}
 						>
 							Sí, Eliminar
 						</Button>
 						<Button
-							variant="primary" // (O un botón neutral/dorado)
+							variant="primary" 
 							onClick={() => setItemParaBorrar(null)}
 						>
 							Cancelar

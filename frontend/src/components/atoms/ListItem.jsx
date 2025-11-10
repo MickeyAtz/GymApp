@@ -21,7 +21,7 @@ export default function ListItem({ item, renderContent, actions = [], badge }) {
 							variant={action.variant || 'primary'}
 							onClick={() => action.onClick(item)}
 						>
-							{action.label}
+							{action.label}	
 						</Button>
 					))}
 					;

@@ -3,10 +3,6 @@ import axiosInstance from './axiosInstance';
 // Prefijo de la ruta base
 const API_URL = '/usuarios';
 
-// =================================================================
-//  Funciones de ADMIN (Gestión de Clientes/Usuarios)
-// =================================================================
-
 // GET /api/usuarios
 // Necesita: -
 // Descripción: Obtiene la lista de todos los usuarios (clientes).
@@ -60,10 +56,6 @@ export const searchUsuarios = async (query) => {
 		})
 	).data;
 };
-
-// =================================================================
-//  Funciones de CLIENTE (Gestión de "Mis Inscripciones")
-// =================================================================
 
 // GET /api/usuarios/mis-inscripciones
 // Necesita: - (Token de cliente)

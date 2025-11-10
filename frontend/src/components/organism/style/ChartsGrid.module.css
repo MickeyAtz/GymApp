@@ -6,9 +6,8 @@
 	gap: 24px;
 }
 
-/* Esto es básicamente un <Card>, así que le damos esos estilos */
 .chartItem {
-	background-color: var(--color-bg-alt); /* Fondo de Card */
+	background-color: var(--color-bg-alt); 
 	color: var(--color-text);
 	padding: 1.5rem;
 	border-radius: 12px;

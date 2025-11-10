@@ -4,7 +4,7 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 0.75rem 1rem;
-	background-color: var(--color-bg-alt); /* Fondo alternativo */
+	background-color: var(--color-bg-alt); 
 	border: 1px solid var(--color-border);
 	border-radius: 0.5rem;
 }

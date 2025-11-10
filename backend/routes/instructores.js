@@ -63,10 +63,6 @@ router.delete(
 	deleteClaseInstructor
 );
 
-// =================================================================
-//  RUTAS DE ADMIN (Gestión de Instructores)
-// =================================================================
-
 // POST /api/instructores/register
 router.post(
 	'/register',

@@ -1,7 +1,6 @@
 /* src/components/organism/style/Sidebar.module.css */
 
 .sidebar {
-	/* Fondo alternativo */
 	background-color: var(--color-bg-alt);
 	color: var(--color-text);
 	display: flex;
@@ -10,7 +9,7 @@
 	overflow-x: hidden;
 	height: 100vh;
 	flex-shrink: 0;
-	border-right: 1px solid var(--color-border); /* Borde sutil */
+	border-right: 1px solid var(--color-border);
 }
 
 .sidebar.open {
@@ -73,7 +72,7 @@
 	overflow-y: auto;
 	flex-grow: 1;
 	width: 100%;
-	padding: 0 0.5rem; /* Padding lateral */
+	padding: 0 0.5rem;
 }
 
 .item {
@@ -83,7 +82,7 @@
 	padding: 12px;
 	width: 100%;
 	cursor: pointer;
-	border-radius: 8px; /* Bordes redondeados */
+	border-radius: 8px;
 	transition: all 0.3s;
 }
 .sidebar.open .item {
@@ -92,11 +91,10 @@
 	gap: 12px;
 }
 .item:hover {
-	background-color: var(--color-border); /* Fondo gris al pasar el mouse */
+	background-color: var(--color-border);
 }
 .active {
-	/* El item activo tiene fondo y texto dorado */
-	background-color: rgba(255, 215, 0, 0.1); /* Fondo dorado traslúcido */
+	background-color: rgba(255, 215, 0, 0.1); 
 	color: var(--color-primary);
 }
 
@@ -122,7 +120,7 @@ a {
 .logoutContainer {
 	margin-top: auto;
 	width: 100%;
-	padding: 0 0.5rem 1rem 0.5rem; /* Padding para el botón */
+	padding: 0 0.5rem 1rem 0.5rem; 
 }
 .logoutBtn {
 	display: flex;
@@ -142,7 +140,7 @@ a {
 	padding-left: 20px;
 }
 .logoutBtn:hover {
-	background-color: var(--color-accent); /* Fondo rojo al pasar el mouse */
+	background-color: var(--color-accent); 
 	color: var(--color-text);
 }
 

@@ -59,28 +59,24 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 			<div className={styles.items}>
 				{items.map((item) => {
 					const Icon = iconMap[item.icon];
-					// --- ¡NUEVA LÓGICA! ---
 					const ExternalIcon = item.isExternal ? iconMap['external'] : null;
 					const isActive = item.id === activeItem;
 
-					// 1. Preparamos el contenido del enlace
 					const linkContent = (
 						<>
 							{Icon && <Icon className={styles.icon} />}
 							{isOpen && <span className={styles.label}>{item.label}</span>}
-							{/* 2. Añadimos el icono 'external' si está abierto y es externo */}
 							{isOpen && ExternalIcon && (
 								<ExternalIcon className={styles.externalIcon} />
 							)}
 						</>
 					);
 
-					// 3. Decidimos si renderizar un <a> o un <Link>
 					if (item.isExternal) {
 						return (
 							<a
 								href={item.path}
-								target="_blank" // <-- La magia para la nueva pestaña
+								target="_blank" 
 								rel="noopener noreferrer"
 								key={item.id}
 								className={`${styles.item} ${isActive ? styles.active : ''}`}

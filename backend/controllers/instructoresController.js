@@ -1,10 +1,6 @@
 import pool from '../db.js';
 import bcrypt from 'bcrypt';
 
-// =================================================================
-//   Funciones de ADMIN (Gestión de Instructores)
-// =================================================================
-
 // POST /api/instructores/register
 // Necesita: req.body (datos del instructor), req.user.perfil_id (empleado_id)
 // Descripción: Registra un nuevo instructor y su cuenta de acceso usando un SP.
@@ -160,9 +156,6 @@ export const passwordChange = async (req, res) => {
 	}
 };
 
-// =================================================================
-//   Funciones de INSTRUCTOR (Gestión de "Mis Clases")
-// =================================================================
 
 // GET /api/instructores/mis-clases
 // Necesita: req.user.perfil_id (del token de instructor)
