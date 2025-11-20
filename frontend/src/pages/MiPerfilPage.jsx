@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { useUser } from '../context/UserContext';
 
 import Card from '../components/molecules/Card';
 import Table from '../components/organism/Table';
 import Button from '../components/atoms/Button';
 import FormAtom from '../components/atoms/FormAtom';
-import Loading from '../components/atoms/Loading';
+import Badge from '../components/atoms/Badge';
 
 import {
 	getMiPerfil,
@@ -18,12 +19,15 @@ import { getMiHistorialVisitas } from '../api/visitas.js';
 import { formatDateTime } from '../utils/formatDate.js';
 
 import styles from './styles/CRUDPages.module.css';
-import stylesPerfil from './styles/MiPerfilPage.module.css';
+import pageStyles from './styles/MiPerfilPage.module.css';
 
 export default function MiPerfilPage() {
+	const { user } = useUser();
 	const [perfilData, setPerfilData] = useState(null);
 	const [historialPagos, setHistorialPagos] = useState([]);
 	const [historialVisitas, setHistorialVisitas] = useState([]);
+
+	const [activeTab, setActiveTab] = useState('visitas');
 
 	const [isSavingPerfil, setIsSavingPerfil] = useState(false);
 	const [isSavingPassword, setIsSavingPassword] = useState(false);
@@ -66,7 +70,6 @@ export default function MiPerfilPage() {
 		}
 	};
 
-	// --- Formularios ---
 	const fieldsPerfil = [
 		{ name: 'nombre', label: 'Nombre', type: 'text', placeholder: 'Tu nombre' },
 		{
@@ -104,7 +107,7 @@ export default function MiPerfilPage() {
 		},
 		{
 			name: 'confirmar_password',
-			label: 'Confirmar Contraseña Nueva',
+			label: 'Confirmar Nueva',
 			type: 'password',
 			placeholder: '********',
 		},
@@ -120,10 +123,9 @@ export default function MiPerfilPage() {
 	const columnsVisitas = [
 		{ field: 'fecha_entrada', label: 'Entrada' },
 		{ field: 'fecha_salida', label: 'Salida' },
-		{ field: 'duracion_minutos', label: 'Duración (min)' },
+		{ field: 'duracion_minutos', label: 'Duración' },
 	];
 
-	// --- Manejadores de Submit ---
 	const handleSubmitPerfil = async (formData) => {
 		setIsSavingPerfil(true);
 		try {
@@ -167,65 +169,100 @@ export default function MiPerfilPage() {
 		<div>
 			<div className={styles.header}>
 				<h2>Mi Perfil</h2>
+				<div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+					<span style={{ fontSize: '1rem', color: 'var(--color-text)' }}>
+						{user?.nombre} {user?.apellidos}
+					</span>
+					<Badge variant="success">{user?.perfil?.toUpperCase()}</Badge>
+				</div>
 			</div>
 
-			<div className={stylesPerfil.gridContainer}>
-				<div className={stylesPerfil.formsColumn}>
-					<Card title="Mis Datos">
+			{/* 🔑 CONTENEDOR DE UNA SOLA COLUMNA */}
+			<div className={pageStyles.singleColumnContainer}>
+				{/* SECCIÓN 1: DATOS PERSONALES */}
+				<section>
+					<Card
+						title="Información Personal"
+						subtitle="Actualiza tus datos de contacto"
+					>
 						{perfilData && (
 							<FormAtom
 								fields={fieldsPerfil}
 								initialData={perfilData}
 								onSubmit={handleSubmitPerfil}
 								onCancel={null}
-								actionsClassName={stylesPerfil.formActions}
+								actionsClassName={pageStyles.formActions}
 							>
 								<Button
 									type="submit"
 									variant="primary"
 									disabled={isSavingPerfil}
+									style={{ width: '100%' }}
 								>
-									{isSavingPerfil ? 'Guardando...' : 'Guardar Datos'}
+									{isSavingPerfil ? 'Guardando...' : 'Actualizar Datos'}
 								</Button>
 							</FormAtom>
 						)}
 					</Card>
-					<Card title="Cambiar Contraseña">
+				</section>
+
+				{/* SECCIÓN 2: SEGURIDAD */}
+				<section>
+					<Card title="Seguridad" subtitle="Gestiona tu contraseña de acceso">
 						<FormAtom
 							fields={fieldsPassword}
 							initialData={{}}
 							onSubmit={handleSubmitPassword}
 							onCancel={null}
-							actionsClassName={stylesPerfil.formActions}
+							actionsClassName={pageStyles.formActions}
 						>
 							<Button
 								type="submit"
-								variant="primary"
+								variant="secondary"
 								disabled={isSavingPassword}
+								style={{ width: '100%' }}
 							>
-								{isSavingPassword ? 'Guardando...' : 'Actualizar Contraseña'}
+								{isSavingPassword ? 'Guardando...' : 'Cambiar Contraseña'}
 							</Button>
 						</FormAtom>
 					</Card>
-				</div>
+				</section>
 
-				<div className={stylesPerfil.historyColumn}>
-					<Card title="Mi Historial de Pagos">
-						<Table
-							columns={columnsPagos}
-							data={historialPagos}
-							rowsPerPage={5}
-						/>
-					</Card>
+				{/* SECCIÓN 3: HISTORIAL */}
+				<section>
+					<Card>
+						<div className={pageStyles.tabsHeader}>
+							<button
+								className={`${pageStyles.tabButton} ${activeTab === 'visitas' ? pageStyles.active : ''}`}
+								onClick={() => setActiveTab('visitas')}
+							>
+								Historial de Visitas
+							</button>
+							<button
+								className={`${pageStyles.tabButton} ${activeTab === 'pagos' ? pageStyles.active : ''}`}
+								onClick={() => setActiveTab('pagos')}
+							>
+								Historial de Pagos
+							</button>
+						</div>
 
-					<Card title="Mi Historial de Visitas">
-						<Table
-							columns={columnsVisitas}
-							data={historialVisitas}
-							rowsPerPage={5}
-						/>
+						<div className={pageStyles.tabContent}>
+							{activeTab === 'visitas' ? (
+								<Table
+									columns={columnsVisitas}
+									data={historialVisitas}
+									rowsPerPage={10}
+								/>
+							) : (
+								<Table
+									columns={columnsPagos}
+									data={historialPagos}
+									rowsPerPage={10}
+								/>
+							)}
+						</div>
 					</Card>
-				</div>
+				</section>
 			</div>
 		</div>
 	);
