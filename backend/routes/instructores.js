@@ -64,14 +64,14 @@ router.delete(
 );
 
 // POST /api/instructores/register
-router.post(
-	'/register',
-	authorizeRoles('admin', 'empleado'),
-	createInstructor
-);
+router.post('/register', authorizeRoles('admin', 'empleado'), createInstructor);
 
 // GET /api/instructores
-router.get('/', authorizeRoles('admin', 'empleado'), getAllInstructores);
+router.get(
+	'/',
+	authorizeRoles('admin', 'empleado', 'cliente'),
+	getAllInstructores
+);
 
 // GET /api/instructores/:id
 router.get('/:id', authorizeRoles('admin', 'empleado'), getInstructorById);
@@ -80,11 +80,7 @@ router.get('/:id', authorizeRoles('admin', 'empleado'), getInstructorById);
 router.put('/:id', authorizeRoles('admin', 'empleado'), updateInstructor);
 
 // PUT /api/instructores/:id/baja
-router.put(
-	'/:id/baja',
-	authorizeRoles('admin', 'empleado'),
-	deleteInstructor
-);
+router.put('/:id/baja', authorizeRoles('admin', 'empleado'), deleteInstructor);
 
 // PUT /api/instructores/:id/passwordChange
 router.put(
