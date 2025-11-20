@@ -45,8 +45,8 @@ export default function MiPerfilPage() {
 
 			const formattedPagos = pagos.map((pago) => ({
 				...pago,
-				fecha_pago: formatDateTime(pago.fecha_pago), 
-				monto: `$${parseFloat(pago.monto).toFixed(2)}`, 
+				fecha_pago: formatDateTime(pago.fecha_pago),
+				monto: `$${parseFloat(pago.monto).toFixed(2)}`,
 			}));
 
 			const formattedVisitas = visitas.map((visita) => ({
@@ -63,7 +63,7 @@ export default function MiPerfilPage() {
 		} catch (err) {
 			console.error(err);
 			toast.error(err.response?.data?.error || 'Error al cargar los datos.');
-		} 
+		}
 	};
 
 	// --- Formularios ---
