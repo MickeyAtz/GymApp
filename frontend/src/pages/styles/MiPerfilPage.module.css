@@ -1,39 +1,86 @@
 /* frontend/src/pages/styles/MiPerfilPage.module.css */
 
-.gridContainer {
-	display: grid;
-	grid-template-columns: 1fr; /* Una columna por defecto para móviles */
-	gap: 2rem;
-}
-
-.formsColumn {
+/* 🔑 Estilo de Columna Única Ancha */
+.singleColumnContainer {
 	display: flex;
 	flex-direction: column;
-	gap: 2rem;
+	gap: 3rem; /* Espacio generoso entre secciones */
+	width: 100%;
+	max-width: 1000px; /* Ancho máximo para evitar que se estire demasiado */
+	margin: 0 auto; /* Centrado horizontal */
+	padding-bottom: 3rem; /* Espacio al final de la página */
 }
 
-.historyColumn {
-	display: flex; /* Para que las tablas se apilen */
-	flex-direction: column;
-	gap: 2rem; /* Espacio entre las dos tablas */
-	overflow-x: auto; /* Scroll horizontal si la tabla es muy ancha en móvil */
-}
-
-/* En pantallas más grandes, usamos dos columnas */
-@media (min-width: 992px) {
-	.gridContainer {
-		/* 1fr para formularios, 2fr para las tablas (más anchas) */
-		grid-template-columns: 1fr 2fr;
-	}
-}
-
-
+/* Acciones del formulario (botones) */
 .formActions {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
+	margin-top: 1.5rem;
 }
 
-.formActions button {
-	width: 100%;
+/* --- Estilos de Pestañas (Tabs) --- */
+.tabsHeader {
+	display: flex;
+	border-bottom: 1px solid var(--color-border);
+	margin-bottom: 1.5rem;
+	gap: 1rem;
+}
+
+.tabButton {
+	background: none;
+	border: none;
+	padding: 0.8rem 1.2rem;
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--color-text);
+	opacity: 0.6;
+	cursor: pointer;
+	border-bottom: 3px solid transparent;
+	transition: all 0.3s ease;
+	/* Opcional: bordes redondeados arriba */
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+}
+
+.tabButton:hover {
+	color: var(--color-primary);
+	opacity: 0.8;
+	background-color: rgba(255, 255, 255, 0.03);
+}
+
+.tabButton.active {
+	color: var(--color-primary);
+	opacity: 1;
+	border-bottom: 3px solid var(--color-primary);
+}
+
+.tabContent {
+	animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(5px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Ajustes Responsivos */
+@media (max-width: 768px) {
+	.singleColumnContainer {
+		gap: 2rem;
+		width: 95%;
+	}
+
+	.tabButton {
+		flex: 1; /* Botones ocupan el mismo ancho */
+		text-align: center;
+		padding: 0.8rem 0.5rem;
+		font-size: 0.9rem;
+	}
 }
