@@ -31,3 +31,6 @@ export const getVisitasMes = async () =>
 
 export const getVisitasSemana = async () =>
 	(await axiosInstance.get('/dashboard/visitas-semana')).data;
+
+export const getResumenPagosTiempo = async () =>
+	(await axiosInstance.get('dashboard/pagos/resumen-tiempo')).data;

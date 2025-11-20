@@ -212,3 +212,34 @@ export const visitasSemana = async (req, res) => {
 		res.status(500).json({ message: 'Error al obtener visitas semanales.' });
 	}
 };
+
+export const getResumenTiempo = async (req, res) => {
+	try {
+		const result = await pool.query(`
+			SELECT 
+                COALESCE(monto_hoy, 0) AS monto_hoy,
+                COALESCE(pagos_hoy, 0) AS pagos_hoy,
+                COALESCE(monto_semana, 0) AS monto_semana,
+                COALESCE(pagos_semana, 0) AS pagos_semana,
+                COALESCE(monto_mes, 0) AS monto_mes,
+                COALESCE(pagos_mes, 0) AS pagos_mes
+            FROM v_resumen_pagos_tiempo
+		`);
+
+		if (result.rows.length === 0) {
+			return res.json({
+				mont_hoy: 0,
+				pagos_hoy: 0,
+				monto_semana: 0,
+				pagos_semana: 0,
+				monto_mes: 0,
+				pagos_mes: 0,
+			});
+		}
+
+		return res.json(result.rows[0]);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: 'Error en el servidor.' });
+	}
+};

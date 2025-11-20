@@ -9,6 +9,7 @@ import {
 	inscripcionesPorClase,
 	visitasSemana,
 	visitasMes,
+	getResumenTiempo,
 } from '../controllers/dashboardController.js';
 
 const router = express.Router();
@@ -25,5 +26,7 @@ router.get('/clases/inscripciones', inscripcionesPorClase);
 
 router.get('/visitas-semana', visitasSemana);
 router.get('/visitas-mes', visitasMes);
+
+router.get('/pagos/resumen-tiempo', getResumenTiempo);
 
 export default router;

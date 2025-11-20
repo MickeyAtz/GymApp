@@ -1,7 +1,7 @@
 import React from 'react';
 import ChartPie from '../atoms/ChartPie';
 import ChartBar from '../atoms/ChartBar';
-import styles from './styles/ChartsGrid.module.css';
+import styles from './style/ChartsGrid.module.css';
 
 export default function ChartsGrid({ charts = [] }) {
 	return (
