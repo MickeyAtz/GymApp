@@ -30,7 +30,9 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 
 	if (!user) return null;
 
-	const items = itemsByRole[user.perfil.toLowerCase()];
+	const userProfile = user?.perfil?.toLowerCase() ?? '';
+
+	const items = itemsByRole?.[userProfile] ?? [];
 
 	const handleItemClick = (id) => {
 		setActiveItem(id);
@@ -76,7 +78,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
 						return (
 							<a
 								href={item.path}
-								target="_blank" 
+								target="_blank"
 								rel="noopener noreferrer"
 								key={item.id}
 								className={`${styles.item} ${isActive ? styles.active : ''}`}

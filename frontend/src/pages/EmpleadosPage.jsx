@@ -132,10 +132,10 @@ export default function EmpleadosPage() {
 				toast.success('¡Contraseña actualizada con éxito!');
 			} else if (editData) {
 				await updateEmpleado(editData.empleado_id, formData);
-				toast.succes('¡Empleado actualizado con éxito!');
+				toast.success('¡Empleado actualizado con éxito!');
 			} else {
 				await createEmpleado(formData);
-				toast.succes('¡Empleado creado con éxito!');
+				toast.success('¡Empleado creado con éxito!');
 			}
 			setIsModalOpen(false);
 			setEditData(null);

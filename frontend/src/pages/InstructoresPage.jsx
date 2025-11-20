@@ -24,7 +24,7 @@ export default function InstructoresPage() {
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
-	const [isSaving, setIsSaving] = useState(false); 
+	const [isSaving, setIsSaving] = useState(false);
 
 	useEffect(() => {
 		document.title = 'Gym App - Instructores';
@@ -105,7 +105,7 @@ export default function InstructoresPage() {
 	};
 
 	const handleSubmit = async (formData) => {
-		setIsSaving(true); 
+		setIsSaving(true);
 		try {
 			if (modalTitle === 'Cambiar contraseña') {
 				if (formData.password !== formData.confirmPassword) {
@@ -133,12 +133,12 @@ export default function InstructoresPage() {
 				err.response?.data?.error || 'No se pudo guardar el instructor.'
 			);
 		} finally {
-			setIsSaving(false); 
+			setIsSaving(false);
 		}
 	};
 
 	const handleEdit = (instructor) => {
-		setModalTitle('Editar Cliente');
+		setModalTitle('Editar Instructor');
 		setEditData(instructor);
 		setIsModalOpen(true);
 	};
@@ -183,7 +183,7 @@ export default function InstructoresPage() {
 						setIsModalOpen(true)
 					)}
 					clasName={styles.addBtn}
-					icon="plus" 
+					icon="plus"
 				>
 					Agregar Instructor
 				</Button>
@@ -244,7 +244,7 @@ export default function InstructoresPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
-					isSaving={isSaving} 
+					isSaving={isSaving}
 				></FormAtom>
 			</Modal>
 			<Modal
@@ -269,7 +269,7 @@ export default function InstructoresPage() {
 						<Button
 							variant="secondary"
 							onClick={handleConfirmDelete}
-							icon="trash" 
+							icon="trash"
 						>
 							Sí, Eliminar
 						</Button>

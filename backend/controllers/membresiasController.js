@@ -78,3 +78,47 @@ export const getActiveMembresias = async (req, res) => {
 		res.status(500).json({ message: 'Error al consultar membresias activas.' });
 	}
 };
+
+export const getUsuarioMembresiaActiva = async (req, res) => {
+	const { usuario_id } = req.params;
+
+	try {
+		const result = await pool.query(
+			`
+				SELECT
+					um.id,
+					um.fecha_inicio,
+					um.fecha_fin,
+					um.status,
+					m.nombre AS membresia_nombre,
+					m.precio,
+					(um.fecha_fin - CURRENT_DATE) AS dias_restantes
+				FROM usuario_membresia um
+				JOIN membresias m ON um.membresia_id = m.id
+				WHERE um.usuario_id = $1
+					AND um.status = 'activo'
+					AND um.fecha_fin >= CURRENT_DATE
+				ORDER BY um.fecha_fin DESC
+				LIMIT 1
+			`,
+			[usuario_id]
+		);
+
+		if (result.rows.length === 0)
+			return res.json({
+				activa: false,
+				mensaje: 'El usuario no tiene membresía activa.',
+			});
+		const membresia = result.rows[0];
+		res.status(201).json({
+			activa: true,
+			...membresia,
+		});
+		
+	} catch (error) {
+		console.error('Error al obtener membresía activa: ', error);
+		res
+			.status(500)
+			.json({ error: 'Error del servidor al verificar membresía' });
+	}
+};

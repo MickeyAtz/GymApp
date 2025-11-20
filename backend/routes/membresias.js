@@ -6,6 +6,7 @@ import {
 	updateMembresia,
 	deleteMembresia,
 	getActiveMembresias,
+	getUsuarioMembresiaActiva,
 } from '../controllers/membresiasController.js';
 
 import { verifyToken } from '../middleware/auth.js';
@@ -19,5 +20,5 @@ router.get('/', verifyToken, getAllMembresias); //Obtener todas las membresías
 router.put('/:id', verifyToken, updateMembresia); //Modificar membresía
 router.put('/:id/baja', verifyToken, deleteMembresia); //Eliminar membresía
 router.get('/activas', getActiveMembresias);
+router.get('/usuario/:usuario_id/activa', getUsuarioMembresiaActiva);
 export default router;
-

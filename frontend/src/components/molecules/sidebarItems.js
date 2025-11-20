@@ -35,6 +35,8 @@ export const allItems = [
 ];
 
 export const itemsByRole = {
+	' ': [],
+
 	empleado: allItems.filter((i) =>
 		[
 			'Dashboard',

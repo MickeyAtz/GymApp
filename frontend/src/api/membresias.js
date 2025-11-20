@@ -11,3 +11,6 @@ export const updateMembresia = async (id, data) =>
 
 export const deleteMembresia = async (id) =>
 	(await axiosInstance.put(`/membresias/${id}/baja`)).data;
+
+export const getMembresiaActivaUsuario = async (usuario_id) =>
+	(await axiosInstance.get(`/membresias/usuario/${usuario_id}/activa`)).data;
