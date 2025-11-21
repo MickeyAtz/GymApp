@@ -58,7 +58,7 @@ export default function ClasesPage() {
 		'Martes',
 		'Miercoles',
 		'Jueves',
-		'Viernes', 	
+		'Viernes',
 		'Sabado',
 		'Domingo',
 	];
@@ -183,7 +183,7 @@ export default function ClasesPage() {
 	return (
 		<div>
 			<div className={styles.header}>
-				<h2>Gestión de clases</h2>
+				<h2>Gestión de Clases</h2>
 				<Button
 					onClick={() => {
 						(setIsModalOpen(true),
@@ -191,7 +191,7 @@ export default function ClasesPage() {
 							setEditData(null));
 					}}
 					className={styles.addBtn}
-					icon="plus" 
+					icon="plus"
 				>
 					Agregar Clase
 				</Button>
@@ -245,7 +245,7 @@ export default function ClasesPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
-					isSaving={isSaving} 
+					isSaving={isSaving}
 				></FormAtom>
 			</Modal>
 
@@ -271,7 +271,7 @@ export default function ClasesPage() {
 						<Button
 							variant="secondary"
 							onClick={handleConfirmDelete}
-							icon="trash" 
+							icon="trash"
 						>
 							Sí, Eliminar
 						</Button>

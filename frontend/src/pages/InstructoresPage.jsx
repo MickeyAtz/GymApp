@@ -176,7 +176,7 @@ export default function InstructoresPage() {
 	return (
 		<div>
 			<div className={styles.header}>
-				<h2>Gestión de instructores</h2>
+				<h2>Gestión de Instructores</h2>
 				<Button
 					onClick={() => (
 						setModalTitle('Nuevo Instructor'),

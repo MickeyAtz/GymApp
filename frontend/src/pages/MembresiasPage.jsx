@@ -23,7 +23,7 @@ export default function MembresiasPage() {
 	const [editData, setEditData] = useState(null);
 	const [modalTitle, setModalTitle] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
-	const [isSaving, setIsSaving] = useState(false); 
+	const [isSaving, setIsSaving] = useState(false);
 
 	useEffect(() => {
 		document.title = 'Gym App - Membresías';
@@ -74,7 +74,7 @@ export default function MembresiasPage() {
 	};
 
 	const handleSubmit = async (formData) => {
-		setIsSaving(true); 
+		setIsSaving(true);
 		const payload = {
 			...formData,
 			activo: formData.activo === 'true' || formData.activo === true,
@@ -97,7 +97,7 @@ export default function MembresiasPage() {
 				err.response?.data?.error || 'No se pudo guardar la membresía.'
 			);
 		} finally {
-			setIsSaving(false); 
+			setIsSaving(false);
 		}
 	};
 
@@ -131,7 +131,7 @@ export default function MembresiasPage() {
 	return (
 		<div>
 			<div className={styles.header}>
-				<h2>Gestión de membresías</h2>
+				<h2>Gestión de Membresías</h2>
 				<Button
 					onClick={() => {
 						setIsModalOpen(true);
@@ -186,7 +186,7 @@ export default function MembresiasPage() {
 						setIsModalOpen(false);
 						setEditData(null);
 					}}
-					isSaving={isSaving} 
+					isSaving={isSaving}
 				/>
 			</Modal>
 
@@ -212,7 +212,7 @@ export default function MembresiasPage() {
 						<Button
 							variant="secondary"
 							onClick={handleConfirmDelete}
-							icon="trash" 
+							icon="trash"
 						>
 							Sí, Eliminar
 						</Button>

@@ -46,6 +46,8 @@ export default function ClientesPage() {
 	const [selectedMembership, setSelectedMembership] = useState(null);
 	const [loadingMembership, setLoadingMembership] = useState(false);
 
+	const [isLoading, setIsLoading] = useState(true);
+
 	const obtenerUsuario = () => {
 		const localUsuario = localStorage.getItem('usuario');
 		setUsuario(localUsuario);
@@ -109,8 +111,12 @@ export default function ClientesPage() {
 	}, []);
 
 	const fetchClientes = async () => {
-		const data = await getAllUsuarios();
-		setClientes(data);
+		try {
+			const data = await getAllUsuarios();
+			setClientes(data);
+		} catch (error) {
+			console.error('Error al cargar clientes');
+		}
 	};
 
 	const handleSubmit = async (formData) => {
@@ -230,7 +236,7 @@ export default function ClientesPage() {
 	return (
 		<div>
 			<div className={styles.header}>
-				<h2>Gestión de clientes</h2>
+				<h2>Gestión de Clientes</h2>
 				<Button
 					onClick={() => (setIsModalOpen(true), setModalTitle('Nuevo Cliente'))}
 					icon="plus"

@@ -27,7 +27,7 @@ export default function EmpleadosPage() {
 	const [modalTitle, setModalTitle] = useState('');
 	const [editData, setEditData] = useState(null);
 	const [itemParaBorrar, setItemParaBorrar] = useState(null);
-	const [isSaving, setIsSaving] = useState(false); 
+	const [isSaving, setIsSaving] = useState(false);
 
 	useEffect(() => {
 		document.title = 'Gym App - Empleados';
@@ -119,7 +119,7 @@ export default function EmpleadosPage() {
 	};
 
 	const handleSubmit = async (formData) => {
-		setIsSaving(true); 
+		setIsSaving(true);
 		try {
 			if (modalTitle === 'Cambiar contraseña') {
 				if (formData.password !== formData.confirmPassword) {
@@ -146,7 +146,7 @@ export default function EmpleadosPage() {
 				err.response?.data?.error || 'No se pudo guardar el empleado.'
 			);
 		} finally {
-			setIsSaving(false); 
+			setIsSaving(false);
 		}
 	};
 
@@ -166,7 +166,7 @@ export default function EmpleadosPage() {
 	const handleConfirmDelete = async () => {
 		if (!itemParaBorrar) return;
 		try {
-			await deleteEmpleado(itemParaBorrar); 
+			await deleteEmpleado(itemParaBorrar);
 			toast.info('Empleado eliminado correctamente.');
 			fetchEmpleados();
 		} catch (err) {
@@ -191,7 +191,7 @@ export default function EmpleadosPage() {
 	return (
 		<div>
 			<div className={styles.header}>
-				<h2>Gestión de empleados</h2>
+				<h2>Gestión de Empleados</h2>
 				<Button
 					onClick={() => {
 						(setIsModalOpen(true), setModalTitle('Nuevo Empleado'));
@@ -290,7 +290,7 @@ export default function EmpleadosPage() {
 						<Button
 							variant="secondary"
 							onClick={handleConfirmDelete}
-							icon="trash" 
+							icon="trash"
 						>
 							Sí, Eliminar
 						</Button>
